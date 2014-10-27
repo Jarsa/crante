@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    	<!-- Vista de Arbol para Chatarras -->
+    	<record model='ir.ui.view' id='chatarra_unit_tree'>
+			<field name='name'>chatarra_unit.tree</field>
+			<field name='model'>chatarra.unit</field>
+			<field name='type'>tree</field>
+			<field name='arch' type='xml'>
+				<tree string='Chatarras'>
+					<field name='name'/>
+					<field name='vat'/>
+				</tree>
+			</field>
+		</record>
+    	<!-- Vista de Formulario para Chatarras -->
+    	<record model='ir.ui.view' id='chatarra_unit_form'>
+    		<field name='name'>chatarra_unit.form</field>
+    		<field name='model'>chatarra.unit</field>
+    		<field name='type'>form</field>
+    		<field name='arch' type='xml'>
+    			<form string='Lista de Unidades'>
+    				<sheet>
+    					<h1>
+    						<label string='Catalogo de Unidades'/>
+    					</h1>
+    					<group col='4'>
+    						<field name='name'/>
+    						<field name='propietario_id' on_change='onchange_vat(propietario_id)'/>
+    						<field name='vat'/>
+    					</group>
+    					<notebook>
+    						<page string='Datos de la Unidad'>
+    							<group col='4'>
+ 									<field name='serie'/>
+ 									<field name='marca' widget='selection'/>
+ 									<field name='clase'/>
+ 									<field name='tipo' widget='selection'/>
+ 									<field name='motor'/>
+ 									<field name='combustible'/>
+ 									<field name='toneladas'/>
+ 									<field name='peso_vehicular'/>
+ 									<field name='largo_vehiculo'/>
+    							</group>
+    						</page>
+    					</notebook>
+    				</sheet>
+    			</form>
+    		</field>
+    	</record>
+    	<!-- Vista de Arbol de Marcas -->
+    	<record model='ir.ui.view' id='chatarra_marca_tree'>
+    		<field name='name'>chatarra_marca.tree</field>
+    		<field name='model'>chatarra.marca</field>
+    		<field name='type'>tree</field>
+    		<field name='arch' type='xml'>
+    			<tree string='Marcas' editable='bottom'>
+    				<field name='name'/>
+    				<field name='active'/>
+    			</tree>
+    		</field>
+    	</record>
+    	<!-- Vista de Arbol de Tipo -->
+    	<record model='ir.ui.view' id='chatarra_tipo_tree'>
+    		<field name='name'>chatarra_tipo.tree</field>
+    		<field name='model'>chatarra.tipo</field>
+    		<field name='type'>tree</field>
+    		<field name='arch' type='xml'>
+    			<tree string='Tipos' editable='buttom'>
+    				<field name='name'/>
+    				<field name='active'/>
+    			</tree>
+    		</field>
+    	</record>
+        <!-- Menu Chatarra-->
+        <menuitem id="chatarra_menu" name="Chatarra"/>
+        <!-- Menu Chatarra/Unidades -->
+        <menuitem id="chatarra_list_menu" name="Unidades" parent="chatarra_menu"/>
+        <!-- Menu Chatarra/Configuracion -->
+        <menuitem id="chatarra_config_menu" name="Configuracion" parent="chatarra_menu"/>
+       <!-- Accion Chatarra/Unidades/Unidades -->
+        <record id='action_chatarra_list' model='ir.actions.act_window'>
+        	<field name='name'>Lista de Chatarras</field>
+        	<field name='res_model'>chatarra.unit</field>
+        	<field name='view_type'>form</field>
+        	<field name='view_mode'>tree,form</field>
+        </record>
+        <!-- Menu Chatarra/Unidades/Unidades -->
+        <menuitem id="chatarra_lists_menu" name="Unidades" parent="chatarra_list_menu" action="action_chatarra_list"/>
+        <!-- Accion Chatarra/Configuracion/Marcas -->
+        <record id='action_chatarra_marca' model='ir.actions.act_window'>
+        	<field name='name'>Lista de Marcas</field>
+        	<field name='res_model'>chatarra.marca</field>
+        	<field name='view_type'>form</field>
+        	<field name='view_mode'>tree,form</field>
+        </record>
+        <!-- Menu Chatarra/Configuracion/Marcas -->
+        <menuitem id="chatarra_marca_menu" name="Marcas" parent="chatarra_config_menu" action="action_chatarra_marca"/>
+        <!-- Accion Chatarra/Configuracion/Tipo -->
+        <record id='action_chatarra_tipo' model='ir.actions.act_window'>
+        	<field name='name'>Lista de Tipos</field>
+        	<field name='res_model'>chatarra.tipo</field>
+        	<field name='view_type'>form</field>
+        	<field name='view_mode'>tree,form</field>
+        </record>
+        <!-- Menu Chatarra/Configuracion/Tipos -->
+        <menuitem id="chatarra_tipo_menu" name="Tipo" parent="chatarra_config_menu" action="action_chatarra_tipo"/>
+        <!-- SEARCH View Chatarra_unit --> 
+        <record id="chatarra_unit_search" model="ir.ui.view">
+            <field name="name">chatarra.unit.search</field>
+            <field name="model">chatarra.unit</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Chatarra">
+                   <group  expand='0' string='Agrupar por:'>
+                       <filter string='Marca' icon="terp-gdu-smart-failing" domain="[]" context="{'group_by' : 'marca'}" />
+                   </group>
+                </search>
+            </field>
+        </record>
+    </data>
+</openerp>
