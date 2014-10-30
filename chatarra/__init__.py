@@ -1,2 +1,3 @@
 # -*- coding: utf-8 -*-
-import chatarra
+import chatarra_unit
+import res_partner

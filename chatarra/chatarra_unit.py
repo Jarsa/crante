@@ -46,19 +46,36 @@ class chatarra_unit(osv.osv):
                 'name': fields.char('Placa',size=40),
                 'serie': fields.char('Número de serie', size=40),
                 'marca': fields.many2one('chatarra.marca', 'Marca'),
+                'modelo': fields.char('Modelo', size=40),
                 'clase': fields.selection([('t2','T 2'),('t3','T 3'),('c2','C 2'),('c3','C 3')],'Clase'),
                 'tipo': fields.many2one('chatarra.tipo','Tipo'),
                 'motor': fields.char('Motor',size=40),
                 'combustible': fields.selection([('diesel','Diesel'),('gasolina','Gasolina')],'Combustible'),
-                'toneladas': fields.integer('Toneladas'),
                 'peso_vehicular': fields.float('Peso Vehicular'),
-                'largo_vehiculo': fields.float('Largo Vehiculo'),
                 'propietario_id': fields.many2one('res.partner','Nombre del Propietario'),
-                'vat': fields.char('R.F.C.'),
+                'vat': fields.char('R.F.C.', size=6),
+                'reg_fed': fields.char('Reg. Fed', size=40),
+                'modalidad': fields.char('Modalidad', size=64),
+                'no_ejes': fields.integer('Numero de ejes'),
+                'no_llantas': fields.integer('Numero de llantas'),
+                'cap_litros': fields.char('Litros', size=10),
+                'cap_toneladas': fields.char('Toneladas', size=10),
+                'cap_personas': fields.char('Personas', size=10),
+                'alto': fields.float('Alto'),
+                'ancho': fields.float('ancho'),
+                'largo': fields.float('largo'),
+                'eje_direccional': fields.char('Eje Direccional', size=10),
+                'eje_motriz': fields.char('Eje Motriz', size=10),
+                'eje_carga': fields.char('Eje Carga', size=10),
+                'permiso_ruta': fields.char('Permiso de ruta', size=10),
+                'lugar_exp': fields.char('Lugar de expedicion', size=10),
+                'fecha_exp': fields.date('Fecha de expedicion'),
+
         }
 
     _sql_constraints = [('chatarra_unit_name_unique', 'unique(name)', 'La Placa ya existe')]
     
     _constraints = [(_check_unique_insesitive, 'La Placa ya existe', ['name'])]
+    
 
 chatarra_unit()

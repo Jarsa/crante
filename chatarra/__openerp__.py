@@ -30,7 +30,7 @@
     "website": "http://www.jarsa.com.mx",
     "category": "Chatarra",
     "depends": ['base_vat','vat_override'],
-    "data":['chatarra_view.xml'],
+    "data":['chatarra_unit_view.xml','res_partner_view.xml'],
     "demo_xml": [],
     "update_xml": [],
     "active": False,

@@ -8,8 +8,9 @@
 			<field name='type'>tree</field>
 			<field name='arch' type='xml'>
 				<tree string='Chatarras'>
-					<field name='name'/>
 					<field name='vat'/>
+                    <field name='name'/>
+					<field name='serie'/>
 				</tree>
 			</field>
 		</record>
@@ -38,10 +39,25 @@
  									<field name='tipo' widget='selection'/>
  									<field name='motor'/>
  									<field name='combustible'/>
- 									<field name='toneladas'/>
  									<field name='peso_vehicular'/>
- 									<field name='largo_vehiculo'/>
-    							</group>
+                                    <field name='modelo'/>
+                                    <field name='reg_fed'/>
+                                    <field name='modalidad'/>
+                                    <field name='no_ejes'/>
+                                    <field name='no_llantas'/>
+                                    <field name='cap_litros'/>                                
+                                    <field name='cap_toneladas'/>
+                                    <field name='cap_personas'/>
+                                    <field name='alto'/>
+                                    <field name='ancho'/>
+                                    <field name='largo'/>
+                                    <field name='eje_direccional'/>
+                                    <field name='eje_motriz'/>
+                                    <field name='eje_carga'/>
+                                    <field name='permiso_ruta'/>                  
+                                    <field name='lugar_exp'/>
+                                    <field name='fecha_exp'/>
+                                </group>
     						</page>
     					</notebook>
     				</sheet>
@@ -106,14 +122,15 @@
         <!-- Menu Chatarra/Configuracion/Tipos -->
         <menuitem id="chatarra_tipo_menu" name="Tipo" parent="chatarra_config_menu" action="action_chatarra_tipo"/>
         <!-- SEARCH View Chatarra_unit --> 
-        <record id="chatarra_unit_search" model="ir.ui.view">
-            <field name="name">chatarra.unit.search</field>
+        <record id="chatarra_marca_search" model="ir.ui.view">
+            <field name="name">chatarra.marca.search</field>
             <field name="model">chatarra.unit</field>
             <field name="type">search</field>
             <field name="arch" type="xml">
                 <search string="Chatarra">
                    <group  expand='0' string='Agrupar por:'>
                        <filter string='Marca' icon="terp-gdu-smart-failing" domain="[]" context="{'group_by' : 'marca'}" />
+                       <filter string='R.F.C.' icon="terp-gdu-smart-failing" domain="[]" context="{'group_by' : 'vat'}" />
                    </group>
                 </search>
             </field>
