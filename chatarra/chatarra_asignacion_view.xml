@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Crate sequence -->
+		<record id="sequence_chatarra_asignacion_type" model="ir.sequence.type">
+            <field name="name">Numero de Asignacion</field>
+            <field name="code">asignacion.sequence.number</field>
+        </record>
+        <record id="sequence_chatarra_asignacion" model="ir.sequence">
+            <field name="name">Asignacion Sequence Number</field>
+            <field name="code">asignacion.sequence.number</field>
+            <field name="prefix">A</field>
+            <field name="padding">4</field>
+        </record>
+        <!-- Vista de Arbol -->
+        <record model='ir.ui.view' id='chatarra_asignacion_tree'>
+        	<field name='name'>chatarra_asignacion.tree</field>
+        	<field name='model'>chatarra.asignacion</field>
+        	<field name='type'>tree</field>
+        	<field name='arch' type='xml'>
+        		<tree string='Asignaciones'>
+        			<field name='name'/>
+        			<field name='client_id'/>
+        			<field name='contacto_id'/>
+        			<field name='agencia_id'/>
+        		</tree>
+        	</field>
+        </record>
+        <!-- Vista de Formulario -->
+        <record model='ir.ui.view' id='chatarra_asignacion_form'>
+        	<field name='name'>chatarra_asignacion.form</field>
+        	<field name='model'>chatarra.asignacion</field>
+        	<field name='type'>form</field>
+        	<field name='arch' type='xml'>
+        		<form string='Asignaciones'>
+        			<header>
+        			</header>
+        			<sheet>
+        				<h1>
+        					<label string='Asignaciones'/>
+        					<field name="name" class="oe_inline" readonly="True"/>
+        				</h1>
+        				<group>
+        					<field name='client_id'/>
+        					<field name='contacto_id'/>
+        					<field name='agencia_id'/>
+        				</group>
+        				<group>
+                            <separator string="Unidades" coslpan="4"/>
+        					<field name='unit_ids' colspan="4" nolabel="1" widget="many2many"/>
+                            <field name="unit_id" readonly="1" colspan="2"/>  
+        				</group>
+        			</sheet>
+        		</form>
+        	</field>
+        </record>
+        <!-- Accion Menu Asigacion -->
+        <record id='action_chatarra_asignacion' model='ir.actions.act_window'>
+        	<field name='name'>Asignacion</field>
+        	<field name='res_model'>chatarra.asignacion</field>
+        	<field name='view_type'>form</field>
+        	<field name='view_mode'>tree,form</field>
+        </record>
+        <!-- Menu Asigaciones -->
+        <menuitem id="chatarra_asignacion_menu" name="Asignaciones" parent="chatarra_list_menu" action="action_chatarra_asignacion"/>
+    </data>
+</openerp>

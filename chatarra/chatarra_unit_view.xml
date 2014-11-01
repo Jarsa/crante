@@ -7,10 +7,13 @@
 			<field name='model'>chatarra.unit</field>
 			<field name='type'>tree</field>
 			<field name='arch' type='xml'>
-				<tree string='Chatarras'>
+				<tree string='Chatarras' 
+                    colors="gray:state=='reposicion';red:state=='borrador';green:state=='asignada';blue:state=='disponible';">
 					<field name='vat'/>
                     <field name='name'/>
 					<field name='serie'/>
+                    <field name='state'/>
+                    <button name="action_disponible" states="borrador" string="Disponible" type="object" icon="gtk-go-forward"/>
 				</tree>
 			</field>
 		</record>
@@ -21,6 +24,10 @@
     		<field name='type'>form</field>
     		<field name='arch' type='xml'>
     			<form string='Lista de Unidades'>
+                    <header>
+                        <button name="action_disponible" states="borrador" string="Disponible" type="object" icon="gtk-apply" class="oe_highlight"/>
+                        <field name='state' widget="statusbar" statusbar_visible="borrador,disponible,asignada,reposicion"/>
+                    </header>
     				<sheet>
     					<h1>
     						<label string='Catalogo de Unidades'/>
@@ -59,6 +66,12 @@
                                     <field name='fecha_exp'/>
                                 </group>
     						</page>
+                            <page string='Log'>
+                                <group con='4'>
+                                    <field name='disponible_por'/>
+                                    <field name='fecha_disponible'/>
+                                </group>
+                            </page>
     					</notebook>
     				</sheet>
     			</form>
@@ -102,7 +115,7 @@
         	<field name='view_mode'>tree,form</field>
         </record>
         <!-- Menu Chatarra/Unidades/Unidades -->
-        <menuitem id="chatarra_lists_menu" name="Unidades" parent="chatarra_list_menu" action="action_chatarra_list"/>
+        <menuitem id="chatarra_lists_menu" name="Unidades Disponibles" parent="chatarra_list_menu" action="action_chatarra_list"/>
         <!-- Accion Chatarra/Configuracion/Marcas -->
         <record id='action_chatarra_marca' model='ir.actions.act_window'>
         	<field name='name'>Lista de Marcas</field>
