@@ -67,9 +67,11 @@
                                 </group>
     						</page>
                             <page string='Log'>
-                                <group con='4'>
+                                <group col='4'>
                                     <field name='disponible_por'/>
                                     <field name='fecha_disponible'/>
+                                    <field name='asignada_por'/>
+                                    <field name='fecha_asignada'/>
                                 </group>
                             </page>
     					</notebook>

@@ -47,7 +47,7 @@
         				</group>
         				<group>
                             <separator string="Unidades" coslpan="4"/>
-        					<field name='unit_ids' colspan="4" nolabel="1" widget="many2many"/>
+        					<field name='unit_ids' colspan="4" nolabel="1" domain="[('state','=', 'disponible')]"/>
                             <field name="unit_id" readonly="1" colspan="2"/>  
         				</group>
         			</sheet>

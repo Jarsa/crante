@@ -93,8 +93,11 @@ class chatarra_unit(osv.osv):
                 'permiso_ruta'      : fields.char('Permiso de ruta', size=10),
                 'lugar_exp'         : fields.char('Lugar de expedicion', size=10),
                 'fecha_exp'         : fields.date('Fecha de expedicion'),
+                'asignacion_id'     : fields.many2one('chatarra.asignacion', 'No. de Asignacion', readonly=True),
                 'disponible_por'    : fields.many2one('res.users', 'Disponible por', readonly=True),
                 'fecha_disponible'  : fields.datetime('Fecha Disponible', readonly=True),
+                'asignada_por'    : fields.many2one('res.users', 'Asignado por', readonly=True),
+                'fecha_asignada'  : fields.datetime('Fecha Asignado', readonly=True),
 
         }
 
