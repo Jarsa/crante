@@ -99,3 +99,4 @@ class chatarra_asignacion_guia(osv.osv):
                         ('Todas las Unidades deben estar en estado "Completa"')
                         )
             asignacion_obj.write(cr, uid, [asignacion], {'guia':guia.id, 'state':'enviado_sct', 'enviado_por':uid, 'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            return True
