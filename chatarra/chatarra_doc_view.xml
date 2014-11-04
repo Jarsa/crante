@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Vista de Arbol -->
+        <record model='ir.ui.view' id='chatarra_documentos_tree'>
+        	<field name='name'>chatarra_documentos.tree</field>
+        	<field name='model'>chatarra.documentos</field>
+        	<field name='type'>tree</field>
+        	<field name='arch' type='xml'>
+        		<tree string='Documentos'>
+        			<field name='name'/>
+        			<field name='unit_id'/>
+        			<field name='state'/>
+        		</tree>
+        	</field>
+        </record>
+        <!-- Vista de Formulario -->
+        <record model='ir.ui.view' id='chatarra_documentos_form'>
+            <field name='name'>chatarra_documentos.form</field>
+            <field name='model'>chatarra.documentos</field>
+            <field name='type'>form</field>
+            <field name='arch' type='xml'>
+                <form string='Documentos'>
+                    <header>
+                        <field name='state' widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <h1>
+                            <label string='Documentos'/>
+                        </h1>
+                        <group>
+                            <field name='name'/>
+                            <field name='imagen'/>
+                        </group>
+                        <group>
+                            <field name='unit_id'/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <!-- Vista de Busqueda --> 
+        <record id="chatarra_marca_search" model="ir.ui.view">
+            <field name="name">chatarra.documentos.search</field>
+            <field name="model">chatarra.documentos</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Chatarra">
+                   <group  expand='0' string='Agrupar por:'>
+                       <filter string='Tipo de documento' icon="terp-gdu-smart-failing" domain="[]" context="{'group_by' : 'name'}" />
+                       <filter string='Unidad' icon="terp-gdu-smart-failing" domain="[]" context="{'group_by' : 'unit_id'}" />
+                   </group>
+                </search>
+            </field>
+        </record>
+        <!-- Accion del menu -->
+        <record id='action_chatarra_documentos' model='ir.actions.act_window'>
+        	<field name='name'>Accion Documentos</field>
+        	<field name='res_model'>chatarra.documentos</field>
+        	<field name='view_type'>form</field>
+        	<field name='view_mode'>tree,form</field>
+        </record>
+        <!-- Menu Chatarra/Unidades/Documentos -->
+        <menuitem id="chatarra_documentos_menu" name="Documentos" parent="chatarra_list_menu" action="action_chatarra_documentos"/>
+    </data>
+</openerp>

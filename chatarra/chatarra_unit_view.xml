@@ -14,6 +14,7 @@
 					<field name='serie'/>
                     <field name='state'/>
                     <button name="action_disponible" states="borrador" string="Disponible" type="object" icon="gtk-go-forward"/>
+                    <button name="action_completa" states="asignada" string="Documentacion Completa" type="object" icon="gtk-apply" class="oe_highlight"/>
 				</tree>
 			</field>
 		</record>
@@ -26,6 +27,7 @@
     			<form string='Lista de Unidades'>
                     <header>
                         <button name="action_disponible" states="borrador" string="Disponible" type="object" icon="gtk-apply" class="oe_highlight"/>
+                        <button name="action_completa" states="asignada" string="Documentacion Completa" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,disponible,asignada,reposicion"/>
                     </header>
     				<sheet>
@@ -66,12 +68,28 @@
                                     <field name='fecha_exp'/>
                                 </group>
     						</page>
+                            <page string='Documentacion' attrs="{'invisible': [('state','in','borrador')]}">
+                                <group>
+                                    <separator string="Documentos" coslpan="4"/>
+                                    <field name='document_ids' colspan="4" nolabel="1" context="{'default_unit_id': active_id,}">
+                                        <tree string='Documentacion' editable='buttom'>
+                                            <field name='name'/>
+                                            <field name='unit_id' readonly="True"/>
+                                            <field name='state'/>
+                                            <field name='imagen'/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
                             <page string='Log'>
                                 <group col='4'>
                                     <field name='disponible_por'/>
                                     <field name='fecha_disponible'/>
                                     <field name='asignada_por'/>
                                     <field name='fecha_asignada'/>
+                                    <field name='enviado_por'/>
+                                    <field name='fecha_enviado'/>
+                                    <field name='asignacion_id'/>
                                 </group>
                             </page>
     					</notebook>

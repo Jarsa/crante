@@ -12,6 +12,14 @@
             <field name="prefix">A</field>
             <field name="padding">4</field>
         </record>
+        <!-- Accion Form Guia -->
+        <record id='action_chatarra_asignacion_guia' model='ir.actions.act_window'>
+            <field name='name'>Guia</field>
+            <field name='res_model'>chatarra.asignacion.guia</field>
+            <field name='view_type'>form</field>
+            <field name='target'>new</field>
+            <field name='view_mode'>form</field>
+        </record>
         <!-- Vista de Arbol -->
         <record model='ir.ui.view' id='chatarra_asignacion_tree'>
         	<field name='name'>chatarra_asignacion.tree</field>
@@ -23,6 +31,7 @@
         			<field name='client_id'/>
         			<field name='contacto_id'/>
         			<field name='agencia_id'/>
+                    <field name='state'/>
         		</tree>
         	</field>
         </record>
@@ -34,6 +43,9 @@
         	<field name='arch' type='xml'>
         		<form string='Asignaciones'>
         			<header>
+                        <button name="action_confirmado" states="borrador" string="Confimar" type="object" icon="gtk-apply" class="oe_highlight"/>
+                        <button  name="%(action_chatarra_asignacion_guia)d" states="confirmado" string="Enviar a SCT" type="action" icon="gtk-apply" class="oe_highlight" context="{'default_asignacion_id': active_id,}"/>
+                        <field name='state' widget="statusbar" statusbar_visible="borrador,confirmado"/>
         			</header>
         			<sheet>
         				<h1>
@@ -45,16 +57,48 @@
         					<field name='contacto_id'/>
         					<field name='agencia_id'/>
         				</group>
-        				<group>
-                            <separator string="Unidades" coslpan="4"/>
-        					<field name='unit_ids' colspan="4" nolabel="1" domain="[('state','=', 'disponible')]"/>
-                            <field name="unit_id" readonly="1" colspan="2"/>  
-        				</group>
+                        <notebook>
+                            <page string='Unidades'>
+                                <separator string="Unidades" coslpan="4"/>
+                                <field name='unit_ids' colspan="4" nolabel="1" domain="[('state','=', 'disponible')]"/>
+                            </page>
+                            <page string='Log'>
+                                <group col='4'>
+                                    <field name='confirmado_por'/>
+                                    <field name='fecha_confirmado'/>
+                                    <field name='enviado_por'/>
+                                    <field name='fecha_enviado'/>
+                                    <field name='guia' readonly='True'/>
+                                </group>
+                            </page>
+                        </notebook>
         			</sheet>
         		</form>
         	</field>
         </record>
-        <!-- Accion Menu Asigacion -->
+        <!-- Vista formulario No. de Guia -->
+        <record model='ir.ui.view' id='chatarra_asignacion_guia_form'>
+            <field name='name'>chatarra_asignacion_guia.form</field>
+            <field name='model'>chatarra.asignacion.guia</field>
+            <field name='type'>form</field>
+            <field name='arch' type='xml'>
+                <form string='Guia'>
+                    <header>
+                     <button name="action_enviado" string="Confirmar" type="object" icon="gtk-apply" class="oe_highlight"/>   
+                    </header>
+                    <sheet>
+                        <h1>
+                            <label string='Guia'/>
+                        </h1>
+                        <group>
+                            <field name='asignacion_id'/>
+                            <field name='name'/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <!-- Accion Menu Asignacion -->
         <record id='action_chatarra_asignacion' model='ir.actions.act_window'>
         	<field name='name'>Asignacion</field>
         	<field name='res_model'>chatarra.asignacion</field>

@@ -93,11 +93,16 @@ class chatarra_unit(osv.osv):
                 'permiso_ruta'      : fields.char('Permiso de ruta', size=10),
                 'lugar_exp'         : fields.char('Lugar de expedicion', size=10),
                 'fecha_exp'         : fields.date('Fecha de expedicion'),
+                'document_ids'      : fields.one2many('chatarra.documentos', 'unit_id', 'Documentos'),
                 'asignacion_id'     : fields.many2one('chatarra.asignacion', 'No. de Asignacion', readonly=True),
                 'disponible_por'    : fields.many2one('res.users', 'Disponible por', readonly=True),
                 'fecha_disponible'  : fields.datetime('Fecha Disponible', readonly=True),
-                'asignada_por'    : fields.many2one('res.users', 'Asignado por', readonly=True),
-                'fecha_asignada'  : fields.datetime('Fecha Asignado', readonly=True),
+                'asignada_por'      : fields.many2one('res.users', 'Asignado por', readonly=True),
+                'fecha_asignada'    : fields.datetime('Fecha Asignado', readonly=True),
+                'completa_por'      : fields.many2one('res.users', 'Doc. Completada por', readonly=True),
+                'fecha_completa'    : fields.datetime('Fecha Completada', readonly=True),
+                'enviado_por'       : fields.many2one('res.users', 'Enviado por', readonly=True),
+                'fecha_enviado'     : fields.datetime('Fecha Enviado', readonly=True),
 
         }
 
@@ -113,6 +118,12 @@ class chatarra_unit(osv.osv):
         self.write(cr, uid, ids, {  'state':'disponible',
                                     'disponible_por':uid,
                                     'fecha_disponible':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_completa(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {  'state':'completa',
+                                    'completa_por':uid,
+                                    'fecha_completa':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         return True
 
 chatarra_unit()
