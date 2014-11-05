@@ -156,7 +156,7 @@ class chatarra_unit_reposicion(osv.osv):
         reposicion = self.browse(cr, uid, ids)
         nueva = reposicion.unidad_nueva_id
         anterior = reposicion.unidad_anterior_id
-        asignacion_obj.write(cr, uid, anterior.asignacion_id.id, {'unit_ids': [(4, nueva.id)(3, anterior.id)]})
+        asignacion_obj.write(cr, uid, anterior.asignacion_id.id, {'unit_ids': [(4, nueva.id),(3, anterior.id)]})
         unidad_obj.write(cr, uid, [nueva.id], {'sustituye_id':anterior.id, 'reposicion_id':reposicion.id, 'asignacion_id':anterior.asignacion_id.id})
         unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id, 'state':'reposicion', 'reposicion_id':reposicion.id, 'reposicion_por':uid, 'fecha_reposicion':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         return True

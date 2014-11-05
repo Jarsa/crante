@@ -29,6 +29,9 @@
             <field name="arch" type="xml">
                 <search string="Unidades">
                    <filter string="Disponibles" icon="terp-gtk-media-pause" domain="[('state','=','disponible')]"/>
+                   <filter string="Borrador" icon="terp-gtk-media-pause" domain="[('state','=','borrador')]"/>
+                   <filter string="Asignada" icon="terp-gtk-media-pause" domain="[('state','=','asignada')]"/>
+                   <filter string="Enviada a SCT" icon="terp-gtk-media-pause" domain="[('state','=','enviado')]"/>
                    <separator orientation="vertical"/>
                    <group  expand='0' string='Agrupar por...'>
                        <filter string='Estado' icon="terp-gdu-smart-failing" domain="[]" context="{'group_by' : 'state'}" />
