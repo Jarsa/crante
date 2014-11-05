@@ -76,7 +76,7 @@ class chatarra_unit(osv.osv):
                 'combustible'       : fields.selection([('diesel','Diesel'),('gasolina','Gasolina')],'Combustible'),
                 'peso_vehicular'    : fields.float('Peso Vehicular'),
                 'propietario_id'    : fields.many2one('res.partner','Nombre del Propietario'),
-                'vat'               : fields.char('R.F.C.', size=6),
+                'vat'               : fields.char('R.F.C.', size=20),
                 'reg_fed'           : fields.char('Reg. Fed', size=40),
                 'modalidad'         : fields.char('Modalidad', size=64),
                 'no_ejes'           : fields.integer('Numero de ejes'),
@@ -107,6 +107,7 @@ class chatarra_unit(osv.osv):
                 'fecha_reposicion'  : fields.datetime('Fecha Reposicion:', readonly=True),
                 'repuesta_id'       : fields.many2one('chatarra.unit', 'Repuesta por:', readonly=True),
                 'sustituye_id'      : fields.many2one('chatarra.unit', 'Sustituye a:', readonly=True),
+                'reposicion_id'     : fields.many2one('chatarra.unit.reposicion', 'No. de Reposicion', readonly=True),
 
         }
 
@@ -143,6 +144,10 @@ class chatarra_unit_reposicion(osv.osv):
         'name'               : fields.char('No. de Reposicion', size=64, readonly=True),
         'unidad_anterior_id' : fields.many2one('chatarra.unit','Unidad anterior:', readonly=True),
         'unidad_nueva_id'    : fields.many2one('chatarra.unit','Unidad nueva:'),
+        'date'               : fields.date('Fecha de reposicion', readonly=True),
+    }
+    _defaults = {
+        'date': lambda *a: time.strftime('%Y-%m-%d'),
     }
 
     def action_reposicion(self, cr, uid, ids, vals, context=None):
@@ -151,21 +156,10 @@ class chatarra_unit_reposicion(osv.osv):
         reposicion = self.browse(cr, uid, ids)
         nueva = reposicion.unidad_nueva_id
         anterior = reposicion.unidad_anterior_id
-        asignacion_obj.write(cr, uid, anterior.asignacion_id.id, {'unit_ids': [(4, nueva.id)]})
-        unidad_obj.write(cr, uid, [nueva.id], {'sustituye_id':anterior.id, 'asignacion_id':anterior.asignacion_id.id})
-        unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id, 'state':'reposicion', 'reposicion_por':uid, 'fecha_reposicion':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        asignacion_obj.write(cr, uid, anterior.asignacion_id.id, {'unit_ids': [(4, nueva.id)(3, anterior.id)]})
+        unidad_obj.write(cr, uid, [nueva.id], {'sustituye_id':anterior.id, 'reposicion_id':reposicion.id, 'asignacion_id':anterior.asignacion_id.id})
+        unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id, 'state':'reposicion', 'reposicion_id':reposicion.id, 'reposicion_por':uid, 'fecha_reposicion':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         return True
-
-    #def list_customers(self, cr, uid, ids, context):
-    #sale_obj = self.pool.get('sale.order')
-    #for sale in self.browse(cr, uid, ids, context):
-    #    sale_ids = sale_obj.search(cr, uid, [('div_code_id','=',sale.div_code_id.id),('project_user','=',sale.project_id.id),('tower_id#','=',sale.tower_id.id)])
-    #    ids_cus = []
-    #    for cus in sale_obj.browse(cr, uid, sale_ids, context):
-    #        if cus.partner_id.id not in ids_cus:
-    #            ids_cus.append(cus.partner_id.id)
-    #    self.write(cr, uid, ids, {'state_readonly':'listed','customer_ids': [(6, 0, ids_cus)]})
-    #return True
 
     def create(self, cr, uid, vals, context={}):
         if (not 'name' in vals) or (vals['name'] == False):

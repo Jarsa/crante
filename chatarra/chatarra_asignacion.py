@@ -60,6 +60,9 @@ class chatarra_asignacion(osv.osv):
         values = vals
         super(chatarra_asignacion, self).write(cr, uid, ids, values, context=context)
         for asignacion in self.browse(cr, uid, ids):
+            for unidad in asignacion.unit_ids:
+                if unidad.state in 'reposicion':
+                    self.write(cr, uid, ids, {'unit_ids': [(3, unidad.id)]})
             if asignacion.state in 'enviado_sct':
                 self.enviar_unidad(cr, uid, ids, vals)
             if asignacion.state in ('confirmado','borrador'):
