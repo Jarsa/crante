@@ -94,15 +94,19 @@ class chatarra_unit(osv.osv):
                 'lugar_exp'         : fields.char('Lugar de expedicion', size=10),
                 'fecha_exp'         : fields.date('Fecha de expedicion'),
                 'document_ids'      : fields.one2many('chatarra.documentos', 'unit_id', 'Documentos'),
-                'asignacion_id'     : fields.many2one('chatarra.asignacion', 'No. de Asignacion', readonly=True),
-                'disponible_por'    : fields.many2one('res.users', 'Disponible por', readonly=True),
-                'fecha_disponible'  : fields.datetime('Fecha Disponible', readonly=True),
-                'asignada_por'      : fields.many2one('res.users', 'Asignado por', readonly=True),
-                'fecha_asignada'    : fields.datetime('Fecha Asignado', readonly=True),
-                'completa_por'      : fields.many2one('res.users', 'Doc. Completada por', readonly=True),
-                'fecha_completa'    : fields.datetime('Fecha Completada', readonly=True),
-                'enviado_por'       : fields.many2one('res.users', 'Enviado por', readonly=True),
-                'fecha_enviado'     : fields.datetime('Fecha Enviado', readonly=True),
+                'asignacion_id'     : fields.many2one('chatarra.asignacion', 'No. de Asignacion:', readonly=True),
+                'disponible_por'    : fields.many2one('res.users', 'Disponible por:', readonly=True),
+                'fecha_disponible'  : fields.datetime('Fecha Disponible:', readonly=True),
+                'asignada_por'      : fields.many2one('res.users', 'Asignado por:', readonly=True),
+                'fecha_asignada'    : fields.datetime('Fecha Asignado:', readonly=True),
+                'completa_por'      : fields.many2one('res.users', 'Doc. Completada por:', readonly=True),
+                'fecha_completa'    : fields.datetime('Fecha Completada:', readonly=True),
+                'enviado_por'       : fields.many2one('res.users', 'Enviado por:', readonly=True),
+                'fecha_enviado'     : fields.datetime('Fecha Enviado:', readonly=True),
+                'reposicion_por'    : fields.many2one('res.users', 'Reposicion por:', readonly=True),
+                'fecha_reposicion'  : fields.datetime('Fecha Reposicion:', readonly=True),
+                'repuesta_id'       : fields.many2one('chatarra.unit', 'Repuesta por:', readonly=True),
+                'sustituye_id'      : fields.many2one('chatarra.unit', 'Sustituye a:', readonly=True),
 
         }
 
@@ -120,10 +124,59 @@ class chatarra_unit(osv.osv):
                                     'fecha_disponible':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         return True
 
-    def action_completa(self, cr, uid, ids, context=None):
+    def action_completa(self, cr, uid, ids, vals,context=None):
+        if vals.get('document_ids'):
+            count = len(vals.get('document_ids'))
+            if count > 3:
+                raise osv.except_osv(_('Warning!'), _('Limit to create 3 Lines'))
         self.write(cr, uid, ids, {  'state':'completa',
                                     'completa_por':uid,
                                     'fecha_completa':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         return True
 
 chatarra_unit()
+
+class chatarra_unit_reposicion(osv.osv):
+    _name = 'chatarra.unit.reposicion'
+    _description = 'No. de Reposicion'
+    _columns = {
+        'name'               : fields.char('No. de Reposicion', size=64, readonly=True),
+        'unidad_anterior_id' : fields.many2one('chatarra.unit','Unidad anterior:', readonly=True),
+        'unidad_nueva_id'    : fields.many2one('chatarra.unit','Unidad nueva:'),
+    }
+
+    def action_reposicion(self, cr, uid, ids, vals, context=None):
+        unidad_obj = self.pool.get('chatarra.unit')
+        asignacion_obj = self.pool.get('chatarra.asignacion')
+        reposicion = self.browse(cr, uid, ids)
+        nueva = reposicion.unidad_nueva_id
+        anterior = reposicion.unidad_anterior_id
+        asignacion_obj.write(cr, uid, anterior.asignacion_id.id, {'unit_ids': [(4, nueva.id)]})
+        unidad_obj.write(cr, uid, [nueva.id], {'sustituye_id':anterior.id, 'asignacion_id':anterior.asignacion_id.id})
+        unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id, 'state':'reposicion', 'reposicion_por':uid, 'fecha_reposicion':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    #def list_customers(self, cr, uid, ids, context):
+    #sale_obj = self.pool.get('sale.order')
+    #for sale in self.browse(cr, uid, ids, context):
+    #    sale_ids = sale_obj.search(cr, uid, [('div_code_id','=',sale.div_code_id.id),('project_user','=',sale.project_id.id),('tower_id#','=',sale.tower_id.id)])
+    #    ids_cus = []
+    #    for cus in sale_obj.browse(cr, uid, sale_ids, context):
+    #        if cus.partner_id.id not in ids_cus:
+    #            ids_cus.append(cus.partner_id.id)
+    #    self.write(cr, uid, ids, {'state_readonly':'listed','customer_ids': [(6, 0, ids_cus)]})
+    #return True
+
+    def create(self, cr, uid, vals, context={}):
+        if (not 'name' in vals) or (vals['name'] == False):
+            vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'reposicion.sequence.number')
+        return super(chatarra_unit_reposicion, self).create(cr, uid, vals, context)
+
+
+
+
+
+
+
+
+
