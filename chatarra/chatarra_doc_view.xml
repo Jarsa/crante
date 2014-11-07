@@ -7,7 +7,7 @@
         	<field name='model'>chatarra.documentos</field>
         	<field name='type'>tree</field>
         	<field name='arch' type='xml'>
-        		<tree string='Documentos'>
+        		<tree string='Documentos' editable='buttom'>
         			<field name='name'/>
         			<field name='unit_id'/>
         			<field name='state'/>

@@ -31,6 +31,17 @@ class chatarra_tipo(osv.osv):
     }
 chatarra_tipo()
 
+class chatarra_motivo(osv.osv):
+    _name = 'chatarra.motivo'
+    _columns = {
+        'name'      : fields.char('Motivo', size=64, required=True),
+        'active'    : fields.boolean('Activo'),
+    }
+    _defaults = {
+        'active' : 'True',
+    }
+chatarra_motivo()
+
 class chatarra_unit(osv.osv):
     _name = 'chatarra.unit'
 
@@ -143,8 +154,9 @@ class chatarra_unit_reposicion(osv.osv):
     _columns = {
         'name'               : fields.char('No. de Reposicion', size=64, readonly=True),
         'unidad_anterior_id' : fields.many2one('chatarra.unit','Unidad anterior:', readonly=True),
-        'unidad_nueva_id'    : fields.many2one('chatarra.unit','Unidad nueva:'),
+        'unidad_nueva_id'    : fields.many2one('chatarra.unit','Unidad nueva:', required=True),
         'date'               : fields.date('Fecha de reposicion', readonly=True),
+        'motivo'             : fields.many2one('chatarra.motivo', 'Motivo', required=True),
     }
     _defaults = {
         'date': lambda *a: time.strftime('%Y-%m-%d'),
