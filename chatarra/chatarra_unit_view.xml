@@ -52,7 +52,7 @@
 					<field name='serie'/>
                     <field name='state'/>
                     <button name="action_disponible" states="borrador" string="Disponible" type="object" icon="gtk-go-forward"/>
-                    <button name="action_completa" states="asignada" string="Documentacion Completa" type="object" icon="gtk-apply" class="oe_highlight"/>
+                    <button name="action_completo" states="asignada" string="Expediente Completo" type="object" icon="gtk-apply" class="oe_highlight"/>
 				</tree>
 			</field>
 		</record>
@@ -65,7 +65,7 @@
     			<form string='Lista de Unidades'>
                     <header>
                         <button name="action_disponible" states="borrador" string="Disponible" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="action_completa" states="asignada" string="Documentacion Completa" type="object" icon="gtk-apply" class="oe_highlight"/>
+                        <button name="action_completo" states="asignada" string="Expediente Completo" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button  name="%(action_chatarra_unidad_reposicion)d" states="asignada" string="Reponer" type="action" icon="gtk-apply" class="oe_highlight" context="{'default_unidad_anterior_id': active_id,}"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,disponible,asignada,reposicion"/>
                     </header>

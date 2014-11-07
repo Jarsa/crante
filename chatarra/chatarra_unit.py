@@ -62,21 +62,24 @@ class chatarra_unit(osv.osv):
     _columns = {
                 'name'              : fields.char('Placa',size=40),
                 'state'             : fields.selection([
-                                        ('borrador','Borrador'), 
-                                        ('disponible','Disponible'), 
-                                        ('asignada','Asignada'), 
-                                        ('completa','Completa'), 
-                                        ('enviado','Enviado a SCT'), 
-                                        ('recibido','Recibido'), 
-                                        ('actualizar','Actualizar'), 
-                                        ('reposicion','Reposicion'), 
-                                        ('enviado_agencia','Agencia'), 
-                                        ('bloqueado','Bloqueado'), 
-                                        ('cita','Cita'), 
+                                        ('borrador','Borrador'),
+                                        ('disponible','Disponible'),
+                                        ('asignada','Asignada'),
+                                        ('elaboracion','Elaboracion de Expediente'),
+                                        ('completo','Expediente Completo'),
+                                        ('enviado','Enviado a SCT'),
+                                        ('recibido','Recibido'),
+                                        ('consulta','Consulta'),
+                                        ('reposicion','Reposicion'),
+                                        ('enviado_agencia','Agencia'),
+                                        ('bloqueado','Bloqueado'),
+                                        ('cita','Cita'),
                                         ('exp_enviado','Expediente Enviado'),
                                         ('chatarrizado','Chatarrizado'),
                                         ('certificado','Certificado Recibido'),
                                         ('baja','Baja'),
+                                        ('cancelado','Cancelado'),
+                                        ('desestimiento','Desestimiento'),
                                         ], 'Estado', readonly=True),
                 'serie'             : fields.char('Número de serie', size=40),
                 'marca'             : fields.many2one('chatarra.marca', 'Marca'),
@@ -110,8 +113,8 @@ class chatarra_unit(osv.osv):
                 'fecha_disponible'  : fields.datetime('Fecha Disponible:', readonly=True),
                 'asignada_por'      : fields.many2one('res.users', 'Asignado por:', readonly=True),
                 'fecha_asignada'    : fields.datetime('Fecha Asignado:', readonly=True),
-                'completa_por'      : fields.many2one('res.users', 'Doc. Completada por:', readonly=True),
-                'fecha_completa'    : fields.datetime('Fecha Completada:', readonly=True),
+                'completo_por'      : fields.many2one('res.users', 'Expediente Completo por:', readonly=True),
+                'fecha_completo'    : fields.datetime('Fecha Expediente Completo:', readonly=True),
                 'enviado_por'       : fields.many2one('res.users', 'Enviado por:', readonly=True),
                 'fecha_enviado'     : fields.datetime('Fecha Enviado:', readonly=True),
                 'reposicion_por'    : fields.many2one('res.users', 'Reposicion por:', readonly=True),
@@ -136,14 +139,17 @@ class chatarra_unit(osv.osv):
                                     'fecha_disponible':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         return True
 
-    def action_completa(self, cr, uid, ids, vals,context=None):
-        if vals.get('document_ids'):
-            count = len(vals.get('document_ids'))
-            if count > 3:
-                raise osv.except_osv(_('Warning!'), _('Limit to create 3 Lines'))
-        self.write(cr, uid, ids, {  'state':'completa',
-                                    'completa_por':uid,
-                                    'fecha_completa':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+    def action_completo(self, cr, uid, ids, vals,context=None):
+        unidad = self.browse(cr, uid, ids)
+        doc_obj = self.pool.get('chatarra.documentos')
+        doc_visual = doc_obj.search(cr, uid, [('name','=','visual'),('unit_id','=',unidad.id)], count=True)
+        if doc_visual == 0:
+            raise osv.except_osv(('Advertencia!'), ('Falta Visual'))
+        if doc_visual > 1:
+            raise osv.except_osv(('Advertencia!'), ('Solo puede existir un Visual'))
+        self.write(cr, uid, ids, {  'state':'completo',
+                                    'completo_por':uid,
+                                    'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         return True
 
 chatarra_unit()
