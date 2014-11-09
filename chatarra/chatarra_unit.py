@@ -84,6 +84,11 @@ class chatarra_unit(osv.osv):
                 'serie'             : fields.char('Número de serie', size=40),
                 'marca'             : fields.many2one('chatarra.marca', 'Marca'),
                 'modelo'            : fields.char('Modelo', size=40),
+                'color_placa'       : fields.char('Color de la Placa'),
+                'tipo_placa'        : fields.selection([('carga','CARGA'),
+                                                        ('pasaje','PASAJE'),
+                                                        ('turismo','TURISMO')
+                                                        ],'Tipo de Placa'),
                 'clase'             : fields.selection([('t2','T 2'),('t3','T 3'),('c2','C 2'),('c3','C 3')],'Clase'),
                 'tipo'              : fields.many2one('chatarra.tipo','Tipo'),
                 'motor'             : fields.char('Motor',size=40),
@@ -119,9 +124,12 @@ class chatarra_unit(osv.osv):
                 'fecha_enviado'     : fields.datetime('Fecha Enviado:', readonly=True),
                 'reposicion_por'    : fields.many2one('res.users', 'Reposicion por:', readonly=True),
                 'fecha_reposicion'  : fields.datetime('Fecha Reposicion:', readonly=True),
+                'facturado_por'     : fields.many2one('res.users', 'Facturado por:', readonly=True),
+                'fecha_facturado'   : fields.datetime('Fecha Facturado:', readonly=True),
                 'repuesta_id'       : fields.many2one('chatarra.unit', 'Repuesta por:', readonly=True),
                 'sustituye_id'      : fields.many2one('chatarra.unit', 'Sustituye a:', readonly=True),
                 'reposicion_id'     : fields.many2one('chatarra.unit.reposicion', 'No. de Reposicion', readonly=True),
+                'factura_id'           : fields.many2one('account.invoice', 'No. de Factura'),
 
         }
 
@@ -134,9 +142,22 @@ class chatarra_unit(osv.osv):
     _constraints = [(_check_unique_insesitive, 'La Placa ya existe', ['name'])]
     
     def action_disponible(self, cr, uid, ids, context=None):
+        unidad = self.browse(cr, uid, ids)
         self.write(cr, uid, ids, {  'state':'disponible',
                                     'disponible_por':uid,
-                                    'fecha_disponible':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+                                    'fecha_disponible':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                                    'document_ids': [(0, 0, {'name':'visual', 'unit_id':unidad.id}),
+                                                     (0, 0, {'name':'carta', 'unit_id':unidad.id}),
+                                                     (0, 0, {'name':'consulta', 'unit_id':unidad.id}),
+                                                     (0, 0, {'name':'copia_tc', 'unit_id':unidad.id}),
+                                                     (0, 0, {'name':'factura_origen', 'unit_id':unidad.id}),
+                                                     (0, 0, {'name':'factura_venta', 'unit_id':unidad.id}),
+                                                     (0, 0, {'name':'factura_compra', 'unit_id':unidad.id}),
+                                                     (0, 0, {'name':'foto_frente', 'unit_id':unidad.id}),
+                                                     (0, 0, {'name':'foto_chasis', 'unit_id':unidad.id}),
+                                                     (0, 0, {'name':'foto_motor', 'unit_id':unidad.id}),
+                                                     (0, 0, {'name':'nueva_tc', 'unit_id':unidad.id})
+                                                     ]})
         return True
 
     def action_completo(self, cr, uid, ids, vals,context=None):

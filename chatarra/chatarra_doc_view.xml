@@ -7,7 +7,7 @@
         	<field name='model'>chatarra.documentos</field>
         	<field name='type'>tree</field>
         	<field name='arch' type='xml'>
-        		<tree string='Documentos' editable='buttom'>
+        		<tree string='Documentos'>
         			<field name='name'/>
         			<field name='unit_id'/>
         			<field name='state'/>
@@ -28,13 +28,23 @@
                         <h1>
                             <label string='Documentos'/>
                         </h1>
-                        <group>
-                            <field name='name'/>
-                            <field name='imagen'/>
-                        </group>
-                        <group>
-                            <field name='unit_id'/>
-                        </group>
+                        <notebook>
+                            <page string='Documentos'>
+                                <group>
+                                    <field name='name'/>
+                                    <field name='imagen'/>
+                                </group>
+                                <group>
+                                    <field name='unit_id'/>
+                                </group>
+                            </page>
+                            <page string='Log'>
+                                <group col='4'>
+                                    <field name='completo_por'/>
+                                    <field name='fecha_completo'/>
+                                </group>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>

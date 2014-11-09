@@ -21,7 +21,6 @@
             <field name='view_mode'>form</field>
         </record>
         <!-- Search View chatarra.unit -->
-        <!-- SEARCH View  --> 
         <record id="chatarra_unit_search" model="ir.ui.view">
             <field name="name">chatarra.unit.search</field>
             <field name="model">chatarra.unit</field>
@@ -86,6 +85,8 @@
  									<field name='clase'/>
  									<field name='tipo' widget='selection'/>
  									<field name='motor'/>
+                                    <field name='color_placa'/>
+                                    <field name='tipo_placa'/>
  									<field name='combustible'/>
  									<field name='peso_vehicular'/>
                                     <field name='modelo'/>
@@ -111,11 +112,11 @@
                                 <group>
                                     <separator string="Documentos" coslpan="4"/>
                                     <field name='document_ids' colspan="4" nolabel="1" context="{'default_unit_id': active_id,}">
-                                        <tree string='Documentacion' editable='buttom'>
+                                        <tree string='Documentacion'>
                                             <field name='name'/>
                                             <field name='unit_id' readonly="True"/>
                                             <field name='state'/>
-                                            <field name='imagen'/>
+                                            <button name="action_completo" states="pendiente" string="Completo" type="object" icon="gtk-apply"/>
                                         </tree>
                                     </field>
                                 </group>
@@ -126,6 +127,10 @@
                                     <field name='fecha_disponible'/>
                                     <field name='asignada_por'/>
                                     <field name='fecha_asignada'/>
+                                    <field name='facturado_por'/>
+                                    <field name='fecha_facturado'/>
+                                    <field name='completo_por'/>
+                                    <field name='fecha_completo'/>
                                     <field name='enviado_por'/>
                                     <field name='fecha_enviado'/>
                                     <field name='reposicion_por'/>
@@ -134,6 +139,7 @@
                                     <field name='sustituye_id'/>
                                     <field name='asignacion_id'/>
                                     <field name='reposicion_id'/>
+                                    <field name='factura_id'/>
                                 </group>
                             </page>
     					</notebook>

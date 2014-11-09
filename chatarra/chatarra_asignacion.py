@@ -5,6 +5,8 @@ import time
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
+import logging
+_logger = logging.getLogger(__name__)
 
 class chatarra_asignacion(osv.osv):
     _name = 'chatarra.asignacion'
@@ -82,6 +84,46 @@ class chatarra_asignacion(osv.osv):
                                     'fecha_confirmado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         return True
 
+    def create_invoices(self, cr, uid, ids, context=None):
+        invoice_obj = self.pool.get('account.invoice')
+        asignacion = self.browse(cr, uid, ids)
+        prod_obj = self.pool.get('product.product')
+        unidad_obj = self.pool.get('chatarra.unit')
+        prod_id = prod_obj.search(cr, uid, [('chatarra', '=', 1),('active','=', 1)], limit=1)
+        product = prod_obj.browse(cr, uid, prod_id, context=None)
+        _logger.error("producto : %r", product.description_sale)
+        _logger.error("cuenta : %r", product.property_account_income.id)
+        _logger.error("precio : %r", product.lst_price)
+        _logger.error("impuestos : %r", product.taxes_id.id)
+        if not prod_id:
+            raise osv.except_osv(
+                    ('Falta Configuracion !'),
+                    ('No existe un producto definido como chatarra !!!'))
+        for unidad in asignacion.unit_ids:
+            invoice_obj.create(cr, uid, {'partner_id':asignacion.client_id.id,
+                                         'contacto_id':asignacion.contacto_id.id,
+                                         'agencia_id':asignacion.agencia_id.id,
+                                         'asignacion_id':asignacion.id,
+                                         'unit_id':unidad.id,
+                                         'account_id':asignacion.client_id.property_account_receivable.id,
+                                         'origin':asignacion.name,
+                                         'fiscal_position':asignacion.client_id.property_account_position.id,
+                                         'invoice_line':[(0,0,{'product_id':product.id,
+                                                               'name':product.description_sale,
+                                                               'account_id':product.property_account_income.id,
+                                                               'quantity':'1',
+                                                               'price_unit':product.lst_price,
+                                                               'invoice_line_tax_id':[(6,0,[product.taxes_id.id])],
+                                                              })]
+                                        }, context=None)
+            invoice_id = invoice_obj.search(cr, uid, [('unit_id','=',unidad.id)])
+            invoice = invoice_obj.browse(cr, uid, invoice_id)
+            unidad_obj.write(cr, uid, unidad.id, {'facturado_por':uid,
+                                              'fecha_facturado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                                              'factura_id':invoice.id,
+                                              })
+        return True
+
 chatarra_asignacion()
 
 class chatarra_asignacion_guia(osv.osv):
@@ -90,6 +132,7 @@ class chatarra_asignacion_guia(osv.osv):
     _columns = {
         'name'          : fields.char('No. de Guia', size=64, required=True),
         'asignacion_id' : fields.many2one('chatarra.asignacion','No. de Asignacion', readonly='True'),
+        'paqueteria_id' : fields.many2one('res.partner','Paqueteria', required=True),
     }
 
     def action_enviado(self, cr, uid, ids, vals, context=None):
@@ -97,9 +140,9 @@ class chatarra_asignacion_guia(osv.osv):
         guia = self.browse(cr, uid, ids)
         asignacion = guia.asignacion_id.id
         for unidad in guia.asignacion_id.unit_ids:
-            if unidad.state not in 'completa':
+            if unidad.state not in 'completo':
                 raise osv.except_osv(('Advertencia !'),
-                        ('Todas las Unidades deben estar en estado "Completa"')
+                        ('Todas las Unidades deben estar en estado "Completo"')
                         )
             asignacion_obj.write(cr, uid, [asignacion], {'guia':guia.id, 'state':'enviado_sct', 'enviado_por':uid, 'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
             return True

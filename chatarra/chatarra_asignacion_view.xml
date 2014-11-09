@@ -44,6 +44,7 @@
         		<form string='Asignaciones'>
         			<header>
                         <button name="action_confirmado" states="borrador" string="Confimar" type="object" icon="gtk-apply" class="oe_highlight"/>
+                        <button name="create_invoices" states="confirmado" string="Crear Facturas" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button  name="%(action_chatarra_asignacion_guia)d" states="confirmado" string="Enviar a SCT" type="action" icon="gtk-apply" class="oe_highlight" context="{'default_asignacion_id': active_id,}"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,confirmado"/>
         			</header>
@@ -55,7 +56,7 @@
         				<group>
         					<field name='client_id'/>
         					<field name='contacto_id'/>
-        					<field name='agencia_id'/>
+        					<field name='agencia_id' context="{'default_agencia': True, 'default_customer': False,}"/>
         				</group>
                         <notebook>
                             <page string='Unidades'>
