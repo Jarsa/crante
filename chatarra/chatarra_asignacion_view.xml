@@ -54,9 +54,9 @@
         					<field name="name" class="oe_inline" readonly="True"/>
         				</h1>
         				<group>
-        					<field name='client_id'/>
-        					<field name='contacto_id'/>
-        					<field name='agencia_id' context="{'default_agencia': True, 'default_customer': False,}"/>
+        					<field name='client_id' domain="[('customer','=',True),('is_company','=',True)]" context="{'default_customer': True, 'default_supplier': False, 'default_is_company': True,}"/>
+        					<field name='contacto_id' domain="[('parent_id.categoria','=', 'agencia')]" context="{'default_categoria': 'agencia', 'default_customer': False, 'default_supplier': True,}" on_change='onchange_contacto(contacto_id)'/>
+        					<field name='agencia_id' domain="[('is_company','=', True),('categoria','=','agencia')]" context="{'default_categoria': 'agencia', 'default_customer': False, 'default_supplier': True, 'default_is_company': True,}"/>
         				</group>
                         <notebook>
                             <page string='Unidades'>
@@ -69,7 +69,9 @@
                                     <field name='fecha_confirmado'/>
                                     <field name='enviado_por'/>
                                     <field name='fecha_enviado'/>
-                                    <field name='guia' readonly='True'/>
+                                    <field name='guia'/>
+                                    <field name='paqueteria_id'/>
+                                    <field name='secretaria_id'/>
                                 </group>
                             </page>
                         </notebook>
@@ -94,6 +96,8 @@
                         <group>
                             <field name='asignacion_id'/>
                             <field name='name'/>
+                            <field name='paqueteria_id' domain="[('categoria','=', 'paqueteria')]" context="{'default_categoria': 'paqueteria', 'default_customer': False, 'default_supplier': True, 'default_is_company': True,}"/>
+                            <field name='secretaria_id' domain="[('categoria','=', 'secretaria')]" context="{'default_categoria': 'secretaria', 'default_customer': False, 'default_supplier': False, 'default_is_company': True,}"/>
                         </group>
                     </sheet>
                 </form>

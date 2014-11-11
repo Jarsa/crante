@@ -10,6 +10,13 @@ _logger = logging.getLogger(__name__)
 
 class chatarra_asignacion(osv.osv):
     _name = 'chatarra.asignacion'
+
+    def onchange_contacto(self, cr, uid, ids, contacto_id, context=None):
+        agencia = False
+        if contacto_id:
+            agencia = self.pool.get('res.partner').browse(cr, uid, contacto_id, context=context).parent_id.id
+        return {'value': {'agencia_id': agencia}}
+    
     _description = 'Asignacion'
     _columns = {
         'name'              : fields.char('No. de Asignacion', size=64, readonly='True'),
@@ -23,12 +30,14 @@ class chatarra_asignacion(osv.osv):
         'client_id'         : fields.many2one('res.partner', 'Cliente'),
         'contacto_id'       : fields.many2one('res.partner', 'Contacto'),
         'agencia_id'        : fields.many2one('res.partner','Agencia'),
-        'unit_ids'		    : fields.many2many('chatarra.unit', 'chatarra_asignacion_unidad_rel', 'asignacion_id', 'unit_id', 'Unidades', required='True'),
-        'confirmado_por'    : fields.many2one('res.users','Confirmado por:', readonly='True'),
-        'fecha_confirmado'  : fields.datetime('Fecha Confirmado:', readonly='True'),
-        'enviado_por'       : fields.many2one('res.users','Enviado por:',readonly='True'),
+        'unit_ids'		    : fields.many2many('chatarra.unit', 'chatarra_asignacion_unidad_rel', 'asignacion_id', 'unit_id', 'Unidades', required=True),
+        'confirmado_por'    : fields.many2one('res.users','Confirmado por:', readonly=True),
+        'fecha_confirmado'  : fields.datetime('Fecha Confirmado:', readonly=True),
+        'enviado_por'       : fields.many2one('res.users','Enviado por:',readonly=True),
         'fecha_enviado'     : fields.datetime('Fecha Enviado:',readonly='True'),
-        'guia'              : fields.many2one('chatarra.asignacion.guia','Numero de Guia:'),
+        'guia'              : fields.many2one('chatarra.asignacion.guia','Numero de Guia:', readonly=True),
+        'paqueteria_id'     : fields.many2one('res.partner', 'Paqueteria:', readonly=True),
+        'secretaria_id'     : fields.many2one('res.partner', 'Secretaria:', readonly=True),
     }
 
     _defaults = {
@@ -39,7 +48,7 @@ class chatarra_asignacion(osv.osv):
         unit_obj = self.pool.get('chatarra.unit')
         for asignacion in self.browse(cr, uid, ids):
             unit_ids = False
-            unit_ids = unit_obj.search(cr, uid, [('asignacion_id', '=', asignacion.id)])
+            unit_ids = unit_obj.search(cr, uid, [('asignacion_id', '=', asignacion.id),('state', '=', 'asignada')])
             if unit_ids:
                 unit_obj.write(cr, uid, unit_ids, {'asignacion_id': False, 'state':'disponible', 'asignada_por': False,'fecha_asignada': False})
             unit_ids = []
@@ -47,8 +56,9 @@ class chatarra_asignacion(osv.osv):
                 if unidad.state in ('borrador'):
                     raise osv.except_osv(('Advertencia !'),
                         ('La Unidad %s esta en estado Borrador...') % (unidad.name)
-                        ) 
-                unit_obj.write(cr, uid, [unidad.id], {'asignacion_id':asignacion.id,'state':'asignada','asignada_por':uid,'fecha_asignada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+                        )
+                if unidad.state in ('disponible'):
+                    unit_obj.write(cr, uid, [unidad.id], {'asignacion_id':asignacion.id,'state':'asignada','asignada_por':uid,'fecha_asignada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
     def enviar_unidad(self,cr, uid, ids, vals, context=None):
         unit_obj = self.pool.get('chatarra.unit')
@@ -91,10 +101,7 @@ class chatarra_asignacion(osv.osv):
         unidad_obj = self.pool.get('chatarra.unit')
         prod_id = prod_obj.search(cr, uid, [('chatarra', '=', 1),('active','=', 1)], limit=1)
         product = prod_obj.browse(cr, uid, prod_id, context=None)
-        _logger.error("producto : %r", product.description_sale)
-        _logger.error("cuenta : %r", product.property_account_income.id)
-        _logger.error("precio : %r", product.lst_price)
-        _logger.error("impuestos : %r", product.taxes_id.id)
+        #_logger.error("producto : %r", product.description_sale)
         if not prod_id:
             raise osv.except_osv(
                     ('Falta Configuracion !'),
@@ -119,9 +126,10 @@ class chatarra_asignacion(osv.osv):
             invoice_id = invoice_obj.search(cr, uid, [('unit_id','=',unidad.id)])
             invoice = invoice_obj.browse(cr, uid, invoice_id)
             unidad_obj.write(cr, uid, unidad.id, {'facturado_por':uid,
-                                              'fecha_facturado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                                              'factura_id':invoice.id,
-                                              })
+                                                  'fecha_facturado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                                                  'factura_id':invoice.id,
+                                                  'facturado':True,
+                                                 })
         return True
 
 chatarra_asignacion()
@@ -133,6 +141,7 @@ class chatarra_asignacion_guia(osv.osv):
         'name'          : fields.char('No. de Guia', size=64, required=True),
         'asignacion_id' : fields.many2one('chatarra.asignacion','No. de Asignacion', readonly='True'),
         'paqueteria_id' : fields.many2one('res.partner','Paqueteria', required=True),
+        'secretaria_id' : fields.many2one('res.partner','Secretaria', required=True),
     }
 
     def action_enviado(self, cr, uid, ids, vals, context=None):
@@ -144,5 +153,10 @@ class chatarra_asignacion_guia(osv.osv):
                 raise osv.except_osv(('Advertencia !'),
                         ('Todas las Unidades deben estar en estado "Completo"')
                         )
-            asignacion_obj.write(cr, uid, [asignacion], {'guia':guia.id, 'state':'enviado_sct', 'enviado_por':uid, 'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            asignacion_obj.write(cr, uid, [asignacion], {'guia':guia.id,
+                                                         'state':'enviado_sct',
+                                                         'enviado_por':uid,
+                                                         'paqueteria_id':guia.paqueteria_id.id,
+                                                         'secretaria_id':guia.secretaria_id.id,
+                                                         'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
             return True

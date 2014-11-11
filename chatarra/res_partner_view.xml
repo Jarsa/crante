@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-        <record model='ir.ui.view' id='res_partner_chatarra_form'>
-            <field name='name'>res.partner.chatarra</field>
-            <field name='model'>res.partner</field>
-            <field name='inherit_id' ref='base.view_partner_form'/>
-            <field name='type'>form</field>
-            <field name='arch' type='xml'>
-                <field name='active' position="after">
-                    <field name="agencia"/>
-                    <field name="paqueteria"/>
-                </field>
+        <record model="ir.ui.view" id="res_partner_chatarra_form">
+            <field name="name">res.partner.chatarra</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="priority">50</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <div name="buttons" position="inside">
+                    <group col="2">
+                        <field name="categoria" />
+                    </group>
+                </div>
             </field>
         </record>
     </data>

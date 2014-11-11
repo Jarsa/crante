@@ -139,6 +139,7 @@
                                     <field name='sustituye_id'/>
                                     <field name='asignacion_id'/>
                                     <field name='reposicion_id'/>
+                                    <field name='facturado'/>
                                     <field name='factura_id'/>
                                 </group>
                             </page>
