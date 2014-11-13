@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    	<!-- Crate sequence -->
+		<record id="sequence_chatarra_envio_type" model="ir.sequence.type">
+            <field name="name">Numero de Envio</field>
+            <field name="code">envio.sequence.number</field>
+        </record>
+        <record id="sequence_chatarra_envio" model="ir.sequence">
+            <field name="name">Envio Sequence Number</field>
+            <field name="code">envio.sequence.number</field>
+            <field name="prefix">E</field>
+            <field name="padding">4</field>
+        </record>
+        <!-- Vista de Arbol Envios -->
+        <record model='ir.ui.view' id='chatarra_envio_tree'>
+        	<field name='name'>chatarra_envio.tree</field>
+        	<field name='model'>chatarra.envio</field>
+        	<field name='type'>tree</field>
+        	<field name='arch' type='xml'>
+        		<tree string='Envios'>
+        			<field name='name'/>
+        			<field name='paqueteria_id'/>
+        			<field name='secretaria_id'/>
+        			<field name='guia'/>
+                    <field name='fecha_enviado'/>
+        			<field name='state'/>
+        		</tree>
+        	</field>
+        </record>
+        <!-- Vista de Formulario Envios -->
+        <record model='ir.ui.view' id='chatarra_envio_form'>
+        	<field name='name'>chatarra_envio.form</field>
+        	<field name='model'>chatarra.envio</field>
+        	<field name='type'>form</field>
+        	<field name='arch' type='xml'>
+        		<form string='Envio'>
+                    <header>
+        				<button name="enviar_unidad" states="borrador" string="Enviar" type="object" icon="gtk-apply" class="oe_highlight"/>
+        				<field name='state' widget="statusbar" statusbar_visible="borrador,enviado"/>
+        			</header>
+        			<sheet>
+        				<h1>
+        					<label string='Envio'/>
+        					<field name="name" class="oe_inline" readonly="True"/>
+        				</h1>
+        				<group col='4'>
+        					<field name='guia' attrs="{'readonly': [('state', '=', 'enviado')]}"/>
+        					<field name='paqueteria_id' domain="[('categoria','=', 'paqueteria')]" context="{'default_categoria': 'paqueteria', 'default_customer': False, 'default_supplier': True, 'default_is_company': True,}" attrs="{'readonly': [('state', '=', 'enviado')]}"/>
+                    		<field name='secretaria_id' domain="[('categoria','=', 'secretaria')]" context="{'default_categoria': 'secretaria', 'default_customer': False, 'default_supplier': False, 'default_is_company': True,}" attrs="{'readonly': [('state', '=', 'enviado')]}"/>
+        				</group>
+        				<notebook>
+        					<page string='Unidades'>
+        						<field name='unit_ids' domain="[('state','=', 'completo')]" attrs="{'readonly': [('state', '=', 'enviado')]}"/>
+        					</page>
+        					<page string='Log'>
+        						<group col='4'>
+        							<field name='enviado_por'/>
+        							<field name='fecha_enviado'/>
+        						</group>
+        					</page>
+        				</notebook>
+        			</sheet>
+        		</form>
+        	</field>
+        </record>
+        <!-- Accion Menu Chatarra/Envio -->
+        <record id='action_chatarra_envio' model='ir.actions.act_window'>
+        	<field name='name'>Envios</field>
+        	<field name='res_model'>chatarra.envio</field>
+        	<field name='view_type'>form</field>
+        	<field name='view_mode'>tree,form</field>
+        </record>
+        <!-- Menu Chatarra/Envio -->
+        <menuitem id="chatarra_envio_menu" name="Envios" sequence="2" parent="chatarra_list_menu" action="action_chatarra_envio"/>
+    </data>
+</openerp>

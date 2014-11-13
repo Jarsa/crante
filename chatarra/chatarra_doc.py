@@ -27,7 +27,8 @@ class chatarra_documentos(osv.osv):
         'imagen' 	        :fields.binary('Imagen'),
         'state'           :fields.selection([
         				            ('pendiente','Pendiente'),
-        				            ('completo','Completo')
+        				            ('completo','Completo'),
+                            ('no_requerido','No Requerido')
         				            ], 'Estado', readonly='True'),
         'completo_por'    :fields.many2one('res.users','Completo por:', readonly=True),
         'fecha_completo'  :fields.datetime('Fecha completo:', readonly=True),
@@ -38,6 +39,11 @@ class chatarra_documentos(osv.osv):
 
     def action_completo(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {  'state':'completo',
+                                    'completo_por':uid,
+                                    'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                                  })
+    def action_no_requerido(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {  'state':'no_requerido',
                                     'completo_por':uid,
                                     'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
                                   })

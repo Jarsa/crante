@@ -12,14 +12,6 @@
             <field name="prefix">A</field>
             <field name="padding">4</field>
         </record>
-        <!-- Accion Form Guia -->
-        <record id='action_chatarra_asignacion_guia' model='ir.actions.act_window'>
-            <field name='name'>Guia</field>
-            <field name='res_model'>chatarra.asignacion.guia</field>
-            <field name='view_type'>form</field>
-            <field name='target'>new</field>
-            <field name='view_mode'>form</field>
-        </record>
         <!-- Vista de Arbol -->
         <record model='ir.ui.view' id='chatarra_asignacion_tree'>
         	<field name='name'>chatarra_asignacion.tree</field>
@@ -45,7 +37,6 @@
         			<header>
                         <button name="action_confirmado" states="borrador" string="Confimar" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="create_invoices" states="confirmado" string="Crear Facturas" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button  name="%(action_chatarra_asignacion_guia)d" states="confirmado" string="Enviar a SCT" type="action" icon="gtk-apply" class="oe_highlight" context="{'default_asignacion_id': active_id,}"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,confirmado"/>
         			</header>
         			<sheet>
@@ -54,54 +45,25 @@
         					<field name="name" class="oe_inline" readonly="True"/>
         				</h1>
         				<group>
-        					<field name='client_id' domain="[('customer','=',True),('is_company','=',True)]" context="{'default_customer': True, 'default_supplier': False, 'default_is_company': True,}"/>
-        					<field name='contacto_id' domain="[('parent_id.categoria','=', 'agencia')]" context="{'default_categoria': 'agencia', 'default_customer': False, 'default_supplier': True,}" on_change='onchange_contacto(contacto_id)'/>
-        					<field name='agencia_id' domain="[('is_company','=', True),('categoria','=','agencia')]" context="{'default_categoria': 'agencia', 'default_customer': False, 'default_supplier': True, 'default_is_company': True,}"/>
+        					<field name='client_id' domain="[('customer','=',True),('is_company','=',True)]" context="{'default_customer': True, 'default_supplier': False, 'default_is_company': True,}" attrs="{'readonly': [('state', '=', 'confirmado')]}"/>
+        					<field name='contacto_id' domain="[('parent_id.categoria','=', 'agencia')]" context="{'default_categoria': 'agencia', 'default_customer': False, 'default_supplier': True,}" on_change='onchange_contacto(contacto_id)' attrs="{'readonly': [('state', '=', 'confirmado')]}"/>
+        					<field name='agencia_id' domain="[('is_company','=', True),('categoria','=','agencia')]" context="{'default_categoria': 'agencia', 'default_customer': False, 'default_supplier': True, 'default_is_company': True,}" attrs="{'readonly': [('state', '=', 'confirmado')]}"/>
         				</group>
                         <notebook>
                             <page string='Unidades'>
                                 <separator string="Unidades" coslpan="4"/>
-                                <field name='unit_ids' colspan="4" nolabel="1" domain="[('state','=', 'disponible')]"/>
+                                <field name='unit_ids' colspan="4" nolabel="1" domain="[('state','=', 'disponible')]" attrs="{'readonly': [('state', '=', 'confirmado')]}"/>
                             </page>
                             <page string='Log'>
                                 <group col='4'>
                                     <field name='confirmado_por'/>
                                     <field name='fecha_confirmado'/>
-                                    <field name='enviado_por'/>
-                                    <field name='fecha_enviado'/>
-                                    <field name='guia'/>
-                                    <field name='paqueteria_id'/>
-                                    <field name='secretaria_id'/>
                                 </group>
                             </page>
                         </notebook>
         			</sheet>
         		</form>
         	</field>
-        </record>
-        <!-- Vista formulario No. de Guia -->
-        <record model='ir.ui.view' id='chatarra_asignacion_guia_form'>
-            <field name='name'>chatarra_asignacion_guia.form</field>
-            <field name='model'>chatarra.asignacion.guia</field>
-            <field name='type'>form</field>
-            <field name='arch' type='xml'>
-                <form string='Guia'>
-                    <header>
-                     <button name="action_enviado" string="Confirmar" type="object" icon="gtk-apply" class="oe_highlight"/>   
-                    </header>
-                    <sheet>
-                        <h1>
-                            <label string='Guia'/>
-                        </h1>
-                        <group>
-                            <field name='asignacion_id'/>
-                            <field name='name'/>
-                            <field name='paqueteria_id' domain="[('categoria','=', 'paqueteria')]" context="{'default_categoria': 'paqueteria', 'default_customer': False, 'default_supplier': True, 'default_is_company': True,}"/>
-                            <field name='secretaria_id' domain="[('categoria','=', 'secretaria')]" context="{'default_categoria': 'secretaria', 'default_customer': False, 'default_supplier': False, 'default_is_company': True,}"/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
         </record>
         <!-- Accion Menu Asignacion -->
         <record id='action_chatarra_asignacion' model='ir.actions.act_window'>
@@ -111,6 +73,6 @@
         	<field name='view_mode'>tree,form</field>
         </record>
         <!-- Menu Asigaciones -->
-        <menuitem id="chatarra_asignacion_menu" name="Asignaciones" parent="chatarra_list_menu" action="action_chatarra_asignacion"/>
+        <menuitem id="chatarra_asignacion_menu" name="Asignaciones" parent="chatarra_list_menu" action="action_chatarra_asignacion" sequence="1"/>
     </data>
 </openerp>

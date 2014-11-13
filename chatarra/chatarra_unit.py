@@ -61,79 +61,105 @@ class chatarra_unit(osv.osv):
         return {'value': {'vat': vat}}
     
     _columns = {
-                'name'                 : fields.char('Placa',size=40),
-                'state'                : fields.selection([
-                                           ('borrador','Borrador'),
-                                           ('disponible','Disponible'),
-                                           ('asignada','Asignada'),
-                                           ('elaboracion','Elaboracion de Expediente'),
-                                           ('completo','Expediente Completo'),
-                                           ('enviado','Enviado a SCT'),
-                                           ('recibido','Recibido'),
-                                           ('consulta','Consulta'),
-                                           ('reposicion','Reposicion'),
-                                           ('enviado_agencia','Agencia'),
-                                           ('bloqueado','Bloqueado'),
-                                           ('cita','Cita'),
-                                           ('exp_enviado','Expediente Enviado'),
-                                           ('chatarrizado','Chatarrizado'),
-                                           ('certificado','Certificado Recibido'),
-                                           ('baja','Baja'),
-                                           ('cancelado','Cancelado'),
-                                           ('desestimiento','Desestimiento'),
-                                           ], 'Estado', readonly=True),
-                'serie'                : fields.char('Número de serie', size=40),
-                'marca'                : fields.many2one('chatarra.marca', 'Marca'),
-                'modelo'               : fields.char('Modelo', size=40),
-                'color_placa'          : fields.char('Color de la Placa'),
-                'tipo_placa'           : fields.selection([('carga','CARGA'),
-                                                           ('pasaje','PASAJE'),
-                                                           ('turismo','TURISMO')
-                                                           ],'Tipo de Placa'),
-                'clase'                : fields.selection([('t2','T 2'),('t3','T 3'),('c2','C 2'),('c3','C 3')],'Clase'),
-                'tipo'                 : fields.many2one('chatarra.tipo','Tipo'),
-                'motor'                : fields.char('Motor',size=40),
-                'combustible'          : fields.selection([('diesel','Diesel'),('gasolina','Gasolina')],'Combustible'),
-                'peso_vehicular'       : fields.float('Peso Vehicular'),
-                'propietario_id'       : fields.many2one('res.partner','Nombre del Propietario'),
-                'vat'                  : fields.char('R.F.C.', size=20),
-                'reg_fed'              : fields.char('Reg. Fed', size=40),
-                'modalidad'            : fields.char('Modalidad', size=64),
-                'no_ejes'              : fields.integer('Numero de ejes'),
-                'no_llantas'           : fields.integer('Numero de llantas'),
-                'cap_litros'           : fields.char('Litros', size=10),
-                'cap_toneladas'        : fields.char('Toneladas', size=10),
-                'cap_personas'         : fields.char('Personas', size=10),
-                'alto'                 : fields.float('Alto'),
-                'ancho'                : fields.float('ancho'),
-                'largo'                : fields.float('largo'),
-                'eje_direccional'      : fields.char('Eje Direccional', size=10),
-                'eje_motriz'           : fields.char('Eje Motriz', size=10),
-                'eje_carga'            : fields.char('Eje Carga', size=10),
-                'permiso_ruta'         : fields.char('Permiso de ruta', size=10),
-                'lugar_exp'            : fields.char('Lugar de expedicion', size=10),
-                'fecha_exp'            : fields.date('Fecha de expedicion'),
-                'document_ids'         : fields.one2many('chatarra.documentos', 'unit_id', 'Documentos'),
-                'asignacion_id'        : fields.many2one('chatarra.asignacion', 'No. de Asignacion:', readonly=True),
-                'disponible_por'       : fields.many2one('res.users', 'Disponible por:', readonly=True),
-                'fecha_disponible'     : fields.datetime('Fecha Disponible:', readonly=True),
-                'asignada_por'         : fields.many2one('res.users', 'Asignado por:', readonly=True),
-                'fecha_asignada'       : fields.datetime('Fecha Asignado:', readonly=True),
-                'completo_por'         : fields.many2one('res.users', 'Expediente Completo por:', readonly=True),
-                'fecha_completo'       : fields.datetime('Fecha Expediente Completo:', readonly=True),
-                'enviado_por'          : fields.many2one('res.users', 'Enviado por:', readonly=True),
-                'fecha_enviado'        : fields.datetime('Fecha Enviado:', readonly=True),
-                'reposicion_por'       : fields.many2one('res.users', 'Reposicion por:', readonly=True),
-                'fecha_reposicion'     : fields.datetime('Fecha Reposicion:', readonly=True),
-                'facturado_por'        : fields.many2one('res.users', 'Facturado por:', readonly=True),
-                'fecha_facturado'      : fields.datetime('Fecha Facturado:', readonly=True),
-                'fact_cancelada_por'   : fields.many2one('res.users', 'Fact. Cancelada por:', readonly=True),
-                'fecha_fact_cancelada' : fields.datetime('Fecha Cancelada:'),
-                'repuesta_id'          : fields.many2one('chatarra.unit', 'Repuesta por:', readonly=True),
-                'sustituye_id'         : fields.many2one('chatarra.unit', 'Sustituye a:', readonly=True),
-                'reposicion_id'        : fields.many2one('chatarra.unit.reposicion', 'No. de Reposicion', readonly=True),
-                'factura_id'           : fields.many2one('account.invoice', 'No. de Factura'),
-                'facturado'            : fields.boolean('Facturado:', readonly=True),
+                'name'                  : fields.char('Placa',size=40),
+                'state'                 : fields.selection([
+                                            ('borrador','Borrador'),
+                                            ('disponible','Disponible'),
+                                            ('asignada','Asignada'),
+                                            ('elaboracion','Elaboracion de Expediente'),
+                                            ('completo','Expediente Completo'),
+                                            ('seleccion','Seleccionado para Envio'),
+                                            ('enviado','Enviado a SCT'),
+                                            ('recibido','Recibido'),
+                                            ('consulta','Consulta'),
+                                            ('reposicion','Reposicion'),
+                                            ('enviado_agencia','Agencia'),
+                                            ('bloqueado','Bloqueado'),
+                                            ('cita','Cita'),
+                                            ('exp_enviado','Expediente Enviado'),
+                                            ('chatarrizado','Chatarrizado'),
+                                            ('certificado','Certificado Recibido'),
+                                            ('baja','Baja'),
+                                            ('cancelado','Cancelado'),
+                                            ('desestimiento','Desestimiento'),
+                                            ], 'Estado', readonly=True),
+                'client_id'             : fields.many2one('res.partner', 'Cliente', readonly=True),
+                'serie'                 : fields.char('Número de serie', size=40),
+                'marca'                 : fields.many2one('chatarra.marca', 'Marca'),
+                'modelo'                : fields.char('Modelo', size=40),
+                'color_placa'           : fields.char('Color de la Placa'),
+                'tipo_placa'            : fields.selection([('carga','CARGA'),
+                                                            ('pasaje','PASAJE'),
+                                                            ('turismo','TURISMO')
+                                                            ],'Tipo de Placa'),
+                'clase'                 : fields.selection([('t2','T 2'),('t3','T 3'),('c2','C 2'),('c3','C 3')],'Clase'),
+                'tipo'                  : fields.many2one('chatarra.tipo','Tipo'),
+                'motor'                 : fields.char('Motor',size=40),
+                'combustible'           : fields.selection([('diesel','Diesel'),('gasolina','Gasolina')],'Combustible'),
+                'peso_vehicular'        : fields.float('Peso Vehicular'),
+                'propietario_id'        : fields.many2one('res.partner','Nombre del Propietario'),
+                'vat'                   : fields.char('R.F.C.', size=20),
+                'reg_fed'               : fields.char('Reg. Fed', size=40),
+                'modalidad'             : fields.char('Modalidad', size=64),
+                'no_ejes'               : fields.integer('Numero de ejes'),
+                'no_llantas'            : fields.integer('Numero de llantas'),
+                'cap_litros'            : fields.char('Litros', size=10),
+                'cap_toneladas'         : fields.char('Toneladas', size=10),
+                'cap_personas'          : fields.char('Personas', size=10),
+                'alto'                  : fields.float('Alto'),
+                'ancho'                 : fields.float('ancho'),
+                'largo'                 : fields.float('largo'),
+                'eje_direccional'       : fields.char('Eje Direccional', size=10),
+                'eje_motriz'            : fields.char('Eje Motriz', size=10),
+                'eje_carga'             : fields.char('Eje Carga', size=10),
+                'permiso_ruta'          : fields.char('Permiso de ruta', size=10),
+                'lugar_exp'             : fields.char('Lugar de expedicion', size=10),
+                'fecha_exp'             : fields.date('Fecha de expedicion'),
+                'document_ids'          : fields.one2many('chatarra.documentos', 'unit_id', 'Documentos'),
+                'asignacion_id'         : fields.many2one('chatarra.asignacion', 'No. de Asignacion:', readonly=True),
+                'disponible_por'        : fields.many2one('res.users', 'Disponible por:', readonly=True),
+                'fecha_disponible'      : fields.datetime('Fecha Disponible:', readonly=True),
+                'asignada_por'          : fields.many2one('res.users', 'Asignado por:', readonly=True),
+                'fecha_asignada'        : fields.datetime('Fecha Asignado:', readonly=True),
+                'completo_por'          : fields.many2one('res.users', 'Expediente Completo por:', readonly=True),
+                'fecha_completo'        : fields.datetime('Fecha Expediente Completo:', readonly=True),
+                'enviado_por'           : fields.many2one('res.users', 'Enviado por:', readonly=True),
+                'fecha_enviado'         : fields.datetime('Fecha Enviado:', readonly=True),
+                'recibido_por'          : fields.many2one('res.users', 'Recibido por:', readonly=True),
+                'fecha_recibido'        : fields.datetime('Fecha Recibido:', readonly=True),
+                'consulta_por'          : fields.many2one('res.users', 'Consulta por:', readonly=True),
+                'fecha_consulta'        : fields.datetime('Fecha Consulta:', readonly=True),
+                'enviado_agencia_por'   : fields.many2one('res.users', 'Enviado Agencia por:', readonly=True),
+                'fecha_enviado_agencia' : fields.datetime('Fecha Enviado Agencia:', readonly=True),
+                'bloqueado_por'         : fields.many2one('res.users', 'Bloqueado por:', readonly=True),
+                'fecha_bloqueado'       : fields.datetime('Fecha Bloqueado:', readonly=True),
+                'cita_por'              : fields.many2one('res.users', 'Cita por:', readonly=True),
+                'fecha_cita'            : fields.datetime('Fecha Cita:', readonly=True),
+                'exp_enviado_por'       : fields.many2one('res.users', 'Exp. Enviado por:', readonly=True),
+                'fecha_exp_enviado'     : fields.datetime('Fecha Exp. Enviado:', readonly=True),
+                'chatarrizado_por'      : fields.many2one('res.users', 'Chatarrizado por:', readonly=True),
+                'fecha_chatarrizado'    : fields.datetime('Fecha Chatarrizado:', readonly=True),
+                'certificado_por'       : fields.many2one('res.users', 'Certificado por:', readonly=True),
+                'fecha_certificado'     : fields.datetime('Fecha Certificado:', readonly=True),
+                'baja_por'              : fields.many2one('res.users', 'Baja por:', readonly=True),
+                'fecha_baja'            : fields.datetime('Fecha Baja:', readonly=True),
+                'cancelado_por'         : fields.many2one('res.users', 'Cancelada por:', readonly=True),
+                'fecha_cancelado'       : fields.datetime('Fecha Cancelada:', readonly=True),
+                'desestimiento_por'     : fields.many2one('res.users', 'Desestimiento por:', readonly=True),
+                'fecha_desestimiento'   : fields.datetime('Fecha Desestimiento:', readonly=True),
+                'reposicion_por'        : fields.many2one('res.users', 'Reposicion por:', readonly=True),
+                'fecha_reposicion'      : fields.datetime('Fecha Reposicion:', readonly=True),
+                'facturado_por'         : fields.many2one('res.users', 'Facturado por:', readonly=True),
+                'fecha_facturado'       : fields.datetime('Fecha Facturado:', readonly=True),
+                'fact_cancelada_por'    : fields.many2one('res.users', 'Fact. Cancelada por:', readonly=True),
+                'fecha_fact_cancelada'  : fields.datetime('Fecha Cancelada:'),
+                'repuesta_id'           : fields.many2one('chatarra.unit', 'Repuesta por:', readonly=True),
+                'sustituye_id'          : fields.many2one('chatarra.unit', 'Sustituye a:', readonly=True),
+                'reposicion_id'         : fields.many2one('chatarra.unit.reposicion', 'No. de Reposicion:', readonly=True),
+                'factura_id'            : fields.many2one('account.invoice', 'No. de Factura:'),
+                'facturado'             : fields.boolean('Facturado:', readonly=True),
+                'envio_id'              : fields.many2one('chatarra.envio','No. Envio:', readonly=True),
+                'guia'                  : fields.char('Guia:', readonly=True),
 
         }
 
@@ -175,6 +201,72 @@ class chatarra_unit(osv.osv):
         self.write(cr, uid, ids, {  'state':'completo',
                                     'completo_por':uid,
                                     'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_recibido(self, cr, uid, ids, vals,context=None):
+        self.write(cr, uid, ids, {'state':'recibido',
+                                  'recibido_por': uid,
+                                  'fecha_recibido':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_consulta(self, cr, uid, ids, vals,context=None):
+        self.write(cr, uid, ids, {'state':'consulta',
+                                  'consulta_por': uid,
+                                  'fecha_consulta':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_enviado_agencia(self, cr, uid, ids, vals,context=None):
+        self.write(cr, uid, ids, {'state':'enviado_agencia',
+                                  'enviado_agencia_por': uid,
+                                  'fecha_enviado_agencia':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_bloqueado(self, cr, uid, ids, vals,context=None):
+        self.write(cr, uid, ids, {'state':'bloqueado',
+                                  'bloqueado_por': uid,
+                                  'fecha_bloqueado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_cita(self, cr, uid, ids, vals,context=None):
+        self.write(cr, uid, ids, {'state':'cita',
+                                  'cita_por': uid,
+                                  'fecha_cita':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_exp_enviado(self, cr, uid, ids, vals,context=None):
+        self.write(cr, uid, ids, {'state':'exp_enviado',
+                                  'exp_enviado_por': uid,
+                                  'fecha_exp_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_chatarrizado(self, cr, uid, ids, vals,context=None):
+        self.write(cr, uid, ids, {'state':'chatarrizado',
+                                  'chatarrizado_por': uid,
+                                  'fecha_chatarrizado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_certificado(self, cr, uid, ids, vals,context=None):
+        self.write(cr, uid, ids, {'state':'certificado',
+                                  'certificado_por': uid,
+                                  'fecha_certificado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_baja(self, cr, uid, ids, vals,context=None):
+        self.write(cr, uid, ids, {'state':'baja',
+                                  'baja_por': uid,
+                                  'fecha_baja':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_cancelado(self, cr, uid, ids, vals,context=None):
+        self.write(cr, uid, ids, {'state':'cancelado',
+                                  'cancelado_por': uid,
+                                  'fecha_cancelado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return True
+
+    def action_desestimiento(self, cr, uid, ids, vals,context=None):
+        self.write(cr, uid, ids, {'state':'desestimiento',
+                                  'desestimiento_por': uid,
+                                  'fecha_desestimiento':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         return True
 
 chatarra_unit()
