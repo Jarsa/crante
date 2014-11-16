@@ -168,7 +168,6 @@ class chatarra_unit(osv.osv):
         unidad = self.browse(cr, uid, ids)
         for documento in unidad.document_ids:
             if documento.state in ('pendiente'):
-                return False
                 raise osv.except_osv(('Advertencia !'),
                        ('El documento %s esta en estado Pendiente...') % (documento.name)
                        )

@@ -55,13 +55,23 @@ class chatarra_unit_reposicion(osv.osv):
         invoice_nueva = invoice_obj.browse(cr, uid, invoice_nueva_id, context=None)
         unidad_obj.write(cr, uid, [nueva.id], {'sustituye_id':anterior.id,
                                                'reposicion_id':reposicion.id,
+                                               'state':'asignada',
                                                'asignacion_id':anterior.asignacion_id.id,
                                                'facturado':True,
                                                'facturado_por':uid,
                                                'factura_id':invoice_nueva.id,
                                                'fecha_facturado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id,
+        if anterior.state in ['asignada','completo','seleccion','enviado','elaboracion']:
+          unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id,
                                                   'state':'reposicion',
+                                                  'reposicion_id':reposicion.id,
+                                                  'reposicion_por':uid,
+                                                  'fact_cancelada_por':uid,
+                                                  'fecha_fact_cancelada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                                                  'fecha_reposicion':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        else:
+          unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id,
+                                                  'state':'desestimiento',
                                                   'reposicion_id':reposicion.id,
                                                   'reposicion_por':uid,
                                                   'fact_cancelada_por':uid,
