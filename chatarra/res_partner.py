@@ -8,7 +8,8 @@ class res_partner(osv.osv):
         'categoria' : fields.selection([('none', 'N/A'),
         								('agencia','Agencia'),
         								('paqueteria','Paqueteria'),
-        								('secretaria','Secretaria')
+        								('secretaria','Secretaria'),
+                                        ('chatarrera','Chatarrera')
         								], 'Categoria'),
     }
     _defaults = {

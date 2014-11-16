@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-    	<!-- Crate sequence -->
-        <record id="sequence_chatarra_unit_reposicion_type" model="ir.sequence.type">
-            <field name="name">Numero de Reposicion</field>
-            <field name="code">reposicion.sequence.number</field>
+        <!-- Accion Wizard Tarjeta (Boton en chatarra.unit) -->
+        <record id='action_wizard_tarjeta' model='ir.actions.act_window'>
+            <field name='name'>Tarjeta</field>
+            <field name='res_model'>chatarra.tarjeta</field>
+            <field name='view_type'>form</field>
+            <field name='target'>new</field>
+            <field name='view_mode'>form</field>
         </record>
-        <record id="sequence_unit_reposicion_number" model="ir.sequence">
-            <field name="name">Numero de Reposicion</field>
-            <field name="code">reposicion.sequence.number</field>
-            <field name="prefix">R</field>
-            <field name="padding">4</field>
-        </record>
-        <!-- Accion Form Reposicion -->
-        <record id='action_chatarra_unidad_reposicion' model='ir.actions.act_window'>
+        <!-- Accion Form Reposicion (Boton en chatarra.unit) -->
+        <record id='action_chatarra_reposicion' model='ir.actions.act_window'>
             <field name='name'>Reposicion</field>
-            <field name='res_model'>chatarra.unit.reposicion</field>
+            <field name='res_model'>chatarra.reposicion</field>
+            <field name='view_type'>form</field>
+            <field name='target'>new</field>
+            <field name='view_mode'>form</field>
+        </record>
+        <!-- Accion Form Cita (Boton en chatarra.unit) -->
+        <record id='action_chatarra_cita_1' model='ir.actions.act_window'>
+            <field name='name'>Cita</field>
+            <field name='res_model'>chatarra.cita</field>
             <field name='view_type'>form</field>
             <field name='target'>new</field>
             <field name='view_mode'>form</field>
@@ -55,6 +60,59 @@
 				</tree>
 			</field>
 		</record>
+        <!-- Vista de Arbol para Chatarras Enviadas a SCT -->
+        <record model='ir.ui.view' id='chatarra_unit_enviado_sct_tree'>
+            <field name='name'>chatarra_unit.tree</field>
+            <field name='model'>chatarra.unit</field>
+            <field name='type'>tree</field>
+            <field name='arch' type='xml'>
+                <tree string='Chatarras' 
+                    colors="gray:state=='reposicion';red:state=='borrador';green:state=='asignada';blue:state=='disponible';">
+                    <field name='vat'/>
+                    <field name='name'/>
+                    <field name='serie'/>
+                    <field name='consulta'/>
+                    <button name="action_recibir_consulta" attrs="{'invisible':['|',('consulta','=',True),('state','!=','enviado')]}" string="Recibir Consulta" type="object" class="oe_highlight" icon="gtk-apply"/>
+                    <field name='tarjeta_circulacion'/>
+                    <button name="action_recibir_tarjeta" attrs="{'invisible':['|',('tarjeta_circulacion','=',True),('state','!=','enviado')]}" string="Recibir TC" type="object" class="oe_highlight" icon="gtk-apply"/>
+                    <field name='copia_tc'/>
+                    <button name="%(action_wizard_tarjeta)d" attrs="{'invisible':['|',('copia_tc','=',True),('state','!=','enviado')]}" string="Copia TC" type="action" class="oe_highlight" context="{'default_unit_id': active_id}" icon="gtk-apply"/>
+                    <field name='state'/>
+                </tree>
+            </field>
+        </record>
+        <!-- Vista de Arbol para Chatarras Recibida SCT -->
+        <record model='ir.ui.view' id='chatarra_unit_recibido_tree'>
+            <field name='name'>chatarra_unit.tree</field>
+            <field name='model'>chatarra.unit</field>
+            <field name='type'>tree</field>
+            <field name='arch' type='xml'>
+                <tree string='Chatarras'>
+                    <field name='vat'/>
+                    <field name='name'/>
+                    <field name='serie'/>
+                    <field name='state'/>
+                    <button name="action_bloqueado" attrs="{'invisible':[('state','!=','recibido')]}" string="Bloqueado" type="action" icon="STOCK_DIALOG_AUTHENTICATION"/>
+                </tree>
+            </field>
+        </record>
+        <!-- Vista de Arbol para Chatarras Cita -->
+        <record model='ir.ui.view' id='chatarra_unit_cita_tree'>
+            <field name='name'>chatarra_unit.tree</field>
+            <field name='model'>chatarra.unit</field>
+            <field name='type'>tree</field>
+            <field name='arch' type='xml'>
+                <tree string='Chatarras'>
+                    <field name='vat'/>
+                    <field name='name'/>
+                    <field name='serie'/>
+                    <field name='chatarrera_id'/>
+                    <field name='programacion_cita'/>
+                    <field name='cita_anterior' attrs="{'invisible':[('cita_anterior','=',False)]}"/>
+                    <field name='state'/>
+                </tree>
+            </field>
+        </record>
     	<!-- Vista de Formulario para Chatarras -->
     	<record model='ir.ui.view' id='chatarra_unit_form'>
     		<field name='name'>chatarra_unit.form</field>
@@ -65,18 +123,19 @@
                     <header>
                         <button name="action_disponible" states="borrador" string="Disponible" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="action_completo" states="asignada" string="Expediente Completo" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="action_recibido" states="enviado" string="Recibido" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="action_consulta" states="recibido" string="Consulta" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="action_enviado_agencia" states="consulta" string="Enviado a Agencia" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="action_bloqueado" states="enviado_agencia" string="Bloqueado" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="action_cita" states="bloqueado" string="Cita" type="object" icon="gtk-apply" class="oe_highlight"/>
+                        <button name="action_recibir_consulta" attrs="{'invisible':['|',('consulta','=',True),('state','!=','enviado')]}" string="Recibir Consulta" type="object" class="oe_highlight"/>
+                        <button name="action_recibir_tarjeta" attrs="{'invisible':['|',('tarjeta_circulacion','=',True),('state','!=','enviado')]}" string="Recibir TC" type="object" class="oe_highlight"/>
+                        <button name="%(action_wizard_tarjeta)d" attrs="{'invisible':['|',('copia_tc','=',True),('state','!=','enviado')]}" string="Copia TC" type="action" class="oe_highlight" context="{'default_unit_id': active_id}"/>
+                        <button name="action_bloqueado" states="recibido" string="Bloqueado" type="object" icon="STOCK_DIALOG_AUTHENTICATION" class="oe_highlight"/>
+                        <button  name="%(action_chatarra_cita_1)d" states="bloqueado" string="Programar Cita" type="action" icon="stock_calendar" class="oe_highlight" context="{'default_unidad_id': active_id,}"/>
                         <button name="action_exp_enviado" states="cita" string="Expediente Enviado" type="object" icon="gtk-apply" class="oe_highlight"/>
+                        <button  name="%(action_chatarra_cita_1)d" states="cita" string="Reprogramar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
                         <button name="action_chatarrizado" states="exp_enviado" string="Chatarrizado" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="action_certificado" states="chatarrizado" string="Certificado" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="action_baja" states="certificado" string="Baja" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="action_cancelado" states="recibido,consulta,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento" type="object" icon="gtk-close" class="oe_highlight"/>
-                        <button name="action_desestimiento" states="recibido,consulta,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento y Reposicion" type="object" icon="gtk-convert" class="oe_highlight"/>
-                        <button  name="%(action_chatarra_unidad_reposicion)d" states="asignada" string="Reponer" type="action" icon="gtk-convert" class="oe_highlight" context="{'default_unidad_anterior_id': active_id,}"/>
+                        <button name="action_cancelado" states="recibido,consulta,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento" type="object" icon="gtk-close"/>
+                        <button name="%(action_chatarra_reposicion)d" states="recibido,consulta,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento y Reposicion" type="object" icon="gtk-convert"/>
+                        <button  name="%(action_chatarra_reposicion)d" states="asignada" string="Reponer" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,disponible,asignada,reposicion"/>
                     </header>
     				<sheet>
@@ -118,19 +177,30 @@
                                     <field name='permiso_ruta'/>                  
                                     <field name='lugar_exp'/>
                                     <field name='fecha_exp'/>
+                                    <field name='folio_tarjeta'/>
+                                    <field name='fecha_tarjeta'/>
+                                    <field name='folio_modalidad'/>
                                 </group>
     						</page>
-                            <page string='Documentacion' attrs="{'invisible': [('state','in','borrador')]}">
+                            <page string='Documentacion' attrs="{'invisible': ['|','|',('state','in','borrador'),('state','in','disponible')]}">
                                 <group>
                                     <separator string="Documentos" coslpan="4"/>
-                                    <field name='document_ids' colspan="4" nolabel="1" context="{'default_unit_id': active_id,}">
+                                    <field name='document_ids' colspan="4" nolabel="1">
                                         <tree string='Documentacion'>
                                             <field name='name'/>
                                             <field name='unit_id' readonly="True"/>
                                             <field name='state'/>
+                                            <button name="action_no_requerido" attrs="{'invisible':['|','|','|','|','|','|','|',('name','=','visual'),('name','=','carta'),('name','=','consulta'),('name','=','copia_tc'),('name','=','foto_frente'),('name','=','foto_chasis'),('name','=','foto_motor'),('state','!=','pendiente')]}" string="Completo" type="object" icon="gtk-cancel"/>
                                             <button name="action_completo" states="pendiente" string="Completo" type="object" icon="gtk-apply"/>
                                         </tree>
                                     </field>
+                                </group>
+                            </page>
+                            <page string='Chatarrizacion'>
+                                <group col='4'>
+                                    <field name='chatarrera_id'/>
+                                    <field name='programacion_cita'/>
+                                    <field name='cita_anterior'/>
                                 </group>
                             </page>
                             <page string='Log'>
@@ -147,14 +217,12 @@
                                     <field name='fecha_enviado'/>
                                     <field name='recibido_por'/>
                                     <field name='fecha_recibido'/>
-                                    <field name='consulta_por'/>
-                                    <field name='fecha_consulta'/>
-                                    <field name='enviado_agencia_por'/>
-                                    <field name='fecha_enviado_agencia'/>
                                     <field name='bloqueado_por'/>
                                     <field name='fecha_bloqueado'/>
                                     <field name='cita_por'/>
                                     <field name='fecha_cita'/>
+                                    <field name='cita_reprogramada_por'/>
+                                    <field name='fecha_cita_reprogramada'/>
                                     <field name='exp_enviado_por'/>
                                     <field name='fecha_exp_enviado'/>
                                     <field name='chatarrizado_por'/>
@@ -177,6 +245,9 @@
                                     <field name='guia'/>
                                     <field name='facturado'/>
                                     <field name='factura_id'/>
+                                    <field name='consulta'/>
+                                    <field name='tarjeta_circulacion'/>
+                                    <field name='copia_tc'/>
                                 </group>
                             </page>
     					</notebook>
@@ -184,125 +255,15 @@
     			</form>
     		</field>
     	</record>
-    	<!-- Vista de Arbol de Marcas -->
-    	<record model='ir.ui.view' id='chatarra_marca_tree'>
-    		<field name='name'>chatarra_marca.tree</field>
-    		<field name='model'>chatarra.marca</field>
-    		<field name='type'>tree</field>
-    		<field name='arch' type='xml'>
-    			<tree string='Marcas' editable='bottom'>
-    				<field name='name'/>
-    				<field name='active'/>
-    			</tree>
-    		</field>
-    	</record>
-    	<!-- Vista de Arbol de Tipo -->
-    	<record model='ir.ui.view' id='chatarra_tipo_tree'>
-    		<field name='name'>chatarra_tipo.tree</field>
-    		<field name='model'>chatarra.tipo</field>
-    		<field name='type'>tree</field>
-    		<field name='arch' type='xml'>
-    			<tree string='Tipos' editable='buttom'>
-    				<field name='name'/>
-    				<field name='active'/>
-    			</tree>
-    		</field>
-    	</record>
-        <!-- Vista formulario Reposicion -->
-        <record model='ir.ui.view' id='chatarra_unit_reposicion_form'>
-            <field name='name'>chatarra_unit_reposicion.form</field>
-            <field name='model'>chatarra.unit.reposicion</field>
-            <field name='type'>form</field>
-            <field name='arch' type='xml'>
-                <form string='Guia'>
-                    <header>
-                     <button name="action_reposicion" string="Reponer" type="object" icon="gtk-apply" class="oe_highlight"/>   
-                    </header>
-                    <sheet>
-                        <h1>
-                            <label string='Reposicion'/>
-                        </h1>
-                        <group col='4'>
-                            <field name='motivo' widget='selection'/>
-                            <field name='date'/>
-                            <field name='unidad_nueva_id' domain="[
-                                                            ('name','!=', unidad_anterior_id),
-                                                            ('state','=','disponible'),
-                                                            ('sustituye_id','=', False)
-                                                            ]"/>
-                            <field name='unidad_anterior_id'/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-        <!-- Vista de Arbol Reposicion -->
-        <record model='ir.ui.view' id='chatarra_unit_reposicion_tree'>
-            <field name='name'>chatarra_unit_reposicion.tree</field>
-            <field name='model'>chatarra.unit.reposicion</field>
-            <field name='type'>tree</field>
-            <field name='arch' type='xml'>
-                <tree string='Reposiciones'>
-                    <field name='name'/>
-                    <field name='unidad_anterior_id'/>
-                    <field name='unidad_nueva_id'/>
-                    <field name='date'/>
-                    <field name='motivo'/>
-                </tree>
-            </field>
-        </record>
-        <!-- SEARCH View Reposicion  --> 
-        <record id="chatarra_unit_reposicion_search" model="ir.ui.view">
-            <field name="name">chatarra.unit.reposicion.search</field>
-            <field name="model">chatarra.unit.reposicion</field>
-            <field name="type">search</field>
-            <field name="arch" type="xml">
-                <search string="Reposiciones">
-                   <filter string="Del Mes" icon="terp-gtk-media-pause" domain="[('date','&gt;=', time.strftime('%%Y-%%m-01'))]" name="this_month"/>
-                   <separator orientation="vertical"/>
-                   <group  expand='1' string='Agrupar por...'>
-                       <filter  string="Year"
-                                name="Year"
-                                domain="[('date','&lt;=', time.strftime('%%Y-%%m-%%d')),('date','&gt;=',time.strftime('%%Y-01-01'))]"
-                                help="This Year" 
-                                context="{'group_by':'date'}"/>
-                        <filter string="Mes"
-                                name="mes"
-                                domain="[('date','&lt;=',(context_today()+relativedelta(day=31)).strftime('%%Y-%%m-%%d')),('date','&gt;=',(context_today()-relativedelta(day=1)).strftime('%%Y-%%m-%%d'))]"
-                                help="Este Mes" 
-                                context="{'group_by':'date'}"/>
-                        <filter string="Semana"
-                                separator="1"
-                                name="semana"
-                                domain="[('date','&lt;=', (context_today() + relativedelta(weeks=0,day=7, weekday=-1)).strftime('%%Y-%%m-%%d')),('date','&gt;=',(context_today() - relativedelta(weeks=1, weekday=0)).strftime('%%Y-%%m-%%d'))]"
-                                help="Esta Semana" 
-                                context="{'group_by':'date'}"/>
-                   </group>
-                </search>
-            </field>
-        </record>
-        <!-- Vista de Arbol de Motivo de Reposicion -->
-        <record model='ir.ui.view' id='chatarra_motivo_tree'>
-            <field name='name'>chatarra_motivo.tree</field>
-            <field name='model'>chatarra.motivo</field>
-            <field name='type'>tree</field>
-            <field name='arch' type='xml'>
-                <tree string='Motivo de Reposicion' editable='buttom'>
-                    <field name='name'/>
-                    <field name='active'/>
-                </tree>
-            </field>
-        </record>
         <!-- Menu Chatarra-->
         <menuitem id="chatarra_menu" name="Chatarra"/>
         <!-- Menu Chatarra/Unidades -->
         <menuitem id="chatarra_list_menu" name="Unidades" parent="chatarra_menu"/>
-        <!-- Menu Chatarra/Configuracion -->
-        <menuitem id="chatarra_config_menu" name="Configuracion" parent="chatarra_menu"/>
        <!-- Accion Chatarra/Unidades/Inventario -->
         <record id='action_chatarra_list' model='ir.actions.act_window'>
         	<field name='name'>Inventario</field>
             <field name="key2">tree_but_open</field>
+            <field name="view_id" ref="chatarra_unit_tree"/>
         	<field name='res_model'>chatarra.unit</field>
         	<field name='view_type'>form</field>
         	<field name='view_mode'>tree,form</field>
@@ -311,6 +272,7 @@
         <record id='action_chatarra_disponibles' model='ir.actions.act_window'>
             <field name='name'>Unidades Disponibles</field>
             <field name='res_model'>chatarra.unit</field>
+            <field name="view_id" ref="chatarra_unit_tree"/>
             <field name="domain">[('state','=','disponible')]</field>
             <field name='view_type'>form</field>
             <field name='view_mode'>tree,form</field>
@@ -319,6 +281,7 @@
         <record id='action_chatarra_asignadas' model='ir.actions.act_window'>
             <field name='name'>Unidades Asignadas</field>
             <field name='res_model'>chatarra.unit</field>
+            <field name="view_id" ref="chatarra_unit_tree"/>
             <field name="domain">[('state','=','asignada')]</field>
             <field name='view_type'>form</field>
             <field name='view_mode'>tree,form</field>
@@ -327,6 +290,7 @@
         <record id='action_chatarra_expediente_completo' model='ir.actions.act_window'>
             <field name='name'>Expediente Completo</field>
             <field name='res_model'>chatarra.unit</field>
+            <field name="view_id" ref="chatarra_unit_tree"/>
             <field name="domain">[('state','=','completo')]</field>
             <field name='view_type'>form</field>
             <field name='view_mode'>tree,form</field>
@@ -335,16 +299,37 @@
         <record id='action_chatarra_enviadas_sct' model='ir.actions.act_window'>
             <field name='name'>Enviadas a SCT</field>
             <field name='res_model'>chatarra.unit</field>
+            <field name="view_id" ref="chatarra_unit_enviado_sct_tree"/>
             <field name="domain">[('state','=','enviado')]</field>
             <field name='view_type'>form</field>
             <field name='view_mode'>tree,form</field>
         </record>
-        <!-- Accion Chatarra/Unidades/Reposiciones -->
-        <record id='action_chatarra_reposiciones' model='ir.actions.act_window'>
-            <field name='name'>Reposiciones</field>
-            <field name='res_model'>chatarra.unit.reposicion</field>
+        <!-- Accion Chatarra/Unidades/Recibidas de SCT -->
+        <record id='action_chatarra_recibido' model='ir.actions.act_window'>
+            <field name='name'>Recibidas de SCT</field>
+            <field name='res_model'>chatarra.unit</field>
+            <field name="view_id" ref="chatarra_unit_recibido_tree"/>
+            <field name="domain">[('state','=','recibido')]</field>
             <field name='view_type'>form</field>
-            <field name='view_mode'>tree</field>
+            <field name='view_mode'>tree,form</field>
+        </record>
+        <!-- Accion Chatarra/Unidades/Bloqueadas -->
+        <record id='action_chatarra_bloqueadas' model='ir.actions.act_window'>
+            <field name='name'>Bloqueadas</field>
+            <field name='res_model'>chatarra.unit</field>
+            <field name="view_id" ref="chatarra_unit_tree"/>
+            <field name="domain">[('state','=','bloqueado')]</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>tree,form</field>
+        </record>
+        <!-- Accion Chatarra/Unidades/Cita -->
+        <record id='action_chatarra_cita' model='ir.actions.act_window'>
+            <field name='name'>Cita</field>
+            <field name='res_model'>chatarra.unit</field>
+            <field name="view_id" ref="chatarra_unit_cita_tree"/>
+            <field name="domain">[('state','=','cita')]</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>tree,form</field>
         </record>
         <!-- Menu Chatarra/Unidades/Inventario -->
         <menuitem id="chatarra_lists_menu" name="Inventario" parent="chatarra_list_menu" sequence="0"/>
@@ -358,34 +343,11 @@
         <menuitem id="chatarra_expediente_completo_menu" name="Expediente completo" parent="chatarra_lists_menu" action="action_chatarra_expediente_completo" sequence="3" />
         <!-- Menu Chatarra/Unidades/Inventario/Enviadas a SCT -->
         <menuitem id="chatarra_enviadas_sct_menu" name="Enviadas a SCT" parent="chatarra_lists_menu" action="action_chatarra_enviadas_sct" sequence="4"/>
-        <!-- Menu Chatarra/Unidades/Reposiciones -->
-        <menuitem id="chatarra_reposiciones_menu" name="Reposiciones" parent="chatarra_list_menu" action="action_chatarra_reposiciones" sequence="3"/>
-        <!-- Accion Chatarra/Configuracion/Marcas -->
-        <record id='action_chatarra_marca' model='ir.actions.act_window'>
-        	<field name='name'>Lista de Marcas</field>
-        	<field name='res_model'>chatarra.marca</field>
-        	<field name='view_type'>form</field>
-        	<field name='view_mode'>tree,form</field>
-        </record>
-        <!-- Menu Chatarra/Configuracion/Marcas -->
-        <menuitem id="chatarra_marca_menu" name="Marcas" parent="chatarra_config_menu" action="action_chatarra_marca"/>
-        <!-- Accion Chatarra/Configuracion/Tipo -->
-        <record id='action_chatarra_tipo' model='ir.actions.act_window'>
-        	<field name='name'>Lista de Tipos</field>
-        	<field name='res_model'>chatarra.tipo</field>
-        	<field name='view_type'>form</field>
-        	<field name='view_mode'>tree,form</field>
-        </record>
-        <!-- Menu Chatarra/Configuracion/Tipos -->
-        <menuitem id="chatarra_tipo_menu" name="Tipo" parent="chatarra_config_menu" action="action_chatarra_tipo"/>
-        <!-- Accion Chatarra motivo -->
-        <record id='action_chatarra_motivo' model='ir.actions.act_window'>
-            <field name='name'>Motivo de Reposicion</field>
-            <field name='res_model'>chatarra.motivo</field>
-            <field name='view_type'>form</field>
-            <field name='view_mode'>tree,form</field>
-        </record>
-        <!-- Menu Chatarra/Configuracion/Motivo -->
-        <menuitem id="chatarra_motivo_menu" name="Motivo de Reposicion" parent="chatarra_config_menu" action="action_chatarra_motivo"/>
+        <!-- Menu Chatarra/Unidades/Inventario/Recibido de SCT -->
+        <menuitem id="chatarra_recibido_sct_menu" name="Recibido de SCT" parent="chatarra_lists_menu" action="action_chatarra_recibido" sequence="5"/>
+        <!-- Menu Chatarra/Unidades/Inventario/Bloqueadas -->
+        <menuitem id="chatarra_recibido_bloqueadas" name="Bloqueadas" parent="chatarra_lists_menu" action="action_chatarra_bloqueadas" sequence="5"/>
+        <!-- Menu Chatarra/Unidades/Inventario/Cita -->
+        <menuitem id="chatarra_cita_menu" name="Cita" parent="chatarra_lists_menu" action="action_chatarra_cita" sequence="6"/>
     </data>
 </openerp>
