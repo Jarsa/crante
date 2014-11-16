@@ -92,11 +92,11 @@
                     <field name='name'/>
                     <field name='serie'/>
                     <field name='state'/>
-                    <button name="action_bloqueado" attrs="{'invisible':[('state','!=','recibido')]}" string="Bloqueado" type="action" icon="STOCK_DIALOG_AUTHENTICATION"/>
+                    <button name="action_bloqueado" attrs="{'invisible':[('state','!=','recibido')]}" string="Bloqueado" type="object" icon="gtk-dialog-authentication"/>
                 </tree>
             </field>
         </record>
-        <!-- Vista de Arbol para Chatarras Cita -->
+        <!-- Vista de Arbol para Chatarras Cita/Bloqueado -->
         <record model='ir.ui.view' id='chatarra_unit_cita_tree'>
             <field name='name'>chatarra_unit.tree</field>
             <field name='model'>chatarra.unit</field>
@@ -108,8 +108,11 @@
                     <field name='serie'/>
                     <field name='chatarrera_id'/>
                     <field name='programacion_cita'/>
-                    <field name='cita_anterior' attrs="{'invisible':[('cita_anterior','=',False)]}"/>
+                    <field name='cita_anterior'/>
                     <field name='state'/>
+                    <button name="%(action_chatarra_cita_1)d" states="bloqueado" string="Programar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
+                    <button name="action_exp_enviado" states="cita" string="Expediente Enviado" type="object" icon="gtk-revert-to-saved" class="oe_highlight"/>
+                    <button  name="%(action_chatarra_cita_1)d" states="cita" string="Reprogramar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
                 </tree>
             </field>
         </record>
@@ -126,9 +129,9 @@
                         <button name="action_recibir_consulta" attrs="{'invisible':['|',('consulta','=',True),('state','!=','enviado')]}" string="Recibir Consulta" type="object" class="oe_highlight"/>
                         <button name="action_recibir_tarjeta" attrs="{'invisible':['|',('tarjeta_circulacion','=',True),('state','!=','enviado')]}" string="Recibir TC" type="object" class="oe_highlight"/>
                         <button name="%(action_wizard_tarjeta)d" attrs="{'invisible':['|',('copia_tc','=',True),('state','!=','enviado')]}" string="Copia TC" type="action" class="oe_highlight" context="{'default_unit_id': active_id}"/>
-                        <button name="action_bloqueado" states="recibido" string="Bloqueado" type="object" icon="STOCK_DIALOG_AUTHENTICATION" class="oe_highlight"/>
+                        <button name="action_bloqueado" states="recibido" string="Bloqueado" type="object" icon="gtk-dialog-authentication" class="oe_highlight"/>
                         <button  name="%(action_chatarra_cita_1)d" states="bloqueado" string="Programar Cita" type="action" icon="stock_calendar" class="oe_highlight" context="{'default_unidad_id': active_id,}"/>
-                        <button name="action_exp_enviado" states="cita" string="Expediente Enviado" type="object" icon="gtk-apply" class="oe_highlight"/>
+                        <button name="action_exp_enviado" states="cita" string="Expediente Enviado" type="object" icon="gtk-revert-to-saved" class="oe_highlight"/>
                         <button  name="%(action_chatarra_cita_1)d" states="cita" string="Reprogramar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
                         <button name="action_chatarrizado" states="exp_enviado" string="Chatarrizado" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="action_certificado" states="chatarrizado" string="Certificado" type="object" icon="gtk-apply" class="oe_highlight"/>
@@ -317,7 +320,7 @@
         <record id='action_chatarra_bloqueadas' model='ir.actions.act_window'>
             <field name='name'>Bloqueadas</field>
             <field name='res_model'>chatarra.unit</field>
-            <field name="view_id" ref="chatarra_unit_tree"/>
+            <field name="view_id" ref="chatarra_unit_cita_tree"/>
             <field name="domain">[('state','=','bloqueado')]</field>
             <field name='view_type'>form</field>
             <field name='view_mode'>tree,form</field>
