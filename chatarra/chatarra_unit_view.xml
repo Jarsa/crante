@@ -139,6 +139,7 @@
                         <button name="action_cancelado" states="recibido,consulta,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento" type="object" icon="gtk-close"/>
                         <button name="%(action_chatarra_reposicion)d" states="recibido,consulta,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado" string="Desestimiento y Reposicion" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
                         <button  name="%(action_chatarra_reposicion)d" states="asignada" string="Reponer" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
+                        <button name="send_mail_chatarra" states="disponible" string="Prueba" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,disponible,asignada,reposicion"/>
                     </header>
     				<sheet>

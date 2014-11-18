@@ -1,10 +1,15 @@
 # -*- encoding: utf-8 -*-
 from openerp.osv import osv, fields
 from openerp import tools
+import openerp.netsvc
+import openerp.pooler
 import time
-from datetime import datetime, timedelta
+from openerp.osv.orm import browse_record, browse_null
+from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
+from openerp.tools.translate import _
+import base64
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -230,9 +235,103 @@ class chatarra_unit(osv.osv):
         return True
 
     def action_cancelado(self, cr, uid, ids, vals,context=None):
+        unidad = self.browse(cr, uid, ids)
+        asignacion_obj = self.pool.get('chatarra.asignacion')
+        asignacion_id = asignacion_obj.search(cr, uid, [('unit_ids','=',unidad.id)])
+        #_logger.error("###################### Asignacion : %r", asignacion_id)
         self.write(cr, uid, ids, {'state':'cancelado',
                                   'cancelado_por': uid,
                                   'fecha_cancelado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        asignacion_obj.write(cr, uid, asignacion_id, {'unit_ids': [(3, unidad.id)]})
         return True
 
+    def send_mail_chatarra(self, cr, uid, ids, context=None):
+      email_template_obj = self.pool.get('email.template')
+      template_ids = email_template_obj.search(cr, uid, [('model_id.model', '=','chatarra.unit')], context=context) 
+      if not template_ids:
+          return True #raise osv.except_osv(_('Warning!'), _('There are no Template configured for sending mail'))
+      values = email_template_obj.generate_email(cr, uid, template_ids[0], ids, context=context)
+      values['res_id'] = False
+      mail_mail_obj = self.pool.get('mail.mail')
+      msg_id = mail_mail_obj.create(cr, uid, values, context=context)
+
+      attachment_obj = self.pool.get('ir.attachment')
+      ir_actions_report = self.pool.get('ir.actions.report.xml')
+
+      matching_reports = ir_actions_report.search(cr, uid, [('report_name','=','chatarra.unit.report')])
+      if not matching_reports:
+          return True #raise osv.except_osv(_('Warning!'), _('There is no Report to send')) 
+
+      report = ir_actions_report.browse(cr, uid, matching_reports[0])
+      report_service = 'report.' + report.report_name
+      service = netsvc.LocalService(report_service)
+      date = self.pool.get('chatarra.notificacion')._get_date(cr, uid, ids)
+      unit_ids = self.search(cr, uid, [('fecha_enviado',">=", date),
+                                            ('state','=','enviado')
+                                            ], order='fecha_enviado desc')
+      if not unit_ids:
+          return True #raise osv.except_osv(_('Warning!'), _('There are no records to print'))
+
+      (result, format) = service.create(cr, uid, unit_ids, 
+                                        {'model': 'chatarra.unit', 'count': len(unit_ids),'date': date}, context=context)
+
+      result = base64.b64encode(result)
+      file_name = _('Unidades_retrasadas')
+      file_name += ".pdf"
+      attachment_id = attachment_obj.create(cr, uid,
+          {
+              'name': file_name,
+              'datas': result,
+              'datas_fname': file_name,
+              'res_model': self._name,
+              'res_id': msg_id,
+              'type': 'binary'
+          }, context=context)
+                
+
+      if msg_id and attachment_id:
+          mail_mail_obj.write(cr, uid, msg_id, {'attachment_ids': [(6, 0, [attachment_id])]}, context=context)
+          mail_mail_obj.send(cr, uid, [msg_id], context=context)
+      return True
 chatarra_unit()
+
+class chatarra_notificacion(osv.osv_memory):
+    _name = 'chatarra.notificacion'
+
+    def _get_date(self, cr, uid, ids, context=None):
+      val = self.pool.get('ir.config_parameter').get_param(cr, uid, 'chatarra_enviado_notificacion_x_dias', context=context)
+      xdays = int(val) or 0
+      date = datetime.now()  + timedelta(days=xdays)
+      return date.strftime(DEFAULT_SERVER_DATE_FORMAT)
+
+    _columns = {
+             'date'    : fields.date('Date', required=True),
+             }
+
+    _defaults = {
+         'date'   : _get_date,
+             }
+   
+    def button_get_units(self, cr, uid, ids, to_attach=False, context=None):
+      """
+#         To get the date and print the report
+#         @return : return report
+#         """
+      if context is None:
+        context = {}
+       
+      date = self.browse(cr, uid, ids)[0].date
+      chatarra_unit_obj = self.pool.get('chatarra.unit')
+      condition = [('fecha_enviado',">=", date)]
+      unit_ids = chatarra_unit_obj.search(cr, uid, condition, order='fecha_enviado desc')      
+      if unit_ids:
+        datas = {   'ids': unit_ids, 
+                    'count': len(unit_ids),
+                    'date': date}
+        return {
+              'type': 'ir.actions.report.xml',
+              'report_name': 'chatarra.unit.report',
+              'datas': datas,
+              }
+      else:
+        raise osv.except_osv(_('Warning!'), _('There are no Driver Licenses expired or to expire on this date'))#
