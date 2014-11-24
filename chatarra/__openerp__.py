@@ -42,7 +42,7 @@
             'chatarra_envio_view.xml',
             'report/report_view.xml',
             'report/report_units_late.xml'],
-    "demo_xml": [],
+    "demo_xml": ['demo/chatarra.unit.csv'],
     "update_xml": [],
     "active": False,
     "installable": True,

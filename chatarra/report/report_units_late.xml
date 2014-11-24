@@ -3,7 +3,7 @@
 <data>
 <template id="report_chatarra_document">
     <t t-call="report.html_container">
-        <t t-call="report.external_layout">
+        <!-- <t t-call="report.external_layout"> -->
             <div class="page">
                 <div class="oe_structure"/>
                 <h2>
@@ -21,7 +21,7 @@
                     </thead>
                     <tbody class="sale_tbody">
                         <tr t-foreach="docs" t-as="l">
-                            <t t-if="l.state == 'disponible'">
+                            <!-- <t t-if="l.state == 'disponible'"> -->
                                 <td>
                                     <span t-field="l.name"/>
                                 </td>
@@ -37,13 +37,13 @@
                                 <td>
                                     <span t-field="l.fecha_enviado"/>
                                 </td>
-                            </t>
+                            <!-- </t> -->
                         </tr>
                     </tbody>
                 </table>
                 <div class="oe_structure"/>
             </div>
-        </t>
+        <!-- </t> -->
     </t>
 </template>
 </data>

@@ -56,7 +56,8 @@
 					<field name='serie'/>
                     <field name='state'/>
                     <button name="action_disponible" states="borrador" string="Disponible" type="object" icon="gtk-go-forward"/>
-                    <button name="action_completo" states="asignada" string="Expediente Completo" type="object" icon="gtk-apply" class="oe_highlight"/>
+                    <button name="action_bloqueado" attrs="{'invisible':[('state','!=','recibido')]}" string="Bloqueado" type="object" icon="gtk-dialog-authentication"/>
+                    <button name="%(action_chatarra_cita_1)d" states="bloqueado" string="Programar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
 				</tree>
 			</field>
 		</record>
@@ -68,9 +69,12 @@
             <field name='arch' type='xml'>
                 <tree string='Chatarras' 
                     colors="gray:state=='reposicion';red:state=='borrador';green:state=='asignada';blue:state=='disponible';">
-                    <field name='vat'/>
+                    <field name='client_id'/>
                     <field name='name'/>
                     <field name='serie'/>
+                    <field name='secretaria_id'/>
+                    <field name='paqueteria_id'/>
+                    <field name='guia'/>
                     <field name='consulta'/>
                     <button name="action_recibir_consulta" attrs="{'invisible':['|',('consulta','=',True),('state','!=','enviado')]}" string="Recibir Consulta" type="object" class="oe_highlight" icon="gtk-apply"/>
                     <field name='tarjeta_circulacion'/>
@@ -81,22 +85,7 @@
                 </tree>
             </field>
         </record>
-        <!-- Vista de Arbol para Chatarras Recibida SCT -->
-        <record model='ir.ui.view' id='chatarra_unit_recibido_tree'>
-            <field name='name'>chatarra_unit.tree</field>
-            <field name='model'>chatarra.unit</field>
-            <field name='type'>tree</field>
-            <field name='arch' type='xml'>
-                <tree string='Chatarras'>
-                    <field name='vat'/>
-                    <field name='name'/>
-                    <field name='serie'/>
-                    <field name='state'/>
-                    <button name="action_bloqueado" attrs="{'invisible':[('state','!=','recibido')]}" string="Bloqueado" type="object" icon="gtk-dialog-authentication"/>
-                </tree>
-            </field>
-        </record>
-        <!-- Vista de Arbol para Chatarras Cita/Bloqueado -->
+        <!-- Vista de Arbol para Chatarras Cita -->
         <record model='ir.ui.view' id='chatarra_unit_cita_tree'>
             <field name='name'>chatarra_unit.tree</field>
             <field name='model'>chatarra.unit</field>
@@ -110,7 +99,6 @@
                     <field name='programacion_cita'/>
                     <field name='cita_anterior'/>
                     <field name='state'/>
-                    <button name="%(action_chatarra_cita_1)d" states="bloqueado" string="Programar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
                     <button name="action_exp_enviado" states="cita" string="Expediente Enviado" type="object" icon="gtk-revert-to-saved" class="oe_highlight"/>
                     <button  name="%(action_chatarra_cita_1)d" states="cita" string="Reprogramar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
                 </tree>
@@ -125,7 +113,6 @@
     			<form string='Lista de Unidades'>
                     <header>
                         <button name="action_disponible" states="borrador" string="Disponible" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="action_completo" states="asignada" string="Expediente Completo" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="action_recibir_consulta" attrs="{'invisible':['|',('consulta','=',True),('state','!=','enviado')]}" string="Recibir Consulta" type="object" class="oe_highlight"/>
                         <button name="action_recibir_tarjeta" attrs="{'invisible':['|',('tarjeta_circulacion','=',True),('state','!=','enviado')]}" string="Recibir TC" type="object" class="oe_highlight"/>
                         <button name="%(action_wizard_tarjeta)d" attrs="{'invisible':['|',('copia_tc','=',True),('state','!=','enviado')]}" string="Copia TC" type="action" class="oe_highlight" context="{'default_unit_id': active_id}"/>
@@ -136,8 +123,8 @@
                         <button name="action_chatarrizado" states="exp_enviado" string="Chatarrizado" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="action_certificado" states="chatarrizado" string="Certificado" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="action_baja" states="certificado" string="Baja" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="action_cancelado" states="recibido,consulta,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento" type="object" icon="gtk-close"/>
-                        <button name="%(action_chatarra_reposicion)d" states="recibido,consulta,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado" string="Desestimiento y Reposicion" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
+                        <button name="action_cancelado" states="recibido,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento" type="object" icon="gtk-close"/>
+                        <button name="%(action_chatarra_reposicion)d" states="recibido,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado" string="Desestimiento y Reposicion" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
                         <button  name="%(action_chatarra_reposicion)d" states="asignada" string="Reponer" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
                         <button name="send_mail_chatarra" states="disponible" string="Prueba" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,disponible,asignada,reposicion"/>
@@ -200,58 +187,69 @@
                                     </field>
                                 </group>
                             </page>
-                            <page string='Chatarrizacion'>
+                            <page string='Referencias' attrs="{'invisible':['|',('state','=', 'disponible'),('state','=', 'borrador')]}">
                                 <group col='4'>
-                                    <field name='chatarrera_id'/>
-                                    <field name='programacion_cita'/>
-                                    <field name='cita_anterior'/>
+                                    <field name='asignacion_id' attrs="{'invisible':[('asignacion_id','=', False)]}"/>
+                                    <field name='reposicion_id' attrs="{'invisible':[('reposicion_id','=', False)]}"/>
+                                    <field name='facturado' attrs="{'invisible':[('facturado','=', False)]}"/>
+                                    <field name='factura_id' attrs="{'invisible':[('factura_id','=', False)]}"/>
+                                    <field name='repuesta_id' attrs="{'invisible':[('repuesta_id','=', False)]}"/>
+                                    <field name='sustituye_id' attrs="{'invisible':[('sustituye_id','=', False)]}"/>
+                                    <field name='envio_id' attrs="{'invisible':[('envio_id','=', False)]}"/>
+                                    <field name='guia' attrs="{'invisible':[('guia','=', False)]}"/>
+                                    <field name='secretaria_id' attrs="{'invisible':[('secretaria_id','=', False)]}"/>
+                                    <field name='paqueteria_id' attrs="{'invisible':[('paqueteria_id','=', False)]}"/>
+                                    <field name='consulta' attrs="{'invisible':[('consulta','=', False)]}"/>
+                                    <field name='tarjeta_circulacion' attrs="{'invisible':[('tarjeta_circulacion','=', False)]}"/>
+                                    <field name='copia_tc' attrs="{'invisible':[('copia_tc','=', False)]}"/>
+                                    <field name='chatarrera_id' attrs="{'invisible':[('chatarrera_id','=', False)]}"/>
+                                    <field name='programacion_cita' attrs="{'invisible':[('programacion_cita','=', False)]}"/>
+                                    <field name='cita_anterior' attrs="{'invisible':[('cita_anterior','=', False)]}"/>
+                                    <field name='cita_anterior2' attrs="{'invisible':[('cita_anterior2','=', False)]}"/>
                                 </group>
                             </page>
                             <page string='Log'>
                                 <group col='4'>
-                                    <field name='disponible_por'/>
-                                    <field name='fecha_disponible'/>
-                                    <field name='asignada_por'/>
-                                    <field name='fecha_asignada'/>
-                                    <field name='facturado_por'/>
-                                    <field name='fecha_facturado'/>
-                                    <field name='completo_por'/>
-                                    <field name='fecha_completo'/>
-                                    <field name='enviado_por'/>
-                                    <field name='fecha_enviado'/>
-                                    <field name='recibido_por'/>
-                                    <field name='fecha_recibido'/>
-                                    <field name='bloqueado_por'/>
-                                    <field name='fecha_bloqueado'/>
-                                    <field name='cita_por'/>
-                                    <field name='fecha_cita'/>
-                                    <field name='cita_reprogramada_por'/>
-                                    <field name='fecha_cita_reprogramada'/>
-                                    <field name='exp_enviado_por'/>
-                                    <field name='fecha_exp_enviado'/>
-                                    <field name='chatarrizado_por'/>
-                                    <field name='fecha_chatarrizado'/>
-                                    <field name='certificado_por'/>
-                                    <field name='fecha_certificado'/>
-                                    <field name='baja_por'/>
-                                    <field name='fecha_baja'/>
-                                    <field name='cancelado_por'/>
-                                    <field name='fecha_cancelado'/>
-                                    <field name='desestimiento_por'/>
-                                    <field name='fecha_desestimiento'/>
-                                    <field name='reposicion_por'/>
-                                    <field name='fecha_reposicion'/>
-                                    <field name='repuesta_id'/>
-                                    <field name='sustituye_id'/>
-                                    <field name='asignacion_id'/>
-                                    <field name='reposicion_id'/>
-                                    <field name='envio_id'/>
-                                    <field name='guia'/>
-                                    <field name='facturado'/>
-                                    <field name='factura_id'/>
-                                    <field name='consulta'/>
-                                    <field name='tarjeta_circulacion'/>
-                                    <field name='copia_tc'/>
+                                    <field name='disponible_por' attrs="{'invisible':[('disponible_por','=', False)]}"/>
+                                    <field name='fecha_disponible' attrs="{'invisible':[('fecha_disponible','=', False)]}"/>
+                                    <field name='asignada_por' attrs="{'invisible':[('asignada_por','=', False)]}"/>
+                                    <field name='fecha_asignada' attrs="{'invisible':[('fecha_asignada','=', False)]}"/>
+                                    <field name='facturado_por' attrs="{'invisible':[('facturado_por','=', False)]}"/>
+                                    <field name='fecha_facturado' attrs="{'invisible':[('fecha_facturado','=', False)]}"/>
+                                    <field name='completo_por' attrs="{'invisible':[('completo_por','=', False)]}"/>
+                                    <field name='fecha_completo' attrs="{'invisible':[('fecha_completo','=', False)]}"/>
+                                    <field name='enviado_por' attrs="{'invisible':[('enviado_por','=', False)]}"/>
+                                    <field name='fecha_enviado' attrs="{'invisible':[('fecha_enviado','=', False)]}"/>
+                                    <field name='copia_tc_por' attrs="{'invisible':[('copia_tc_por','=', False)]}"/>
+                                    <field name='fecha_copia_tc' attrs="{'invisible':[('fecha_copia_tc','=', False)]}"/>
+                                    <field name='consulta_por' attrs="{'invisible':[('consulta_por','=', False)]}"/>
+                                    <field name='fecha_consulta' attrs="{'invisible':[('fecha_consulta','=', False)]}"/>
+                                    <field name='tc_por' attrs="{'invisible':[('tc_por','=', False)]}"/>
+                                    <field name='fecha_tc' attrs="{'invisible':[('fecha_tc','=', False)]}"/>
+                                    <field name='recibido_por' attrs="{'invisible':[('recibido_por','=', False)]}"/>
+                                    <field name='fecha_recibido' attrs="{'invisible':[('fecha_recibido','=', False)]}"/>
+                                    <field name='bloqueado_por' attrs="{'invisible':[('bloqueado_por','=', False)]}"/>
+                                    <field name='fecha_bloqueado' attrs="{'invisible':[('fecha_bloqueado','=', False)]}"/>
+                                    <field name='cita_por' attrs="{'invisible':[('cita_por','=', False)]}"/>
+                                    <field name='fecha_cita' attrs="{'invisible':[('fecha_cita','=', False)]}"/>
+                                    <field name='cita_reprogramada_por' attrs="{'invisible':[('cita_reprogramada_por','=', False)]}"/>
+                                    <field name='fecha_cita_reprogramada' attrs="{'invisible':[('fecha_cita_reprogramada','=', False)]}"/>
+                                    <field name='cita_reprogramada2_por' attrs="{'invisible':[('cita_reprogramada2_por','=', False)]}"/>
+                                    <field name='fecha_cita_reprogramada2' attrs="{'invisible':[('fecha_cita_reprogramada2','=', False)]}"/>
+                                    <field name='exp_enviado_por' attrs="{'invisible':[('exp_enviado_por','=', False)]}"/>
+                                    <field name='fecha_exp_enviado' attrs="{'invisible':[('fecha_exp_enviado','=', False)]}"/>
+                                    <field name='chatarrizado_por' attrs="{'invisible':[('chatarrizado_por','=', False)]}"/>
+                                    <field name='fecha_chatarrizado' attrs="{'invisible':[('fecha_chatarrizado','=', False)]}"/>
+                                    <field name='certificado_por' attrs="{'invisible':[('certificado_por','=', False)]}"/>
+                                    <field name='fecha_certificado' attrs="{'invisible':[('fecha_certificado','=', False)]}"/>
+                                    <field name='baja_por' attrs="{'invisible':[('baja_por','=', False)]}"/>
+                                    <field name='fecha_baja' attrs="{'invisible':[('fecha_baja','=', False)]}"/>
+                                    <field name='cancelado_por' attrs="{'invisible':[('cancelado_por','=', False)]}"/>
+                                    <field name='fecha_cancelado' attrs="{'invisible':[('fecha_cancelado','=', False)]}"/>
+                                    <field name='desestimiento_por' attrs="{'invisible':[('desestimiento_por','=', False)]}"/>
+                                    <field name='fecha_desestimiento' attrs="{'invisible':[('fecha_desestimiento','=', False)]}"/>
+                                    <field name='reposicion_por' attrs="{'invisible':[('reposicion_por','=', False)]}"/>
+                                    <field name='fecha_reposicion' attrs="{'invisible':[('fecha_reposicion','=', False)]}"/>
                                 </group>
                             </page>
     					</notebook>
@@ -312,7 +310,7 @@
         <record id='action_chatarra_recibido' model='ir.actions.act_window'>
             <field name='name'>Recibidas de SCT</field>
             <field name='res_model'>chatarra.unit</field>
-            <field name="view_id" ref="chatarra_unit_recibido_tree"/>
+            <field name="view_id" ref="chatarra_unit_tree"/>
             <field name="domain">[('state','=','recibido')]</field>
             <field name='view_type'>form</field>
             <field name='view_mode'>tree,form</field>
@@ -321,7 +319,7 @@
         <record id='action_chatarra_bloqueadas' model='ir.actions.act_window'>
             <field name='name'>Bloqueadas</field>
             <field name='res_model'>chatarra.unit</field>
-            <field name="view_id" ref="chatarra_unit_cita_tree"/>
+            <field name="view_id" ref="chatarra_unit_tree"/>
             <field name="domain">[('state','=','bloqueado')]</field>
             <field name='view_type'>form</field>
             <field name='view_mode'>tree,form</field>

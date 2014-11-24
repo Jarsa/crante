@@ -34,10 +34,18 @@ class chatarra_envio(osv.osv):
             unit_ids = False
             unit_ids = unit_obj.search(cr, uid, [('envio_id', '=', envio.id),('state', '=', 'seleccion')])
             if unit_ids:
-                unit_obj.write(cr, uid, unit_ids, {'envio_id': False, 'state':'completo', 'guia': False})
+                unit_obj.write(cr, uid, unit_ids, {'envio_id': False,
+                                                   'state':'completo',
+                                                   'guia': False,
+                                                   'paqueteria_id': False,
+                                                   'secretaria_id': False,})
             unit_ids = []
             for unidad in envio.unit_ids:
-            	unit_obj.write(cr, uid, [unidad.id], {'envio_id':envio.id,'state':'seleccion','guia':envio.guia})
+            	unit_obj.write(cr, uid, [unidad.id], {'envio_id':envio.id,
+                                                      'state':'seleccion',
+                                                      'guia':envio.guia,
+                                                      'paqueteria_id':envio.paqueteria_id.id,
+                                                      'secretaria_id':envio.secretaria_id.id,})
 
     def enviar_unidad(self, cr, uid, ids, vals, context=None):
     	unit_obj = self.pool.get('chatarra.unit')
@@ -50,6 +58,8 @@ class chatarra_envio(osv.osv):
     											  'state':'enviado',
     											  'guia':envio.guia,
     											  'enviado_por':uid,
+                                                  'paqueteria_id':envio.paqueteria_id.id,
+                                                  'secretaria_id':envio.secretaria_id.id,
     											  'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
     def create(self, cr, uid, vals, context={}):

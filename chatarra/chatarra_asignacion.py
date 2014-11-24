@@ -16,7 +16,13 @@ class chatarra_asignacion(osv.osv):
         if contacto_id:
             agencia = self.pool.get('res.partner').browse(cr, uid, contacto_id, context=context).parent_id.id
         return {'value': {'agencia_id': agencia}}
-    
+
+    def _get_total_quantity(self, cr, uid, ids, unit_ids, args, context = None):
+        res = {}
+        for asignacion in self.browse(cr, uid, ids, context = context):
+            res[asignacion.id] = sum([1 for x in asignacion.unit_ids])
+        return res
+
     _description = 'Asignacion'
     _columns = {
         'name'              : fields.char('No. de Asignacion', size=64, readonly='True'),
@@ -31,6 +37,7 @@ class chatarra_asignacion(osv.osv):
         'agencia_id'        : fields.many2one('res.partner','Agencia'),
         'unit_ids'		    : fields.many2many('chatarra.unit', 'chatarra_asignacion_unidad_rel', 'asignacion_id', 'unit_id', 'Unidades', required=True),
         'confirmado_por'    : fields.many2one('res.users','Confirmado por:', readonly=True),
+        'cantidad'          : fields.function(_get_total_quantity, type='integer', method = True, string = 'No. de Unidades', readonly = True),
         'fecha_confirmado'  : fields.datetime('Fecha Confirmado:', readonly=True),
     }
 
