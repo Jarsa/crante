@@ -122,3 +122,22 @@ class chatarra_cita(osv.osv):
                                                     'fecha_cita_reprogramada2':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
 chatarra_cita()
+
+class chatarra_certificado_wizard(osv.osv):
+    _name = 'chatarra.certificado'
+    _columns = {
+        'unit_id'       : fields.many2one('chatarra.unit','Unidad', readonly=True),
+        'certificado'   : fields.char('No. de Certificado', required=True),
+        'fecha'         : fields.date('Fecha', readonly=True),
+
+    }
+
+    def recibir_certificado(self,cr,uid,ids,context=None):
+        unidad_obj = self.pool.get('chatarra.unit')
+        wiz = self.browse(cr,uid,ids)
+        unit = wiz.unit_id
+        unidad_obj.write(cr, uid, [unit.id], {'certificado': wiz.certificado,
+                                              'certificado_fecha': wiz.fecha,
+                                              'certificado_por': uid,
+                                              'fecha_certificado': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+chatarra_certificado_wizard()

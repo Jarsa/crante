@@ -148,6 +148,8 @@ class chatarra_unit(osv.osv):
                 'programacion_cita'        : fields.datetime('Fecha de Cita', readonly=True),
                 'cita_anterior'            : fields.datetime('Fecha de Cita Anterior', readonly=True),
                 'cita_anterior2'           : fields.datetime('Fecha de Cita Anterior 2', readonly=True),
+                'certificado'              : fields.char('Certificado', size=10, readonly=True),
+                'certificado_fecha'        : fields.date('Fecha del Certificado', readonly=True),
         }
 
     _defaults = {

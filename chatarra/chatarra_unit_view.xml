@@ -25,6 +25,14 @@
             <field name='target'>new</field>
             <field name='view_mode'>form</field>
         </record>
+        <!-- Accion Form Certificado (Boton en chatarra.unit) -->
+        <record id='action_chatarra_certificado' model='ir.actions.act_window'>
+            <field name='name'>Certificado</field>
+            <field name='res_model'>chatarra.certificado</field>
+            <field name='view_type'>form</field>
+            <field name='target'>new</field>
+            <field name='view_mode'>form</field>
+        </record>
         <!-- Search View chatarra.unit -->
         <record id="chatarra_unit_search" model="ir.ui.view">
             <field name="name">chatarra.unit.search</field>
@@ -121,7 +129,7 @@
                         <button name="action_exp_enviado" states="cita" string="Expediente Enviado" type="object" icon="gtk-revert-to-saved" class="oe_highlight"/>
                         <button  name="%(action_chatarra_cita_1)d" states="cita" string="Reprogramar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
                         <button name="action_chatarrizado" states="exp_enviado" string="Chatarrizado" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="action_certificado" states="chatarrizado" string="Certificado" type="object" icon="gtk-apply" class="oe_highlight"/>
+                        <button name="%(action_chatarra_certificado)d" states="chatarrizado" string="Certificado" type="action" icon="gtk-apply" class="oe_highlight" context="{'default_unit_id': active_id, 'default_fecha': programacion_cita}"/>
                         <button name="action_baja" states="certificado" string="Baja" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="action_cancelado" states="recibido,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento" type="object" icon="gtk-close"/>
                         <button name="%(action_chatarra_reposicion)d" states="recibido,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado" string="Desestimiento y Reposicion" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
