@@ -36,7 +36,6 @@
         		<form string='Asignaciones'>
         			<header>
                         <button name="action_confirmado" states="borrador" string="Confimar" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="create_invoices" states="confirmado" string="Crear Facturas" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,confirmado"/>
         			</header>
         			<sheet>

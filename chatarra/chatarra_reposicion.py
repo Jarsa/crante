@@ -55,7 +55,7 @@ class chatarra_unit_reposicion(osv.osv):
                                      'origin':anterior.asignacion_id.name + '/' + reposicion.name,
                                      'fiscal_position':anterior.asignacion_id.client_id.property_account_position.id,
                                      'invoice_line':[(0,0,{'product_id':product.id,
-                                                           'name':product.description_sale,
+                                                           'name':'Marca: ' + nueva.marca.name + '\nSerie: ' + nueva.serie + '\nPlacas: ' + nueva.name,
                                                            'account_id':prod_account,
                                                            'quantity':'1',
                                                            'price_unit':product.lst_price,

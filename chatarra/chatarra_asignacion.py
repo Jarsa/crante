@@ -90,9 +90,6 @@ class chatarra_asignacion(osv.osv):
         self.write(cr, uid, ids, {  'state':'confirmado',
                                     'confirmado_por':uid,
                                     'fecha_confirmado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return True
-
-    def create_invoices(self, cr, uid, ids, context=None):
         invoice_obj = self.pool.get('account.invoice')
         fpos_obj = self.pool.get('account.fiscal.position')
         asignacion = self.browse(cr, uid, ids)
@@ -109,7 +106,6 @@ class chatarra_asignacion(osv.osv):
                                        'for this product: "%s" (id:%d)') % \
                                        (product.name, product.id,))
         prod_account = fpos_obj.map_account(cr, uid, False, prod_account)
-        #_logger.error("producto : %r", product.description_sale)
         if not prod_id:
             raise osv.except_osv(
                     ('Falta Configuracion !'),
@@ -124,7 +120,7 @@ class chatarra_asignacion(osv.osv):
                                          'origin':asignacion.name,
                                          'fiscal_position':asignacion.client_id.property_account_position.id,
                                          'invoice_line':[(0,0,{'product_id':product.id,
-                                                               'name':product.description_sale,
+                                                               'name':'Marca: ' + unidad.marca.name + '\nSerie: ' + unidad.serie + '\nPlacas: ' + unidad.name,
                                                                'account_id':prod_account,
                                                                'quantity':'1',
                                                                'price_unit':product.lst_price,

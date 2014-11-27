@@ -31,7 +31,7 @@ class chatarra_unit(osv.osv):
         return {'value': {'vat': vat}}
     
     _columns = {  
-                'name'                     : fields.char('Placa',size=40),
+                'name'                     : fields.char('Placa', size=40, required=True),
                 'state'                    : fields.selection([
                                                ('borrador','Borrador'),
                                                ('disponible','Disponible'),
@@ -54,7 +54,7 @@ class chatarra_unit(osv.osv):
                                                ('desestimiento','Desestimiento'),
                                                ], 'Estado', readonly=True),
                 'client_id'                : fields.many2one('res.partner', 'Cliente', readonly=True),
-                'supplier_id'              : fields.many2one('res.partner', 'Proveedor'),
+                'supplier_id'              : fields.many2one('res.partner', 'Proveedor', required=True),
                 'serie'                    : fields.char('Número de serie', size=40),
                 'marca'                    : fields.many2one('chatarra.marca', 'Marca'),
                 'modelo'                   : fields.char('Modelo', size=40),
@@ -190,7 +190,7 @@ class chatarra_unit(osv.osv):
                                      'journal_id':journal.id,
                                      'fiscal_position':unidad.supplier_id.property_account_position.id,
                                      'invoice_line':[(0,0,{'product_id':product.id,
-                                                           'name':product.description_sale,
+                                                           'name':'Marca: ' + unidad.marca.name + '\nSerie: ' + unidad.serie + '\nPlacas: ' + unidad.name,
                                                            'account_id':prod_account,
                                                            'quantity':'1',
                                                            'price_unit':product.lst_price,
