@@ -51,7 +51,7 @@ class chatarra_asignacion(osv.osv):
             unit_ids = False
             unit_ids = unit_obj.search(cr, uid, [('asignacion_id', '=', asignacion.id),('state', '=', 'asignada')])
             if unit_ids:
-                unit_obj.write(cr, uid, unit_ids, {'asignacion_id': False, 'state':'disponible', 'asignada_por': False,'fecha_asignada': False})
+                unit_obj.write(cr, uid, unit_ids, {'asignacion_id': False, 'client_id': False, 'state':'disponible', 'asignada_por': False,'fecha_asignada': False})
             unit_ids = []
             for unidad in asignacion.unit_ids:
                 if unidad.state in ('borrador'):

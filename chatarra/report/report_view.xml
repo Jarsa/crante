@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-         <!-- Reporte -->
-         <record id='reporte_unidades_retrasadas' model='ir.actions.report.xml'>
-        	<field name='name'>Reporte de Unidades Retrasadas</field>
-        	<field name='model'>chatarra.unit</field>
-        	<field name='report_type'>qweb-pdf</field>
-        	<field name='report_name'>chatarra.report_chatarra_document</field>
-        </record>
+         <!-- Reporte Lista de Chatarras -->
+        <report 
+            id="reporte_unidades_retrasadas"
+            string="Lista de Unidades"
+            model="chatarra.unit" 
+            report_type="qweb-pdf"
+            file="chatarra.report_chatarra_document" 
+            name="chatarra.report_chatarra_document" 
+        />
         <!-- Email Template -->
         <record id="email_template_reporte_unidades_retrasadas" model="email.template">
             <field name="name">chatarra.unit.report</field>
