@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
 import logging
+from openerp.tools.translate import _
 _logger = logging.getLogger(__name__)
 
 class chatarra_asignacion(osv.osv):
@@ -65,14 +66,6 @@ class chatarra_asignacion(osv.osv):
                                                           'asignada_por':uid,
                                                           'fecha_asignada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
-    def enviar_unidad(self,cr, uid, ids, vals, context=None):
-        unit_obj = self.pool.get('chatarra.unit')
-        for asignacion in self.browse(cr, uid, ids):
-            unit_ids = []
-            for unidad in asignacion.unit_ids:
-                if asignacion.state in 'enviado_sct':
-                    unit_obj.write(cr, uid, [unidad.id], {'state':'enviado','enviado_por':uid,'fecha_enviado':asignacion.fecha_enviado})
-
     def write(self, cr, uid, ids, vals, context=None):
         values = vals
         super(chatarra_asignacion, self).write(cr, uid, ids, values, context=context)
@@ -101,11 +94,21 @@ class chatarra_asignacion(osv.osv):
 
     def create_invoices(self, cr, uid, ids, context=None):
         invoice_obj = self.pool.get('account.invoice')
+        fpos_obj = self.pool.get('account.fiscal.position')
         asignacion = self.browse(cr, uid, ids)
         prod_obj = self.pool.get('product.product')
         unidad_obj = self.pool.get('chatarra.unit')
         prod_id = prod_obj.search(cr, uid, [('chatarra', '=', 1),('active','=', 1)], limit=1)
         product = prod_obj.browse(cr, uid, prod_id, context=None)
+        prod_account = product.product_tmpl_id.property_account_expense.id
+        if not prod_account:
+            prod_account = product.categ_id.property_account_expense_categ.id
+            if not prod_account:
+                raise osv.except_osv(_('Error !'),
+                                     _('There is no expense account defined ' \
+                                       'for this product: "%s" (id:%d)') % \
+                                       (product.name, product.id,))
+        prod_account = fpos_obj.map_account(cr, uid, False, prod_account)
         #_logger.error("producto : %r", product.description_sale)
         if not prod_id:
             raise osv.except_osv(
@@ -122,13 +125,13 @@ class chatarra_asignacion(osv.osv):
                                          'fiscal_position':asignacion.client_id.property_account_position.id,
                                          'invoice_line':[(0,0,{'product_id':product.id,
                                                                'name':product.description_sale,
-                                                               'account_id':product.property_account_income.id,
+                                                               'account_id':prod_account,
                                                                'quantity':'1',
                                                                'price_unit':product.lst_price,
-                                                               'invoice_line_tax_id':[(6,0,[product.taxes_id.id])],
+                                                               'invoice_line_tax_id':[(6,0,[x.id for x in product.taxes_id])],
                                                               })]
                                         }, context=None)
-            invoice_id = invoice_obj.search(cr, uid, [('unit_id','=',unidad.id)])
+            invoice_id = invoice_obj.search(cr, uid, [('unit_id','=',unidad.id),('type','=','out_invoice')])
             invoice = invoice_obj.browse(cr, uid, invoice_id)
             unidad_obj.write(cr, uid, unidad.id, {'facturado_por':uid,
                                                   'fecha_facturado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),

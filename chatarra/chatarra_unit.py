@@ -54,6 +54,7 @@ class chatarra_unit(osv.osv):
                                                ('desestimiento','Desestimiento'),
                                                ], 'Estado', readonly=True),
                 'client_id'                : fields.many2one('res.partner', 'Cliente', readonly=True),
+                'supplier_id'              : fields.many2one('res.partner', 'Proveedor'),
                 'serie'                    : fields.char('Número de serie', size=40),
                 'marca'                    : fields.many2one('chatarra.marca', 'Marca'),
                 'modelo'                   : fields.char('Modelo', size=40),
@@ -161,7 +162,41 @@ class chatarra_unit(osv.osv):
     _constraints = [(_check_unique_insesitive, 'La Placa ya existe', ['name'])]
 
     def action_disponible(self, cr, uid, ids, context=None):
+        invoice_obj = self.pool.get('account.invoice')
+        fpos_obj = self.pool.get('account.fiscal.position')
+        prod_obj = self.pool.get('product.product')
+        prod_id = prod_obj.search(cr, uid, [('chatarra', '=', 1),('active','=', 1)], limit=1)
+        product = prod_obj.browse(cr, uid, prod_id, context=None)
+        prod_account = product.product_tmpl_id.property_account_expense.id
+        if not prod_account:
+          prod_account = product.categ_id.property_account_expense_categ.id
+          if not prod_account:
+            raise osv.except_osv(_('Error !'),
+                                   _('There is no expense account defined ' \
+                                     'for this product: "%s" (id:%d)') % \
+                                     (product.name, product.id,))
+        prod_account = fpos_obj.map_account(cr, uid, False, prod_account)
+        journal_obj = self.pool.get('account.journal')
+        journal_id = journal_obj.search(cr, uid, [('type', '=', 'purchase')], limit=1)
+        journal = journal_obj.browse(cr, uid, journal_id, context=None)
+        _logger.error("###################### journal_id : %r", journal_id)
+        _logger.error("###################### journal : %r", journal)
         unidad = self.browse(cr, uid, ids)
+        invoice_obj.create(cr, uid, {'partner_id':unidad.supplier_id.id,
+                                     'account_id':unidad.supplier_id.property_account_payable.id,
+                                     'origin':unidad.name,
+                                     'unit_id':unidad.id,
+                                     'type':'in_invoice',
+                                     'journal_id':journal.id,
+                                     'fiscal_position':unidad.supplier_id.property_account_position.id,
+                                     'invoice_line':[(0,0,{'product_id':product.id,
+                                                           'name':product.description_sale,
+                                                           'account_id':prod_account,
+                                                           'quantity':'1',
+                                                           'price_unit':product.lst_price,
+                                                           'invoice_line_tax_id':[(6,0,[x.id for x in product.taxes_id])],
+                                                          })]
+                                    }, context=None)
         self.write(cr, uid, ids, {  'state':'disponible',
                                     'disponible_por':uid,
                                     'fecha_disponible':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),

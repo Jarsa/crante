@@ -25,33 +25,44 @@ class chatarra_unit_reposicion(osv.osv):
     def action_reposicion(self, cr, uid, ids, vals, context=None):
         unidad_obj = self.pool.get('chatarra.unit')
         invoice_obj = self.pool.get('account.invoice')
+        fpos_obj = self.pool.get('account.fiscal.position')
         asignacion_obj = self.pool.get('chatarra.asignacion')
         prod_obj = self.pool.get('product.product')
         prod_id = prod_obj.search(cr, uid, [('chatarra', '=', 1),('active','=', 1)], limit=1)
         product = prod_obj.browse(cr, uid, prod_id, context=None)
+        prod_account = product.product_tmpl_id.property_account_expense.id
+        if not prod_account:
+          prod_account = product.categ_id.property_account_expense_categ.id
+          if not prod_account:
+            raise osv.except_osv(_('Error !'),
+                                 _('There is no expense account defined ' \
+                                 'for this product: "%s" (id:%d)') % \
+                                 (product.name, product.id,))
+                    
+        prod_account = fpos_obj.map_account(cr, uid, False, prod_account)
         reposicion = self.browse(cr, uid, ids)
         nueva = reposicion.unidad_nueva_id
         anterior = reposicion.unidad_anterior_id
         invoice_anterior_id = invoice_obj.search(cr, uid, [('unit_id','=',anterior.id)])
         invoice_anterior = invoice_obj.browse(cr, uid, invoice_anterior_id, context=None)
-        #_logger.error("##################### asignacion : %r", anterior.asignacion_id.id)
-        invoice_obj.create(cr, uid, {'partner_id':anterior.asignacion_id.client_id.id,
+        #_logger.error("##################### invoices : %r", invoice_anterior)
+        invoice_obj.create(cr, uid, {'partner_id':anterior.client_id.id,
                                      'contacto_id':anterior.asignacion_id.contacto_id.id,
                                      'agencia_id':anterior.asignacion_id.agencia_id.id,
                                      'asignacion_id':anterior.asignacion_id.id,
                                      'unit_id':nueva.id,
-                                     'account_id':anterior.asignacion_id.client_id.property_account_receivable.id,
-                                     'origin':(anterior.asignacion_id.name, reposicion.name),
+                                     'account_id':anterior.client_id.property_account_receivable.id,
+                                     'origin':anterior.asignacion_id.name + '/' + reposicion.name,
                                      'fiscal_position':anterior.asignacion_id.client_id.property_account_position.id,
                                      'invoice_line':[(0,0,{'product_id':product.id,
                                                            'name':product.description_sale,
-                                                           'account_id':product.property_account_income.id,
+                                                           'account_id':prod_account,
                                                            'quantity':'1',
                                                            'price_unit':product.lst_price,
-                                                           'invoice_line_tax_id':[(6,0,[product.taxes_id.id])],
+                                                           'invoice_line_tax_id':[(6,0,[x.id for x in product.taxes_id])],
                                                           })]
                                     }, context=None)
-        invoice_nueva_id = invoice_obj.search(cr, uid, [('unit_id','=',nueva.id)])
+        invoice_nueva_id = invoice_obj.search(cr, uid, [('unit_id','=',nueva.id),('type','=','out_invoice')])
         invoice_nueva = invoice_obj.browse(cr, uid, invoice_nueva_id, context=None)
         unidad_obj.write(cr, uid, [nueva.id], {'sustituye_id':anterior.id,
                                                'reposicion_id':reposicion.id,
@@ -77,7 +88,8 @@ class chatarra_unit_reposicion(osv.osv):
                                                   'fact_cancelada_por':uid,
                                                   'fecha_fact_cancelada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                                                   'fecha_reposicion':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        invoice_obj.write(cr, uid, [invoice_anterior.id], {'state':'cancel'})
+        for invoice in invoice_anterior:
+          invoice.signal_workflow('invoice_cancel')
         asignacion_obj.write(cr, uid, anterior.asignacion_id.id, {'unit_ids': [(4, nueva.id),(3, anterior.id)]})
         return True
 

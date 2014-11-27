@@ -146,6 +146,7 @@
     						<field name='propietario_id' on_change='onchange_vat(propietario_id)'/>
     						<field name='vat'/>
                             <field name='client_id'/>
+                            <field name='supplier_id'/>
     					</group>
     					<notebook>
     						<page string='Datos de la Unidad'>
