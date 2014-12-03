@@ -5,6 +5,6 @@ import chatarra_reposicion
 import res_partner
 import chatarra_asignacion
 import chatarra_doc
-import product_template
+import product_product
 import account_invoice
 import chatarra_envio

@@ -35,6 +35,7 @@ class chatarra_unit(osv.osv):
                 'state'                    : fields.selection([
                                                ('borrador','Borrador'),
                                                ('disponible','Disponible'),
+                                               ('por_asignar','Seleccionado para Asignacion'),
                                                ('asignada','Asignada'),
                                                ('elaboracion','Elaboracion de Expediente'),
                                                ('completo','Expediente Completo'),
@@ -165,7 +166,7 @@ class chatarra_unit(osv.osv):
         invoice_obj = self.pool.get('account.invoice')
         fpos_obj = self.pool.get('account.fiscal.position')
         prod_obj = self.pool.get('product.product')
-        prod_id = prod_obj.search(cr, uid, [('chatarra', '=', 1),('active','=', 1)], limit=1)
+        prod_id = prod_obj.search(cr, uid, [('categoria', '=', 'chatarra'),('active','=', 1)], limit=1)
         product = prod_obj.browse(cr, uid, prod_id, context=None)
         prod_account = product.product_tmpl_id.property_account_expense.id
         if not prod_account:
@@ -194,7 +195,7 @@ class chatarra_unit(osv.osv):
                                                            'account_id':prod_account,
                                                            'quantity':'1',
                                                            'price_unit':product.lst_price,
-                                                           'invoice_line_tax_id':[(6,0,[x.id for x in product.taxes_id])],
+                                                           'invoice_line_tax_id':[(6,0,[x.id for x in product.supplier_taxes_id])],
                                                           })]
                                     }, context=None)
         self.write(cr, uid, ids, {  'state':'disponible',
@@ -212,17 +213,6 @@ class chatarra_unit(osv.osv):
                                                      (0, 0, {'name':'foto_motor', 'unit_id':unidad.id})
                                                      ]})
         return True
-
-    def action_completo(self, cr, uid, ids, vals,context=None):
-        unidad = self.browse(cr, uid, ids)
-        for documento in unidad.document_ids:
-            if documento.state in ('pendiente'):
-                raise osv.except_osv(('Advertencia !'),
-                       ('El documento %s esta en estado Pendiente...') % (documento.name)
-                       )
-        self.write(cr, uid, ids, {'state':'completo',
-                                      'completo_por':uid,
-                                      'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
     def action_recibir_consulta(self, cr, uid, ids, vals,context=None):
         unidad = self.browse(cr, uid, ids)

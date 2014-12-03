@@ -26,7 +26,7 @@
             <field name='type'>form</field>
             <field name='arch' type='xml'>
                 <field name='journal_id' position='after'>
-                    <field name='unit_id'/>
+                    <field name='unit_id' attrs="{'invisible':[('unit_id','=', False)]}"/>
                 </field>
             </field>
         </record>

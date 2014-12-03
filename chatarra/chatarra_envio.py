@@ -48,8 +48,66 @@ class chatarra_envio(osv.osv):
                                                       'secretaria_id':envio.secretaria_id.id,})
 
     def enviar_unidad(self, cr, uid, ids, vals, context=None):
-    	unit_obj = self.pool.get('chatarra.unit')
-    	envio = self.browse(cr, uid, ids)
+      envio = self.browse(cr, uid, ids)
+      unit_obj = self.pool.get('chatarra.unit')
+      invoice_obj = self.pool.get('account.invoice')
+      fpos_obj = self.pool.get('account.fiscal.position')
+      prod_obj = self.pool.get('product.product')
+      prod_id = prod_obj.search(cr, uid, [('categoria', '=', 'envio'),('active','=', 1)], limit=1)
+      prod2_id = prod_obj.search(cr, uid, [('categoria', '=', 'secretaria'),('active','=', 1)], limit=1)
+      product = prod_obj.browse(cr, uid, prod_id, context=None)
+      product2 = prod_obj.browse(cr, uid, prod2_id, context=None)
+      prod_account = product.product_tmpl_id.property_account_expense.id
+      if not prod_account:
+        prod_account = product.categ_id.property_account_expense_categ.id
+        if not prod_account:
+          raise osv.except_osv(_('Error !'),
+                               _('There is no expense account defined ' \
+                                 'for this product: "%s" (id:%d)') % \
+                                (product.name, product.id,))
+      prod_account = fpos_obj.map_account(cr, uid, False, prod_account)
+      prod_account2 = product2.product_tmpl_id.property_account_expense.id
+      if not prod_account2:
+        prod_account2 = product2.categ_id.property_account_expense_categ.id
+        if not prod_account2:
+          raise osv.except_osv(_('Error !'),
+                                 _('There is no expense account defined ' \
+                                   'for this product: "%s" (id:%d)') % \
+                                   (product2.name, produc2t.id,))
+      prod_account = fpos_obj.map_account(cr, uid, False, prod_account)
+      journal_obj = self.pool.get('account.journal')
+      journal_id = journal_obj.search(cr, uid, [('type', '=', 'purchase')], limit=1)
+      journal = journal_obj.browse(cr, uid, journal_id, context=None)
+      invoice_obj.create(cr, uid, {'partner_id':envio.paqueteria_id.id,
+                                   'account_id':envio.paqueteria_id.property_account_payable.id,
+                                   'origin':envio.name,
+                                   'type':'in_invoice',
+                                   'journal_id':journal.id,
+                                   'fiscal_position':envio.paqueteria_id.property_account_position.id,
+                                   'invoice_line':[(0,0,{'product_id':product.id,
+                                                         'name':'Envio: ' + envio.name + '\nNo. de Guia: ' + envio.guia + '\nPaqueteria: ' + envio.paqueteria_id.name + '\nSecretaria: ' + envio.secretaria_id.name,
+                                                         'account_id':prod_account,
+                                                         'quantity':'1',
+                                                         'price_unit':product.lst_price,
+                                                         'invoice_line_tax_id':[(6,0,[x.id for x in product.supplier_taxes_id])],
+                                                        })]
+                                  }, context=None)
+      for unidad in envio.unit_ids:
+        invoice_obj.create(cr, uid, {'partner_id':envio.secretaria_id.id,
+                                   'account_id':envio.secretaria_id.property_account_payable.id,
+                                   'origin':envio.name + '/' + envio.secretaria_id.name + '/' + unidad._name,
+                                   'type':'in_invoice',
+                                   'journal_id':journal.id,
+                                   'fiscal_position':envio.secretaria_id.property_account_position.id,
+                                   'unit_id':unidad.id,
+                                   'invoice_line':[(0,0,{'product_id':product2.id,
+                                                         'name':'Envio: ' + envio.name + '\nNo. de Guia: ' + envio.guia + '\nPaqueteria: ' + envio.paqueteria_id.name + '\nSecretaria: ' + envio.secretaria_id.name,
+                                                         'account_id':prod_account2,
+                                                         'quantity':'1',
+                                                         'price_unit':product2.lst_price,
+                                                         'invoice_line_tax_id':[(6,0,[x.id for x in product2.supplier_taxes_id])],
+                                                        })]
+                                  }, context=None)
     	self.write(cr, uid, ids, {'state':'enviado',
     							  'enviado_por':uid,
     							  'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
@@ -61,6 +119,7 @@ class chatarra_envio(osv.osv):
                                                   'paqueteria_id':envio.paqueteria_id.id,
                                                   'secretaria_id':envio.secretaria_id.id,
     											  'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+      return True
 
     def create(self, cr, uid, vals, context={}):
         if (not 'name' in vals) or (vals['name'] == False):

@@ -50,7 +50,7 @@ class chatarra_asignacion(osv.osv):
         unit_obj = self.pool.get('chatarra.unit')
         for asignacion in self.browse(cr, uid, ids):
             unit_ids = False
-            unit_ids = unit_obj.search(cr, uid, [('asignacion_id', '=', asignacion.id),('state', '=', 'asignada')])
+            unit_ids = unit_obj.search(cr, uid, [('asignacion_id', '=', asignacion.id),('state', '=', 'por_asignar')])
             if unit_ids:
                 unit_obj.write(cr, uid, unit_ids, {'asignacion_id': False, 'client_id': False, 'state':'disponible', 'asignada_por': False,'fecha_asignada': False})
             unit_ids = []
@@ -61,7 +61,7 @@ class chatarra_asignacion(osv.osv):
                         )
                 if unidad.state in ('disponible'):
                     unit_obj.write(cr, uid, [unidad.id], {'asignacion_id':asignacion.id,
-                                                          'state':'asignada',
+                                                          'state':'por_asignar',
                                                           'client_id':asignacion.client_id.id,
                                                           'asignada_por':uid,
                                                           'fecha_asignada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
@@ -73,8 +73,6 @@ class chatarra_asignacion(osv.osv):
             for unidad in asignacion.unit_ids:
                 if unidad.state in 'reposicion':
                     self.write(cr, uid, ids, {'unit_ids': [(3, unidad.id)]})
-            if asignacion.state in 'enviado_sct':
-                self.enviar_unidad(cr, uid, ids, vals)
             if asignacion.state in ('confirmado','borrador'):
                 self.asignar_unidad(cr, uid, ids, vals)
         return True
@@ -95,7 +93,7 @@ class chatarra_asignacion(osv.osv):
         asignacion = self.browse(cr, uid, ids)
         prod_obj = self.pool.get('product.product')
         unidad_obj = self.pool.get('chatarra.unit')
-        prod_id = prod_obj.search(cr, uid, [('chatarra', '=', 1),('active','=', 1)], limit=1)
+        prod_id = prod_obj.search(cr, uid, [('categoria', '=', 'chatarra'),('active','=', 1)], limit=1)
         product = prod_obj.browse(cr, uid, prod_id, context=None)
         prod_account = product.product_tmpl_id.property_account_expense.id
         if not prod_account:
@@ -133,6 +131,7 @@ class chatarra_asignacion(osv.osv):
                                                   'fecha_facturado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                                                   'factura_id':invoice.id,
                                                   'facturado':True,
+                                                  'state':'asignada'
                                                  })
         return True
 

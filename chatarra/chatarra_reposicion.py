@@ -28,7 +28,7 @@ class chatarra_unit_reposicion(osv.osv):
         fpos_obj = self.pool.get('account.fiscal.position')
         asignacion_obj = self.pool.get('chatarra.asignacion')
         prod_obj = self.pool.get('product.product')
-        prod_id = prod_obj.search(cr, uid, [('chatarra', '=', 1),('active','=', 1)], limit=1)
+        prod_id = prod_obj.search(cr, uid, [('categoria', '=', 'chatarra'),('active','=', 1)], limit=1)
         product = prod_obj.browse(cr, uid, prod_id, context=None)
         prod_account = product.product_tmpl_id.property_account_expense.id
         if not prod_account:
@@ -67,6 +67,7 @@ class chatarra_unit_reposicion(osv.osv):
         unidad_obj.write(cr, uid, [nueva.id], {'sustituye_id':anterior.id,
                                                'reposicion_id':reposicion.id,
                                                'state':'asignada',
+                                               'client_id':anterior.client_id.id,
                                                'asignacion_id':anterior.asignacion_id.id,
                                                'facturado':True,
                                                'facturado_por':uid,

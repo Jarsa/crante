@@ -36,18 +36,6 @@ class chatarra_documentos(osv.osv):
         'state': 'pendiente'
     }
 
-    #def action_completo_unidad(self, cr, uid, ids, vals,context=None):
-    #    unidad = self.browse(cr, uid, ids)
-    #    for documento in unidad.document_ids:
-    #        if documento.state in ('pendiente'):
-    #            return False
-    #            #raise osv.except_osv(('Advertencia !'),
-    #            #       ('El documento %s esta en estado Pendiente...') % (documento.name)
-    #            #       )
-    #    self.write(cr, uid, ids, {'state':'completo',
-    #                                  'completo_por':uid,
-    #                                  'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-
     def write(self, cr, uid, ids, vals, context=None):
         values = vals
         documento = self.browse(cr, uid, ids)
@@ -57,15 +45,10 @@ class chatarra_documentos(osv.osv):
         for document in unidad.document_ids:
             if document.state in ('pendiente'):
                 return False
-                #raise osv.except_osv(('Advertencia !'),
-                #       ('El documento %s esta en estado Pendiente...') % (documento.name)
-                #       )
         unidad_obj.write(cr, uid, [unidad.id], {'state':'completo',
                                                 'completo_por':uid,
                                                 'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        #if unidad.state in 'asignada':
-        #    self.action_completo_unidad(cr, uid, ids, vals)
-        return True
+        return { 'type' :  'ir.actions.act_close_wizard_and_reload_view' }
 
     def action_completo(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {  'state':'completo',

@@ -86,6 +86,10 @@ class chatarra_tarjeta_wizard(osv.osv):
             unidad_obj.write(cr, uid, [unit.id], {'state':'recibido',
                                   'recibido_por': uid,
                                   'fecha_recibido':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return {
+                'type': 'ir.actions.client',
+                'tag': 'reload',
+                }
 
 chatarra_tarjeta_wizard()
 
@@ -120,6 +124,10 @@ class chatarra_cita(osv.osv):
                                                     'programacion_cita': cita.fecha,
                                                     'chatarrera_id': cita.chatarrera_id.id,
                                                     'fecha_cita_reprogramada2':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return {
+                'type': 'ir.actions.client',
+                'tag': 'reload',
+                }
 
 chatarra_cita()
 
@@ -140,4 +148,9 @@ class chatarra_certificado_wizard(osv.osv):
                                               'certificado_fecha': wiz.fecha,
                                               'certificado_por': uid,
                                               'fecha_certificado': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        return {
+                'type': 'ir.actions.client',
+                'tag': 'reload',
+                }
+
 chatarra_certificado_wizard()
