@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class chatarra_marca(osv.osv):
     _name = 'chatarra.marca'
     _columns = {
-                'name': fields.char('Marca',size=40),
+                'name': fields.char('Marca', size=40, required=True),
                 'active': fields.boolean('Activo'),
         }
     _defaults = {
@@ -23,7 +23,7 @@ chatarra_marca()
 class chatarra_tipo(osv.osv):
     _name = 'chatarra.tipo'
     _columns = {
-                'name': fields.char('Tipo',size=40),
+                'name': fields.char('Tipo', size=40, required=True),
                 'active': fields.boolean('Activo'),
         }
     _defaults = {
