@@ -95,7 +95,7 @@ class chatarra_envio(osv.osv):
       for unidad in envio.unit_ids:
         invoice_obj.create(cr, uid, {'partner_id':envio.secretaria_id.id,
                                    'account_id':envio.secretaria_id.property_account_payable.id,
-                                   'origin':envio.name + '/' + envio.secretaria_id.name + '/' + unidad._name,
+                                   'origin':envio.name + '/' + envio.secretaria_id.name + '/' + unidad.name,
                                    'type':'in_invoice',
                                    'journal_id':journal.id,
                                    'fiscal_position':envio.secretaria_id.property_account_position.id,
