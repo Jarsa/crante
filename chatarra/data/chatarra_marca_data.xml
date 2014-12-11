@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model='chatarra.marca' id='chatarra_marca_atlas'>
+        	<field name='name'>ATLAS</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_autocar'>
+        	<field name='name'>AUTOCAR</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_casa'>
+        	<field name='name'>CASA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_caza'>
+        	<field name='name'>CAZA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_chaycesa'>
+        	<field name='name'>CHAYCESA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_chevrolet'>
+        	<field name='name'>CHEVROLET</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_chrysler'>
+        	<field name='name'>CHRYSLER</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_conde'>
+        	<field name='name'>CONDE</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_datsun'>
+        	<field name='name'>DATSUN</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_diamond_reo'>
+        	<field name='name'>DIAMOND REO</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_diamond_t'>
+        	<field name='name'>DIAMOND T.</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_dina'>
+        	<field name='name'>DINA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_dina_diamond_t'>
+        	<field name='name'>DINA DIAMOND T.</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_dodge'>
+        	<field name='name'>DODGE</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_famsa'>
+        	<field name='name'>FAMSA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_famsa_international'>
+        	<field name='name'>FAMSA INTERNATIONAL</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_fargo'>
+        	<field name='name'>FARGO</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_ford'>
+        	<field name='name'>FORD</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_freightliner'>
+        	<field name='name'>FREIGHTLINER</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_frhtliner'>
+        	<field name='name'>FRHTLINER</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_fruehauf'>
+        	<field name='name'>FRUEHAUF</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_g_m_coach'>
+        	<field name='name'>G M COACH</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_gmc'>
+        	<field name='name'>GMC</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_gran_danes'>
+        	<field name='name'>GRAN DANES</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_grove'>
+        	<field name='name'>GROVE</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_hehdrickson'>
+        	<field name='name'>HEHDRICKSON</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_heron'>
+        	<field name='name'>HERON</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_igsa'>
+        	<field name='name'>IGSA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_intercons'>
+        	<field name='name'>INTERCONS</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_international'>
+        	<field name='name'>INTERNATIONAL</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_kenworth'>
+        	<field name='name'>KENWORTH</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_lucio'>
+        	<field name='name'>LUCIO</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_lufk'>
+        	<field name='name'>LUFK</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_mack'>
+        	<field name='name'>MACK</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_mack_western'>
+        	<field name='name'>MACK WESTERN</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_mago'>
+        	<field name='name'>MAGO</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_marca'>
+        	<field name='name'>MARCA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_marmol'>
+        	<field name='name'>MARMOL</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_marmon_herrington'>
+        	<field name='name'>MARMON HERRINGTON</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_masa'>
+        	<field name='name'>MASA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_mci'>
+        	<field name='name'>MCI</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_mercedes_benz'>
+        	<field name='name'>MERCEDES BENZ</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_mercedez_benz'>
+        	<field name='name'>MERCEDEZ BENZ</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_mercury'>
+        	<field name='name'>MERCURY</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_oisa'>
+        	<field name='name'>OISA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_omnibus_integral'>
+        	<field name='name'>OMNIBUS INTEGRAL</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_ottawa'>
+        	<field name='name'>OTTAWA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_pena_motor'>
+        	<field name='name'>PEÑA MOTOR</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_pena_motors'>
+        	<field name='name'>PEÑA MOTORS</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_pena'>
+        	<field name='name'>PEÑA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_peterbild'>
+        	<field name='name'>PETERBILD</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_peterbilt'>
+        	<field name='name'>PETERBILT</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_peycha'>
+        	<field name='name'>PEYCHA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_principe'>
+        	<field name='name'>PRINCIPE</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_ram'>
+        	<field name='name'>RAM</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_ramirez'>
+        	<field name='name'>RAMIREZ</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_reo'>
+        	<field name='name'>REO</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_road_king'>
+        	<field name='name'>ROAD KING</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_s/m'>
+        	<field name='name'>S/M</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_scania'>
+        	<field name='name'>SCANIA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_silver'>
+        	<field name='name'>SILVER</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_somex'>
+        	<field name='name'>SOMEX</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_sterling'>
+        	<field name='name'>STERLING</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_sultana'>
+        	<field name='name'>SULTANA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_tractocasa'>
+        	<field name='name'>TRACTOCASA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_tractocaza'>
+        	<field name='name'>TRACTOCAZA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_tractor'>
+        	<field name='name'>TRACTOR</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_vipsa'>
+        	<field name='name'>VIPSA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_volvo'>
+        	<field name='name'>VOLVO</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_volvo_white'>
+        	<field name='name'>VOLVO WHITE</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_western'>
+        	<field name='name'>WESTERN</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_western_st'>
+        	<field name='name'>WESTERN ST.</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_western_star'>
+        	<field name='name'>WESTERN STAR</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_westw'>
+        	<field name='name'>WESTW</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_white'>
+        	<field name='name'>WHITE</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_white_western'>
+        	<field name='name'>WHITE WESTERN</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_zamarripa'>
+        	<field name='name'>ZAMARRIPA</field>
+        </record>
+    </data>
+</openerp>

@@ -272,7 +272,6 @@
        <!-- Accion Chatarra/Unidades/Inventario -->
         <record id='action_chatarra_list' model='ir.actions.act_window'>
         	<field name='name'>Inventario</field>
-            <field name="key2">tree_but_open</field>
             <field name="view_id" ref="chatarra_unit_tree"/>
         	<field name='res_model'>chatarra.unit</field>
         	<field name='view_type'>form</field>

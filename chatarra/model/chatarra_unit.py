@@ -283,54 +283,54 @@ class chatarra_unit(osv.osv):
         asignacion_obj.write(cr, uid, asignacion_id, {'unit_ids': [(3, unidad.id)]})
         return True
 
-    def send_mail_chatarra(self, cr, uid, ids, context=None):
-      email_template_obj = self.pool.get('email.template')
-      template_ids = email_template_obj.search(cr, uid, [('model_id.model', '=','chatarra.unit')], context=context) 
-      if not template_ids:
-          return True #raise osv.except_osv(_('Warning!'), _('There are no Template configured for sending mail'))
-      values = email_template_obj.generate_email(cr, uid, template_ids[0], ids, context=context)
-      values['res_id'] = False
-      mail_mail_obj = self.pool.get('mail.mail')
-      msg_id = mail_mail_obj.create(cr, uid, values, context=context)
-
-      attachment_obj = self.pool.get('ir.attachment')
-      ir_actions_report = self.pool.get('ir.actions.report.xml')
-
-      matching_reports = ir_actions_report.search(cr, uid, [('report_name','=','chatarra.unit.report')])
-      if not matching_reports:
-          return True #raise osv.except_osv(_('Warning!'), _('There is no Report to send')) 
-
-      report = ir_actions_report.browse(cr, uid, matching_reports[0])
-      report_service = 'report.' + report.report_name
-      service = netsvc.LocalService(report_service)
-      date = self.pool.get('chatarra.notificacion')._get_date(cr, uid, ids)
-      unit_ids = self.search(cr, uid, [('fecha_enviado',">=", date),
-                                            ('state','=','enviado')
-                                            ], order='fecha_enviado desc')
-      if not unit_ids:
-          return True #raise osv.except_osv(_('Warning!'), _('There are no records to print'))
-
-      (result, format) = service.create(cr, uid, unit_ids, 
-                                        {'model': 'chatarra.unit', 'count': len(unit_ids),'date': date}, context=context)
-
-      result = base64.b64encode(result)
-      file_name = _('Unidades_retrasadas')
-      file_name += ".pdf"
-      attachment_id = attachment_obj.create(cr, uid,
-          {
-              'name': file_name,
-              'datas': result,
-              'datas_fname': file_name,
-              'res_model': self._name,
-              'res_id': msg_id,
-              'type': 'binary'
-          }, context=context)
-                
-
-      if msg_id and attachment_id:
-          mail_mail_obj.write(cr, uid, msg_id, {'attachment_ids': [(6, 0, [attachment_id])]}, context=context)
-          mail_mail_obj.send(cr, uid, [msg_id], context=context)
-      return True
+#    def send_mail_chatarra(self, cr, uid, ids, context=None):
+#      email_template_obj = self.pool.get('email.template')
+#      template_ids = email_template_obj.search(cr, uid, [('model_id.model', '=','chatarra.unit')], context=context) 
+#      if not template_ids:
+#          return True #raise osv.except_osv(_('Warning!'), _('There are no Template configured for sending mail'))
+#      values = email_template_obj.generate_email(cr, uid, template_ids[0], ids, context=context)
+#      values['res_id'] = False
+#      mail_mail_obj = self.pool.get('mail.mail')
+#      msg_id = mail_mail_obj.create(cr, uid, values, context=context)
+#
+#      attachment_obj = self.pool.get('ir.attachment')
+#      ir_actions_report = self.pool.get('ir.actions.report.xml')
+#
+#      matching_reports = ir_actions_report.search(cr, uid, [('report_name','=','chatarra.unit.report')])
+#      if not matching_reports:
+#          return True #raise osv.except_osv(_('Warning!'), _('There is no Report to send')) 
+#
+#      report = ir_actions_report.browse(cr, uid, matching_reports[0])
+#      report_service = 'report.' + report.report_name
+#      service = netsvc.LocalService(report_service)
+#      date = self.pool.get('chatarra.notificacion')._get_date(cr, uid, ids)
+#      unit_ids = self.search(cr, uid, [('fecha_enviado',">=", date),
+#                                            ('state','=','enviado')
+#                                            ], order='fecha_enviado desc')
+#      if not unit_ids:
+#          return True #raise osv.except_osv(_('Warning!'), _('There are no records to print'))
+#
+#      (result, format) = service.create(cr, uid, unit_ids, 
+#                                        {'model': 'chatarra.unit', 'count': len(unit_ids),'date': date}, context=context)
+#
+#      result = base64.b64encode(result)
+#      file_name = _('Unidades_retrasadas')
+#      file_name += ".pdf"
+#      attachment_id = attachment_obj.create(cr, uid,
+#          {
+#              'name': file_name,
+#              'datas': result,
+#              'datas_fname': file_name,
+#              'res_model': self._name,
+#              'res_id': msg_id,
+#              'type': 'binary'
+#          }, context=context)
+#                
+#
+#      if msg_id and attachment_id:
+#          mail_mail_obj.write(cr, uid, msg_id, {'attachment_ids': [(6, 0, [attachment_id])]}, context=context)
+#          mail_mail_obj.send(cr, uid, [msg_id], context=context)
+#      return True
 chatarra_unit()
 
 class chatarra_notificacion(osv.osv_memory):
