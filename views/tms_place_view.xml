@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    	<record model='ir.ui.view' id='sale_shop_form'>
+            <field name='name'>tms.place.locatel</field>
+            <field name='model'>tms.place</field>
+            <field name='inherit_id' ref='tms.view_tms_place_form'/>
+            <field name='type'>form</field>
+            <field name='arch' type='xml'>
+                <field name='longitude' position='after'>
+                	<field name='locatel_id'/>
+                </field>
+            </field>
+        </record>
+        <menuitem id="tms_place_sync" name="Sync Locatel" parent="tms.menu_tms_config_routes"/>
+        <!-- <act_window id='sync_locatel' name='Sync Locatel' src_model='tms.place' res_model='tms.place' view_mode='form' target='new' key2='client_action_multi'/> -->
+    </data>
+</openerp>

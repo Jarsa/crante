@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    	<record model='ir.ui.view' id='connector_places_form'>
+            <field name='name'>connector_places.form</field>
+            <field name='model'>connector.places</field>
+            <field name='type'>form</field>
+            <field name='arch' type='xml'>
+                <form string='Get Places' version="7.0">
+                    <header>
+                        <button name="get_places" string="Get Places" type="object" icon="gtk-refresh"/>
+                    </header>
+                    <sheet>
+                        <h1>
+                            <label string='Get Places'/>
+                        </h1>
+                        <group>
+                            <field name='name'/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+<!--         <record id='get_places' model='ir.actions.act_window'>
+            <field name='name'>Sync Locatel</field>
+            <field name='res_model'>connector.places</field>
+            <field name='src_model'>tms.place</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>form</field>
+            <field name='target'>new</field>
+            <field name='key2'>client_action_multi</field>
+        </record> -->
+        <record id='action_get_places' model='ir.actions.act_window'>
+            <field name='name'>Get Places</field>
+            <field name='res_model'>connector.places</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>tree,form</field>
+        </record>
+        <menuitem id="get_places_menu" name="Get Locatel Places" parent="tms.menu_tms_config_routes" action="action_get_places"/>
+    </data>
+</openerp>
