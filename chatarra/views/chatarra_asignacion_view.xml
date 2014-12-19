@@ -23,6 +23,7 @@
         			<field name='client_id'/>
         			<field name='contacto_id'/>
         			<field name='agencia_id'/>
+                    <field name='cantidad'/>
                     <field name='state'/>
         		</tree>
         	</field>
