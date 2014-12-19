@@ -13,5 +13,12 @@
                 </field>
         	</field>
         </record>
+        <record id='action_chatarra_product' model='ir.actions.act_window'>
+            <field name='name'>Productos</field>
+            <field name='res_model'>product.product</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>tree,form</field>
+        </record>
+        <menuitem id="chatarra_product_menu" name="Productos" parent="chatarra.chatarra_config_menu" action="action_chatarra_product"/>
     </data>
 </openerp>

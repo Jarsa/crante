@@ -15,5 +15,12 @@
                 </div>
             </field>
         </record>
+        <record id='action_chatarra_client' model='ir.actions.act_window'>
+            <field name='name'>Client</field>
+            <field name='res_model'>res.partner</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>tree,form</field>
+        </record>
+        <menuitem id="chatarra_client_menu" name="Clientes" parent="chatarra.chatarra_config_menu" action="action_chatarra_client"/>
     </data>
 </openerp>
