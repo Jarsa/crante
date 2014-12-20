@@ -141,44 +141,44 @@
     						<label string='Catalogo de Unidades'/>
     					</h1>
     					<group col='4'>
-    						<field name='name'/>
-                            <field name='supplier_id' domain="[('supplier','=',True),('is_company','=',True)]" context="{'default_customer': False, 'default_supplier': True, 'default_is_company': True,}"/>
-    						<field name='propietario_id' on_change='onchange_vat(propietario_id)'/>
-    						<field name='vat'/>
-                            <field name='client_id' attrs="{'invisible':[('client_id','=',False)]}"/>
+    						<field name='name' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                            <field name='supplier_id' domain="[('supplier','=',True),('is_company','=',True)]" context="{'default_customer': False, 'default_supplier': True, 'default_is_company': True,}" attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+    						<field name='propietario_id' on_change='onchange_vat(propietario_id)' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+    						<field name='vat' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                            <field name='client_id' attrs="{'invisible':[('client_id','=',False)],'readonly': [('state', '!=', 'borrador')]}"/>
     					</group>
     					<notebook>
     						<page string='Datos de la Unidad'>
     							<group col='4'>
- 									<field name='serie'/>
- 									<field name='marca' widget='selection'/>
- 									<field name='clase'/>
- 									<field name='tipo' widget='selection'/>
- 									<field name='motor'/>
-                                    <field name='color_placa'/>
-                                    <field name='tipo_placa'/>
- 									<field name='combustible'/>
- 									<field name='peso_vehicular'/>
-                                    <field name='modelo'/>
-                                    <field name='reg_fed'/>
-                                    <field name='modalidad'/>
-                                    <field name='no_ejes'/>
-                                    <field name='no_llantas'/>
-                                    <field name='cap_litros'/>                                
-                                    <field name='cap_toneladas'/>
-                                    <field name='cap_personas'/>
-                                    <field name='alto'/>
-                                    <field name='ancho'/>
-                                    <field name='largo'/>
-                                    <field name='eje_direccional'/>
-                                    <field name='eje_motriz'/>
-                                    <field name='eje_carga'/>
-                                    <field name='permiso_ruta'/>                  
-                                    <field name='lugar_exp'/>
-                                    <field name='fecha_exp'/>
-                                    <field name='folio_tarjeta'/>
-                                    <field name='fecha_tarjeta'/>
-                                    <field name='folio_modalidad'/>
+ 									<field name='serie' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+ 									<field name='marca' widget='selection' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+ 									<field name='clase' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+ 									<field name='tipo' widget='selection' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+ 									<field name='motor' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='color_placa' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='tipo_placa' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+ 									<field name='combustible' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+ 									<field name='peso_vehicular' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='modelo' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='reg_fed' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='modalidad' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='no_ejes' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='no_llantas' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='cap_litros' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='cap_toneladas' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='cap_personas' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='alto' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='ancho' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='largo' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='eje_direccional' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='eje_motriz' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='eje_carga' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='permiso_ruta' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>                  
+                                    <field name='lugar_exp' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='fecha_exp' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='folio_tarjeta' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='fecha_tarjeta' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='folio_modalidad' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
                                 </group>
     						</page>
                             <page string='Documentacion' attrs="{'invisible': ['|','|',('state','in','borrador'),('state','in','disponible')]}">
