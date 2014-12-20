@@ -10,8 +10,6 @@ from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
 from openerp.tools.translate import _
 import base64
-import logging
-_logger = logging.getLogger(__name__)
 
 class chatarra_unit(osv.osv):
     _name = 'chatarra.unit'
@@ -21,6 +19,14 @@ class chatarra_unit(osv.osv):
         lst = [x.name.lower() for x in self.browse(cr, uid, sr_ids, context=context) if x.name and x.id not in ids]
         for self_obj in self.browse(cr, uid, ids, context=context):
             if self_obj.name and self_obj.name.lower() in  lst:
+                return False
+            return True
+
+    def _check_unique_serie(self, cr, uid, ids, context=None):
+        sr_ids = self.search(cr, 1 , [], context=context)
+        lst = [x.serie.lower() for x in self.browse(cr, uid, sr_ids, context=context) if x.serie and x.id not in ids]
+        for self_obj in self.browse(cr, uid, ids, context=context):
+            if self_obj.serie and self_obj.serie.lower() in  lst:
                 return False
             return True
 
@@ -158,9 +164,11 @@ class chatarra_unit(osv.osv):
         'state': 'borrador',
     }
 
-    _sql_constraints = [('chatarra_unit_name_unique', 'unique(name)', 'La Placa ya existe')]
+    _sql_constraints = [('chatarra_unit_name_unique', 'unique(name)', 'La Placa ya existe'),
+                        ('chatarra_unit_serie_unique', 'unique(serie)', 'La Serie ya existe')]
     
-    _constraints = [(_check_unique_insesitive, 'La Placa ya existe', ['name'])]
+    _constraints = [(_check_unique_insesitive, 'La Placa ya existe', ['name']),
+                    (_check_unique_serie, 'La Serie ya existe', ['serie'])]
 
     def action_disponible(self, cr, uid, ids, context=None):
         invoice_obj = self.pool.get('account.invoice')
@@ -180,8 +188,6 @@ class chatarra_unit(osv.osv):
         journal_obj = self.pool.get('account.journal')
         journal_id = journal_obj.search(cr, uid, [('type', '=', 'purchase')], limit=1)
         journal = journal_obj.browse(cr, uid, journal_id, context=None)
-        _logger.error("###################### journal_id : %r", journal_id)
-        _logger.error("###################### journal : %r", journal)
         unidad = self.browse(cr, uid, ids)
         invoice_obj.create(cr, uid, {'partner_id':unidad.supplier_id.id,
                                      'account_id':unidad.supplier_id.property_account_payable.id,
