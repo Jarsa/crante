@@ -9,7 +9,8 @@ class res_partner(osv.osv):
         								('agencia','Agencia'),
         								('paqueteria','Paqueteria'),
         								('secretaria','Secretaria'),
-                                        ('chatarrera','Chatarrera')
+                                        ('chatarrera','Chatarrera'),
+                                        ('gestor','Gestor')
         								], 'Categoria'),
     }
     _defaults = {

@@ -16,21 +16,22 @@ class chatarra_documentos(osv.osv):
        					            ('consulta','Consulta'),
        					            ('copia_tc','Tarjeta de Circulacion Prop. Anterior'),
        					            ('factura_origen','Factura de origen'),
-                            ('factura_venta','Factura de venta'),
-                            ('factura_compra','Factura de compra'),
+                                    ('factura_venta','Factura de venta'),
+                                    ('factura_compra','Factura de compra'),
        					            ('foto_frente','Foto frente'),
-                            ('foto_chasis','Foto chasis'),
-                            ('foto_motor','Foto motor')
+                                    ('foto_chasis','Foto chasis'),
+                                    ('foto_motor','Foto motor')
        					            ], 'Tipo de Documento'),
         'unit_id'	        :fields.many2one('chatarra.unit', 'Placa', required=True),
         'imagen' 	        :fields.binary('Imagen'),
-        'state'           :fields.selection([
+        'state'             :fields.selection([
         				            ('pendiente','Pendiente'),
         				            ('completo','Completo'),
-                            ('no_requerido','No Requerido')
+                                    ('no_requerido','No Requerido'),
+                                    ('cancelado', 'Cancelado'),
         				            ], 'Estado', readonly='True'),
-        'completo_por'    :fields.many2one('res.users','Completo por:', readonly=True),
-        'fecha_completo'  :fields.datetime('Fecha completo:', readonly=True),
+        'completo_por'      :fields.many2one('res.users','Completo por:', readonly=True),
+        'fecha_completo'    :fields.datetime('Fecha completo:', readonly=True),
     }
     _defaults = {
         'state': 'pendiente'

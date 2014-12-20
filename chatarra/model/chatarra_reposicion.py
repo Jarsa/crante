@@ -27,25 +27,26 @@ class chatarra_unit_reposicion(osv.osv):
         invoice_obj = self.pool.get('account.invoice')
         fpos_obj = self.pool.get('account.fiscal.position')
         asignacion_obj = self.pool.get('chatarra.asignacion')
+        doc_obj = self.pool.get('chatarra.documentos')
         prod_obj = self.pool.get('product.product')
         prod_id = prod_obj.search(cr, uid, [('categoria', '=', 'chatarra'),('active','=', 1)], limit=1)
         product = prod_obj.browse(cr, uid, prod_id, context=None)
         prod_account = product.product_tmpl_id.property_account_expense.id
         if not prod_account:
-          prod_account = product.categ_id.property_account_expense_categ.id
-          if not prod_account:
-            raise osv.except_osv(_('Error !'),
+            prod_account = product.categ_id.property_account_expense_categ.id
+            if not prod_account:
+                raise osv.except_osv(_('Error !'),
                                  _('There is no expense account defined ' \
                                  'for this product: "%s" (id:%d)') % \
                                  (product.name, product.id,))
-                    
         prod_account = fpos_obj.map_account(cr, uid, False, prod_account)
         reposicion = self.browse(cr, uid, ids)
         nueva = reposicion.unidad_nueva_id
         anterior = reposicion.unidad_anterior_id
+        doc_id = doc_obj.search(cr, uid, [('unit_id','=',anterior.id)])
+        doc = doc_obj.browse(cr, uid, doc_id, context=None)
         invoice_anterior_id = invoice_obj.search(cr, uid, [('unit_id','=',anterior.id)])
         invoice_anterior = invoice_obj.browse(cr, uid, invoice_anterior_id, context=None)
-        #_logger.error("##################### invoices : %r", invoice_anterior)
         invoice_obj.create(cr, uid, {'partner_id':anterior.client_id.id,
                                      'contacto_id':anterior.asignacion_id.contacto_id.id,
                                      'agencia_id':anterior.asignacion_id.agencia_id.id,
@@ -64,6 +65,8 @@ class chatarra_unit_reposicion(osv.osv):
                                     }, context=None)
         invoice_nueva_id = invoice_obj.search(cr, uid, [('unit_id','=',nueva.id),('type','=','out_invoice')])
         invoice_nueva = invoice_obj.browse(cr, uid, invoice_nueva_id, context=None)
+        for document in doc:
+            doc_obj.write(cr, uid, document.id, {'state':'cancelado'})
         unidad_obj.write(cr, uid, [nueva.id], {'sustituye_id':anterior.id,
                                                'reposicion_id':reposicion.id,
                                                'state':'asignada',
@@ -74,25 +77,24 @@ class chatarra_unit_reposicion(osv.osv):
                                                'factura_id':invoice_nueva.id,
                                                'fecha_facturado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         if anterior.state in ['asignada','completo','seleccion','enviado','elaboracion']:
-          unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id,
-                                                  'state':'reposicion',
-                                                  'reposicion_id':reposicion.id,
-                                                  'reposicion_por':uid,
-                                                  'fact_cancelada_por':uid,
-                                                  'fecha_fact_cancelada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                                                  'fecha_reposicion':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id,
+                                                      'state':'reposicion',
+                                                      'reposicion_id':reposicion.id,
+                                                      'reposicion_por':uid,
+                                                      'fact_cancelada_por':uid,
+                                                      'fecha_fact_cancelada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                                                      'fecha_reposicion':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         else:
-          unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id,
-                                                  'state':'desestimiento',
-                                                  'reposicion_id':reposicion.id,
-                                                  'reposicion_por':uid,
-                                                  'fact_cancelada_por':uid,
-                                                  'fecha_fact_cancelada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                                                  'fecha_reposicion':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id,
+                                                     'state':'desestimiento',
+                                                     'reposicion_id':reposicion.id,
+                                                     'reposicion_por':uid,
+                                                     'fact_cancelada_por':uid,
+                                                     'fecha_fact_cancelada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                                                     'fecha_reposicion':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         for invoice in invoice_anterior:
-          invoice.signal_workflow('invoice_cancel')
+            invoice.signal_workflow('invoice_cancel')
         asignacion_obj.write(cr, uid, anterior.asignacion_id.id, {'unit_ids': [(4, nueva.id),(3, anterior.id)]})
-        return True
 
     def create(self, cr, uid, vals, context={}):
         if (not 'name' in vals) or (vals['name'] == False):

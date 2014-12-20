@@ -176,9 +176,9 @@
                                     <field name='permiso_ruta' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>                  
                                     <field name='lugar_exp' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
                                     <field name='fecha_exp' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
-                                    <field name='folio_tarjeta' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
-                                    <field name='fecha_tarjeta' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
-                                    <field name='folio_modalidad' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                                    <field name='folio_tarjeta'/>
+                                    <field name='fecha_tarjeta'/>
+                                    <field name='folio_modalidad'/>
                                 </group>
     						</page>
                             <page string='Documentacion' attrs="{'invisible': ['|','|',('state','in','borrador'),('state','in','disponible')]}">
