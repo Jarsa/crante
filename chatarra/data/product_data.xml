@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id='' model='product.product'>
+        	<field name='name'>Chatarra</field>
+        	<field name='categoria'>chatarra</field>
+        	<field name='sale_ok' eval='True' />
+        </record>
+        <record id='' model='product.product'>
+        	<field name='name'>Envio</field>
+        	<field name='categoria'>envio</field>
+        	<field name='sale_ok' eval='False' />
+        </record>
+        <record id='' model='product.product'>
+        	<field name='name'>Secretaria</field>
+        	<field name='categoria'>secretaria</field>
+        	<field name='sale_ok' eval='False' />
+        </record>
+    </data>
+</openerp>
