@@ -42,7 +42,7 @@ class chatarra_motivo(osv.osv):
     }
 chatarra_motivo()
 
-class chatarra_tarjeta_wizard(osv.osv):
+class chatarra_tarjeta_wizard(osv.TransientModel):
     _name = 'chatarra.tarjeta'
     
     def onchange_date(self, cr, uid, ids, fecha, context=None):
@@ -86,16 +86,18 @@ class chatarra_tarjeta_wizard(osv.osv):
             unidad_obj.write(cr, uid, [unit.id], {'state':'recibido',
                                   'recibido_por': uid,
                                   'fecha_recibido':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return {
-                'type': 'ir.actions.client',
-                'tag': 'reload',
-                }
+        #return { 'type' :  'ir.actions.act_close_wizard_and_reload_view' }
+        # return {
+        #         'type': 'ir.actions.client',
+        #         'tag': 'reload',
+        #         }
 
 chatarra_tarjeta_wizard()
 
-class chatarra_cita(osv.osv):
+class chatarra_cita(osv.TransientModel):
     _name = 'chatarra.cita'
     _columns = {
+        'name'          : fields.char('Nombre'),
         'fecha'         : fields.datetime('Fecha', required=True),
         'unidad_id'     : fields.many2one('chatarra.unit', 'Unidad', readonly=True),
         'chatarrera_id' : fields.many2one('res.partner', 'Chatarrera', required=True),
@@ -131,7 +133,7 @@ class chatarra_cita(osv.osv):
 
 chatarra_cita()
 
-class chatarra_certificado_wizard(osv.osv):
+class chatarra_certificado_wizard(osv.TransientModel):
     _name = 'chatarra.certificado'
     _columns = {
         'unit_id'       : fields.many2one('chatarra.unit','Unidad', readonly=True),

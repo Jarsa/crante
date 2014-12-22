@@ -181,11 +181,11 @@
                                     <field name='folio_modalidad'/>
                                 </group>
     						</page>
-                            <page string='Documentacion' attrs="{'invisible': ['|','|',('state','in','borrador'),('state','in','disponible')]}">
+                            <page string='Documentacion' attrs="{'invisible': ['|','|',('state','in','borrador')]}">
                                 <group>
                                     <separator string="Documentos" coslpan="4"/>
                                     <field name='document_ids' colspan="4" nolabel="1">
-                                        <tree string='Documentacion'>
+                                        <tree string='Documentacion' editable="top">
                                             <field name='name'/>
                                             <field name='unit_id' readonly="True"/>
                                             <field name='state'/>
@@ -311,7 +311,7 @@
             <field name="view_id" ref="chatarra_unit_enviado_sct_tree"/>
             <field name="domain">[('state','=','enviado')]</field>
             <field name='view_type'>form</field>
-            <field name='view_mode'>tree,form</field>
+            <field name='view_mode'>tree</field>
         </record>
         <!-- Accion Chatarra/Unidades/Recibidas de SCT -->
         <record id='action_chatarra_recibido' model='ir.actions.act_window'>
