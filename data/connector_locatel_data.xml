@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data  noupdate='1'>
-        <record id='connector_config' model='connector.config'>
+        <record id='connector_locatel' model='connector.locatel'>
         	<field name='user'>localeluser</field>
         	<field name='password'>locatelpassword</field>
         	<field name='ws_schema'>http://www.w3.org/2001/XMLSchema</field>

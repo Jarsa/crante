@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-    	<record model='ir.ui.view' id='connector_config_form'>
-    		<field name='name'>connector_config.form</field>
-    		<field name='model'>connector.config</field>
+    	<!-- Form View -->
+        <record model='ir.ui.view' id='connector_locatel_form'>
+    		<field name='name'>connector_locatel.form</field>
+    		<field name='model'>connector.locatel</field>
     		<field name='type'>form</field>
     		<field name='arch' type='xml'>
     			<form string='Basic configuration' version='7.0'>
@@ -32,9 +33,10 @@
     			</form>
     		</field>
     	</record>
+        <!-- Tree View -->
     	<record model='ir.ui.view' id='connector_config_tree'>
-    		<field name='name'>connector_config.tree</field>
-    		<field name='model'>connector.config</field>
+    		<field name='name'>connector_locatel.tree</field>
+    		<field name='model'>connector.locatel</field>
     		<field name='type'>tree</field>
     		<field name='arch' type='xml'>
     			<tree string='Basic configuration'>
@@ -42,13 +44,15 @@
     			</tree>
     		</field>
     	</record>
-    	<record id='action_connector_config' model='ir.actions.act_window'>
-    		<field name='name'>Connector config</field>
-    		<field name='res_model'>connector.config</field>
+        <!-- Menu Action -->
+    	<record id='action_connector_locatel' model='ir.actions.act_window'>
+    		<field name='name'>Connector locatel</field>
+    		<field name='res_model'>connector.locatel</field>
     		<field name='view_type'>form</field>
     		<field name='view_mode'>tree,form</field>
     	</record>
+        <!-- Menus -->
     	<menuitem id="connector_menu" name="Locatel" parent="base.menu_custom"/>
-    	<menuitem id="connector_config_menu" name="Configuration" parent="connector_menu" action="action_connector_config"/>
+    	<menuitem id="connector_locatel_menu" name="Configuration" parent="connector_menu" action="action_connector_locatel"/>
     </data>
 </openerp>
