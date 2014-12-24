@@ -25,17 +25,26 @@ class connector_places_wizard(osv.osv):
 		d = ImportDoctor(imp)
 		client = Client(url, doctor=d)
 		ListaLugaresPersonalizados = client.service.ListaLugaresPersonalizados(usuario, password)
+		count = 1
 		for place in ListaLugaresPersonalizados.diffgram.Lugares.Lugar:
+			print count
 			place_id = place._id
 			if places_obj.search(cr, uid, [('locatel_id', '=', place_id)]):
 				pass
-			else:
+			elif count<100:
 				geocoder = Geocoder.reverse_geocode(float(place.latitud), float(place.longitud))
-				state_id = state_obj.search(cr, uid, [('name','=',geocoder.state)])
-				print state_id
-				places_obj.create(cr, uid, {'locatel_id':place._id,
-				 							'name':place.zona,
-				 							'latitude':place.latitud,
-				 							'longitude':place.longitud,
-				 							'state_id':state_id[0]})
-			sleep(1.5)
+			 	if geocoder.state == 'state' or 'Baja California':
+			 		pass
+			 	else:
+			 		state_id = state_obj.search(cr, uid, [('name','=',geocoder.state)])
+			 		print state_id
+			 		print geocoder.state
+			 		print 'latitud: ', place.latitud
+			 		print 'longitud', place.longitud
+			 		places_obj.create(cr, uid, {'locatel_id':place._id,
+			 	 							'name':place.zona,
+			 	 							'latitude':place.latitud,
+			 	 							'longitude':place.longitud,
+			 	 							'state_id':state_id[0]})
+			 	count = count + 1
+			 	sleep(1.5)

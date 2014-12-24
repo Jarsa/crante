@@ -8,16 +8,17 @@
             <field name='arch' type='xml'>
                 <form string='Get Places' version="7.0">
                     <header>
-                        <button name="get_places" string="Get Places" type="object" icon="gtk-refresh"/>
                     </header>
                     <sheet>
                         <h1>
                             <label string='Get Places'/>
                         </h1>
-                        <group>
-                            <field name='name'/>
-                        </group>
+                        <h2>
+                            </h2>
                     </sheet>
+                    <footer>
+                        <button name="get_places" string="Get Places" type="object" icon="gtk-refresh"/>
+                    </footer>
                 </form>
             </field>
         </record>
@@ -33,8 +34,9 @@
         <record id='action_get_places' model='ir.actions.act_window'>
             <field name='name'>Get Places</field>
             <field name='res_model'>connector.places</field>
+            <field name='target'>new</field>
             <field name='view_type'>form</field>
-            <field name='view_mode'>tree,form</field>
+            <field name='view_mode'>form</field>
         </record>
         <menuitem id="get_places_menu" name="Get Locatel Places" parent="tms.menu_tms_config_routes" action="action_get_places"/>
     </data>

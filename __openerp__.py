@@ -38,7 +38,9 @@
  * Updates travel history.
                     ''',
     'data' : ['views/tms_place_view.xml',
-              'wizard/connector_places_wizard_view.xml'],
+              'views/connector_config_view.xml',
+              'data/connector_config_data.xml',
+              'wizard/connector_places_wizard_view.xml',],
     'application': True,
     'installable': True,
 }
