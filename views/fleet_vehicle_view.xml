@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model='ir.ui.view' id='tms_place_form'>
+            <field name='name'>fleet.vehicle.locatel</field>
+            <field name='model'>fleet.vehicle</field>
+            <field name='inherit_id' ref='tms.fleet_vehicle_form_inherit_tms'/>
+            <field name='type'>form</field>
+            <field name='arch' type='xml'>
+                <header position='inside'>
+                    <button name="get_vehicle_gps" string="Get GPS Data" type="object" icon="gtk-refresh"/>
+                </header>
+            </field>
+        </record>
+    </data>
+</openerp>

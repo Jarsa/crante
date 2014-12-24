@@ -7,9 +7,9 @@
             <field name='inherit_id' ref='tms.view_tms_place_form'/>
             <field name='type'>form</field>
             <field name='arch' type='xml'>
-                <header position='inside'>
+                <!-- <header position='inside'>
                     <button name="get_places" string="Get Places from Locatel" type="object" icon="gtk-refresh"/>
-                </header>
+                </header> -->
                 <field name='longitude' position='after'>
                 	<field name='locatel_id'/>
                 </field>

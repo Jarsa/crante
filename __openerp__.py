@@ -39,7 +39,9 @@
                     ''',
     'data' : ['views/tms_place_view.xml',
               'views/connector_locatel_view.xml',
-              'data/connector_locatel_data.xml',],
+              'views/fleet_vehicle_view.xml',
+              'data/connector_locatel_data.xml',
+              'wizard/connector_places_wizard_view.xml'],
     'application': True,
     'installable': True,
 }
