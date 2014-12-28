@@ -1,38 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-        <!-- Accion Wizard Tarjeta (Boton en chatarra.unit) -->
-        <record id='action_wizard_tarjeta' model='ir.actions.act_window'>
-            <field name='name'>Tarjeta</field>
-            <field name='res_model'>chatarra.tarjeta</field>
-            <field name='view_type'>form</field>
-            <field name='target'>new</field>
-            <field name='view_mode'>form</field>
-        </record>
-        <!-- Accion Form Reposicion (Boton en chatarra.unit) -->
-        <record id='action_chatarra_reposicion' model='ir.actions.act_window'>
-            <field name='name'>Reposicion</field>
-            <field name='res_model'>chatarra.reposicion</field>
-            <field name='view_type'>form</field>
-            <field name='target'>new</field>
-            <field name='view_mode'>form</field>
-        </record>
-        <!-- Accion Form Cita (Boton en chatarra.unit) -->
-        <record id='action_chatarra_cita_1' model='ir.actions.act_window'>
-            <field name='name'>Cita</field>
-            <field name='res_model'>chatarra.cita</field>
-            <field name='view_type'>form</field>
-            <field name='target'>new</field>
-            <field name='view_mode'>form</field>
-        </record>
-        <!-- Accion Form Certificado (Boton en chatarra.unit) -->
-        <record id='action_chatarra_certificado' model='ir.actions.act_window'>
-            <field name='name'>Certificado</field>
-            <field name='res_model'>chatarra.certificado</field>
-            <field name='view_type'>form</field>
-            <field name='target'>new</field>
-            <field name='view_mode'>form</field>
-        </record>
         <!-- Search View chatarra.unit -->
         <record id="chatarra_unit_search" model="ir.ui.view">
             <field name="name">chatarra.unit.search</field>
@@ -93,7 +61,7 @@
                 </tree>
             </field>
         </record>
-        <!-- Vista de Arbol para Chatarras Cita -->
+        <!-- Vista de Arbol para Chatarras en estado Cita -->
         <record model='ir.ui.view' id='chatarra_unit_cita_tree'>
             <field name='name'>chatarra_unit.tree</field>
             <field name='model'>chatarra.unit</field>
@@ -340,6 +308,8 @@
             <field name='view_type'>form</field>
             <field name='view_mode'>tree,form</field>
         </record>
+        <!-- Menu Chatarra/Configuracion -->
+        <menuitem id="chatarra_config_menu" name="Configuracion" parent="chatarra_menu"/>
         <!-- Menu Chatarra/Unidades/Inventario -->
         <menuitem id="chatarra_lists_menu" name="Inventario" parent="chatarra_list_menu" sequence="0"/>
         <!-- Menu Chatarra/Unidades/Inventario/Inventario -->

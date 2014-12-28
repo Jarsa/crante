@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Vista de Arbol -->
+    	<record model='ir.ui.view' id='chatarra_marca_tree'>
+    		<field name='name'>chatarra_marca.tree</field>
+    		<field name='model'>chatarra.marca</field>
+    		<field name='type'>tree</field>
+    		<field name='arch' type='xml'>
+    			<tree string='Marcas' editable='bottom'>
+    				<field name='name'/>
+    				<field name='active'/>
+    			</tree>
+    		</field>
+    	</record>
+    	<!-- Accion Chatarra/Configuracion/Marcas -->
+        <record id='action_chatarra_marca' model='ir.actions.act_window'>
+        	<field name='name'>Lista de Marcas</field>
+        	<field name='res_model'>chatarra.marca</field>
+        	<field name='view_type'>form</field>
+        	<field name='view_mode'>tree</field>
+        </record>
+        <!-- Menu Chatarra/Configuracion/Marcas -->
+        <menuitem id="chatarra_marca_menu" name="Marcas" parent="chatarra_config_menu" action="action_chatarra_marca"/>
+    </data>
+</openerp>

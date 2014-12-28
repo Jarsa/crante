@@ -5,8 +5,6 @@ import time
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
-import logging
-_logger = logging.getLogger(__name__)
 
 class chatarra_unit_reposicion(osv.osv):
     _name = 'chatarra.reposicion'

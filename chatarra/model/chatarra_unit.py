@@ -282,7 +282,6 @@ class chatarra_unit(osv.osv):
         unidad = self.browse(cr, uid, ids)
         asignacion_obj = self.pool.get('chatarra.asignacion')
         asignacion_id = asignacion_obj.search(cr, uid, [('unit_ids','=',unidad.id)])
-        #_logger.error("###################### Asignacion : %r", asignacion_id)
         self.write(cr, uid, ids, {'state':'cancelado',
                                   'cancelado_por': uid,
                                   'fecha_cancelado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
@@ -337,7 +336,6 @@ class chatarra_unit(osv.osv):
 #          mail_mail_obj.write(cr, uid, msg_id, {'attachment_ids': [(6, 0, [attachment_id])]}, context=context)
 #          mail_mail_obj.send(cr, uid, [msg_id], context=context)
 #      return True
-chatarra_unit()
 
 class chatarra_notificacion(osv.osv_memory):
     _name = 'chatarra.notificacion'

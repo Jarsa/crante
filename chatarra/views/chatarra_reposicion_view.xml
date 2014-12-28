@@ -85,6 +85,14 @@
                 </search>
             </field>
         </record>
+        <!-- Accion Form Reposicion (Boton en chatarra.unit) -->
+        <record id='action_chatarra_reposicion' model='ir.actions.act_window'>
+            <field name='name'>Reposicion</field>
+            <field name='res_model'>chatarra.reposicion</field>
+            <field name='view_type'>form</field>
+            <field name='target'>new</field>
+            <field name='view_mode'>form</field>
+        </record>
         <!-- Accion Chatarra/Unidades/Reposiciones -->
         <record id='action_chatarra_reposiciones' model='ir.actions.act_window'>
             <field name='name'>Reposiciones</field>
