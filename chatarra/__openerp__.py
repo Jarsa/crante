@@ -34,6 +34,7 @@
                 'account_accountant',
                 'account_cancel'],
     "data":[
+            'views/chatarra_view.xml',
             'views/chatarra_reposicion_view.xml',
             'views/res_partner_view.xml',
             'views/chatarra_asignacion_view.xml',
@@ -45,10 +46,10 @@
             'views/chatarra_marca_view.xml',
             'views/chatarra_tipo_view.xml',
             'views/chatarra_motivo_view.xml',
+            'wizard/chatarra_certificado_wizard_view.xml',
+            'wizard/chatarra_cita_wizard_view.xml',
+            'wizard/chatarra_tarjeta_wizard_view.xml',
             'views/chatarra_unit_view.xml',
-            'wizard/chatarra_certificado_wizard.xml',
-            'wizard/chatarra_cita_wizard.xml',
-            'wizard/chatarra_tarjeta_wizard.xml'
             'reports/report_view.xml',
             'reports/report_units_late.xml',
             'data/chatarra_marca_data.xml',

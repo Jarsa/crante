@@ -48,7 +48,7 @@ class chatarra_tarjeta_wizard(osv.TransientModel):
             unidad_obj.write(cr, uid, [unit.id], {'state':'recibido',
                                   'recibido_por': uid,
                                   'fecha_recibido':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        #return { 'type' :  'ir.actions.act_close_wizard_and_reload_view' }
+        return { 'type' :  'ir.actions.act_close_wizard_and_reload_view' }
         # return {
         #         'type': 'ir.actions.client',
         #         'tag': 'reload',

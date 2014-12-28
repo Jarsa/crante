@@ -33,7 +33,7 @@
                     <field name='state'/>
                     <button name="action_disponible" states="borrador" string="Disponible" type="object" icon="gtk-go-forward"/>
                     <button name="action_bloqueado" attrs="{'invisible':[('state','!=','recibido')]}" string="Bloqueado" type="object" icon="gtk-dialog-authentication"/>
-                    <button name="%(action_chatarra_cita_1)d" states="bloqueado" string="Programar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
+                    <button name="%(chatarra.action_chatarra_cita_1)d" states="bloqueado" string="Programar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
 				</tree>
 			</field>
 		</record>
@@ -56,7 +56,7 @@
                     <field name='tarjeta_circulacion'/>
                     <button name="action_recibir_tarjeta" attrs="{'invisible':['|',('tarjeta_circulacion','=',True),('state','!=','enviado')]}" string="Recibir TC" type="object" class="oe_highlight" icon="gtk-apply"/>
                     <field name='copia_tc'/>
-                    <button name="%(action_wizard_tarjeta)d" attrs="{'invisible':['|',('copia_tc','=',True),('state','!=','enviado')]}" string="Copia TC" type="action" class="oe_highlight" context="{'default_unit_id': active_id}" icon="gtk-apply"/>
+                    <button name="%(chatarra.action_wizard_tarjeta)d" attrs="{'invisible':['|',('copia_tc','=',True),('state','!=','enviado')]}" string="Copia TC" type="action" class="oe_highlight" context="{'default_unit_id': active_id}" icon="gtk-apply"/>
                     <field name='state'/>
                 </tree>
             </field>
@@ -76,7 +76,7 @@
                     <field name='cita_anterior'/>
                     <field name='state'/>
                     <button name="action_exp_enviado" states="cita" string="Expediente Enviado" type="object" icon="gtk-revert-to-saved" class="oe_highlight"/>
-                    <button  name="%(action_chatarra_cita_1)d" states="cita" string="Reprogramar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
+                    <button  name="%(chatarra.action_chatarra_cita_1)d" states="cita" string="Reprogramar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
                 </tree>
             </field>
         </record>
@@ -91,17 +91,17 @@
                         <button name="action_disponible" states="borrador" string="Disponible" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="action_recibir_consulta" attrs="{'invisible':['|',('consulta','=',True),('state','!=','enviado')]}" string="Recibir Consulta" type="object" class="oe_highlight"/>
                         <button name="action_recibir_tarjeta" attrs="{'invisible':['|',('tarjeta_circulacion','=',True),('state','!=','enviado')]}" string="Recibir TC" type="object" class="oe_highlight"/>
-                        <button name="%(action_wizard_tarjeta)d" attrs="{'invisible':['|',('copia_tc','=',True),('state','!=','enviado')]}" string="Copia TC" type="action" class="oe_highlight" context="{'default_unit_id': active_id}"/>
+                        <button name="%(chatarra.action_wizard_tarjeta)d" attrs="{'invisible':['|',('copia_tc','=',True),('state','!=','enviado')]}" string="Copia TC" type="action" class="oe_highlight" context="{'default_unit_id': active_id}"/>
                         <button name="action_bloqueado" states="recibido" string="Bloqueado" type="object" icon="gtk-dialog-authentication" class="oe_highlight"/>
-                        <button  name="%(action_chatarra_cita_1)d" states="bloqueado" string="Programar Cita" type="action" icon="stock_calendar" class="oe_highlight" context="{'default_unidad_id': active_id,}"/>
+                        <button  name="%(chatarra.action_chatarra_cita_1)d" states="bloqueado" string="Programar Cita" type="action" icon="stock_calendar" class="oe_highlight" context="{'default_unidad_id': active_id,}"/>
                         <button name="action_exp_enviado" states="cita" string="Expediente Enviado" type="object" icon="gtk-revert-to-saved" class="oe_highlight"/>
-                        <button  name="%(action_chatarra_cita_1)d" states="cita" string="Reprogramar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
+                        <button  name="%(chatarra.action_chatarra_cita_1)d" states="cita" string="Reprogramar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
                         <button name="action_chatarrizado" states="exp_enviado" string="Chatarrizado" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="%(action_chatarra_certificado)d" states="chatarrizado" string="Certificado" type="action" icon="gtk-apply" class="oe_highlight" context="{'default_unit_id': active_id, 'default_fecha': programacion_cita}"/>
+                        <button name="%(chatarra.action_chatarra_certificado)d" states="chatarrizado" string="Certificado" type="action" icon="gtk-apply" class="oe_highlight" context="{'default_unit_id': active_id, 'default_fecha': programacion_cita}"/>
                         <button name="action_baja" states="certificado" string="Baja" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="action_cancelado" states="recibido,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento" type="object" icon="gtk-close"/>
-                        <button name="%(action_chatarra_reposicion)d" states="recibido,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado" string="Desestimiento y Reposicion" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
-                        <button  name="%(action_chatarra_reposicion)d" states="asignada,completo" string="Reponer" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
+                        <button name="%(chatarra.action_chatarra_reposicion)d" states="recibido,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado" string="Desestimiento y Reposicion" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
+                        <button  name="%(chatarra.action_chatarra_reposicion)d" states="asignada,completo" string="Reponer" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,disponible,asignada,reposicion"/>
                     </header>
     				<sheet>
@@ -233,10 +233,6 @@
     			</form>
     		</field>
     	</record>
-        <!-- Menu Chatarra-->
-        <menuitem id="chatarra_menu" name="Chatarra"/>
-        <!-- Menu Chatarra/Unidades -->
-        <menuitem id="chatarra_list_menu" name="Unidades" parent="chatarra_menu"/>
        <!-- Accion Chatarra/Unidades/Inventario -->
         <record id='action_chatarra_list' model='ir.actions.act_window'>
         	<field name='name'>Inventario</field>
@@ -308,8 +304,6 @@
             <field name='view_type'>form</field>
             <field name='view_mode'>tree,form</field>
         </record>
-        <!-- Menu Chatarra/Configuracion -->
-        <menuitem id="chatarra_config_menu" name="Configuracion" parent="chatarra_menu"/>
         <!-- Menu Chatarra/Unidades/Inventario -->
         <menuitem id="chatarra_lists_menu" name="Inventario" parent="chatarra_list_menu" sequence="0"/>
         <!-- Menu Chatarra/Unidades/Inventario/Inventario -->
