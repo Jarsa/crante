@@ -13,6 +13,7 @@ import base64
 
 class chatarra_unit(osv.osv):
     _name = 'chatarra.unit'
+    _description = 'Unidad'
 
     def _check_unique_insesitive(self, cr, uid, ids, context=None):
         sr_ids = self.search(cr, 1 , [], context=context)

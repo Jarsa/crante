@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model='ir.module.category' id='chatarra_module_category'>
+        	<field name='name'>Chatarra</field>
+        	<field name='sequence'>101</field>
+        </record>
+        <record id='chatarra_group_create_units' model='res.groups'>
+        	<field name='name'>Puede crear Unidades</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_reposiciones' model='res.groups'>
+        	<field name='name'>Puede hacer reposiciones</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_documentos' model='res.groups'>
+        	<field name='name'>Puede confirmar documentos</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_create_asignaciones' model='res.groups'>
+        	<field name='name'>Puede crear asignaciones</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_confirm_asignaciones' model='res.groups'>
+        	<field name='name'>Puede confirmar asignaciones</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_create_envio' model='res.groups'>
+        	<field name='name'>Puede crear envios</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_confirm_envio' model='res.groups'>
+        	<field name='name'>Puede confirmar envios</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_recibir_sct' model='res.groups'>
+        	<field name='name'>Puede recibir unidades de SCT</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_disponible' model='res.groups'>
+        	<field name='name'>Puede poner en Disponible</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_bloqueo' model='res.groups'>
+        	<field name='name'>Puede bloquear unidades</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_cita' model='res.groups'>
+        	<field name='name'>Puede programar citas</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_cita2' model='res.groups'>
+        	<field name='name'>Puede re-programar citas</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_desestimiento' model='res.groups'>
+        	<field name='name'>Puede hacer desestimiento</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_desestimiento_reposicion' model='res.groups'>
+        	<field name='name'>Puede hacer desestimiento con reposicion</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_enviar_expediente' model='res.groups'>
+        	<field name='name'>Puede enviar expediente</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_chatarrizado' model='res.groups'>
+        	<field name='name'>Puede chatarrizar</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_certificado' model='res.groups'>
+        	<field name='name'>Puede recibir certificado</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_baja' model='res.groups'>
+        	<field name='name'>Puede hacer baja</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_desasingar' model='res.groups'>
+        	<field name='name'>Puede desasignar</field>
+        	<field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_user' model='res.groups'>
+            <field name='name'>Chatarra / Usuario</field>
+            <field name='category_id' eval='chatarra_module_category'/>
+        </record>
+        <record id='chatarra_group_manager' model='res.groups'>
+            <field name='name'>Chatarra / Administrador</field>
+            <field name='category_id' eval='chatarra_module_category'/>
+            <field name='implied_ids' eval="[(4, ref('chatarra_group_create_units')),
+                                             (4, ref('chatarra_group_reposiciones')),
+                                             (4, ref('chatarra_group_documentos')),
+                                             (4, ref('chatarra_group_create_asignaciones')),
+                                             (4, ref('chatarra_group_confirm_asignaciones')),
+                                             (4, ref('chatarra_group_create_envio')),
+                                             (4, ref('chatarra_group_confirm_envio')),
+                                             (4, ref('chatarra_group_recibir_sct')),
+                                             (4, ref('chatarra_group_disponible')),
+                                             (4, ref('chatarra_group_bloqueo')),
+                                             (4, ref('chatarra_group_cita')),
+                                             (4, ref('chatarra_group_cita2')),
+                                             (4, ref('chatarra_group_desestimiento')),
+                                             (4, ref('chatarra_group_desestimiento_reposicion')),
+                                             (4, ref('chatarra_group_enviar_expediente')),
+                                             (4, ref('chatarra_group_chatarrizado')),
+                                             (4, ref('chatarra_group_certificado')),
+                                             (4, ref('chatarra_group_baja')),
+                                             (4, ref('chatarra_group_desasingar'))
+                                             ]"/>
+        </record>
+    </data>
+</openerp>

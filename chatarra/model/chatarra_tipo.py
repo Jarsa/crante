@@ -3,6 +3,7 @@ from openerp.osv import fields, osv
 
 class chatarra_tipo(osv.osv):
     _name = 'chatarra.tipo'
+    _description = 'Tipo'
     _columns = {
                 'name': fields.char('Tipo', size=40, required=True),
                 'active': fields.boolean('Activo'),

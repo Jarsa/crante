@@ -22,6 +22,7 @@ class chatarra_certificado_wizard(osv.TransientModel):
         unidad_obj.write(cr, uid, [unit.id], {'certificado': wiz.certificado,
                                               'certificado_fecha': wiz.fecha,
                                               'certificado_por': uid,
+                                              'state': 'certificado',
                                               'fecha_certificado': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         return {
                 'type': 'ir.actions.client',

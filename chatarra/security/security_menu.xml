@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Menus -->
+        <record model='ir.ui.menu' id='chatarra_asignacion_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_documentos_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_envio_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_reposiciones_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_lists_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_inventario_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_disponibles_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_asignadas_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_expediente_completo_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_enviadas_sct_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_recibido_sct_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_recibido_bloqueadas'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_cita_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_config_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_marca_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_motivo_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_tipo_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_product_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='chatarra_client_menu'>
+            <field name='groups_id' eval="[(4, ref('chatarra_group_manager'))]"/>
+        </record>
+    </data>
+</openerp>

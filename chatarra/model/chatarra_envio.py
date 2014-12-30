@@ -1,15 +1,14 @@
 # -*- encoding: utf-8 -*-
 from openerp.osv import osv, fields
-from openerp import tools
+from openerp import tools, _
 import time
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
-import logging
-_logger = logging.getLogger(__name__)
 
 class chatarra_envio(osv.osv):
     _name = 'chatarra.envio'
+    _description = 'Envios'
     _columns = {
         'name'			: fields.char('No. de envio', readonly=True),
         'state'			: fields.selection([

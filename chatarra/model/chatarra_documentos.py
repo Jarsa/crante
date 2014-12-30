@@ -8,7 +8,7 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FO
 
 class chatarra_documentos(osv.osv):
     _name = 'chatarra.documentos'
-    _description = 'documentos'
+    _description = 'Documentos'
     _columns = {
         'name'		        :fields.selection([
 	       				            ('visual','Visual'),

@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
 import logging
 from openerp.tools.translate import _
-_logger = logging.getLogger(__name__)
+
 
 class chatarra_asignacion(osv.osv):
     _name = 'chatarra.asignacion'

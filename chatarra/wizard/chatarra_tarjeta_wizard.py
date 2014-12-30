@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from openerp.osv import fields, osv
-from openerp import tools
+from openerp import tools, _
 import time
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -48,8 +48,13 @@ class chatarra_tarjeta_wizard(osv.TransientModel):
             unidad_obj.write(cr, uid, [unit.id], {'state':'recibido',
                                   'recibido_por': uid,
                                   'fecha_recibido':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return { 'type' :  'ir.actions.act_close_wizard_and_reload_view' }
+#         return {
+#             'type': 'ir.actions.client',
+#             'tag': 'chatarra_unit_enviado_sct_tree',
+#             'params': {'wait': True},
+# }
+        #return { 'type' :  'ir.actions.act_close_wizard_and_reload_view' }
         # return {
-        #         'type': 'ir.actions.client',
+        #         'type': 'ir_actions_act_window',
         #         'tag': 'reload',
         #         }

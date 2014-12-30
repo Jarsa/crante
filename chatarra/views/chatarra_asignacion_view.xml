@@ -36,7 +36,7 @@
         	<field name='arch' type='xml'>
         		<form string='Asignaciones'>
         			<header>
-                        <button name="action_confirmado" states="borrador" string="Confimar" type="object" icon="gtk-apply" class="oe_highlight"/>
+                        <button name="action_confirmado" groups="chatarra.chatarra_group_confirm_asignaciones" states="borrador" string="Confimar" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,confirmado"/>
         			</header>
         			<sheet>

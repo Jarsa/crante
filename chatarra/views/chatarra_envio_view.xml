@@ -37,7 +37,7 @@
         	<field name='arch' type='xml'>
         		<form string='Envio'>
                     <header>
-        				<button name="enviar_unidad" states="borrador" string="Enviar" type="object" icon="gtk-apply" class="oe_highlight"/>
+        				<button name="enviar_unidad" groups="chatarra.chatarra_group_confirm_envio" states="borrador" string="Enviar" type="object" icon="gtk-apply" class="oe_highlight"/>
         				<field name='state' widget="statusbar" statusbar_visible="borrador,enviado"/>
         			</header>
         			<sheet>

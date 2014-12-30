@@ -20,7 +20,7 @@
             <field name='arch' type='xml'>
                 <form string='Guia'>
                     <header>
-                     <button name="action_reposicion" string="Reponer" type="object" icon="gtk-apply" class="oe_highlight"/>   
+                     <button name="action_reposicion" group="chatarra.chatarra_group_reposiciones" string="Reponer" type="object" icon="gtk-apply" class="oe_highlight"/>   
                     </header>
                     <sheet>
                         <h1>
