@@ -125,7 +125,7 @@ class chatarra_asignacion(osv.osv):
                                                                'invoice_line_tax_id':[(6,0,[x.id for x in product.taxes_id])],
                                                               })]
                                         }, context=None)
-            invoice_id = invoice_obj.search(cr, uid, [('unit_id','=',unidad.id),('type','=','out_invoice')])
+            invoice_id = invoice_obj.search(cr, uid, [('unit_id','=',unidad.id),('type','=','out_invoice'),('state','=','draft')])
             invoice = invoice_obj.browse(cr, uid, invoice_id)
             unidad_obj.write(cr, uid, unidad.id, {'facturado_por':uid,
                                                   'fecha_facturado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),

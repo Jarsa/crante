@@ -102,6 +102,7 @@
                         <button name="action_cancelado" groups="chatarra.chatarra_group_desestimiento" states="recibido,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento" type="object" icon="gtk-close"/>
                         <button name="%(chatarra.action_chatarra_reposicion)d" groups="chatarra.chatarra_group_desestimiento_reposicion" states="recibido,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado" string="Desestimiento y Reposicion" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
                         <button  name="%(chatarra.action_chatarra_reposicion)d" groups="chatarra.chatarra_group_reposiciones" states="asignada,completo" string="Reponer" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
+                        <button  name="action_desasignar" groups="chatarra.chatarra_group_desasingar" states="asignada,elaboracion,completo,enviado" string="Desasignar" type="object" icon="gtk-ok"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,disponible,asignada,reposicion"/>
                     </header>
     				<sheet>
@@ -168,9 +169,12 @@
                                     </field>
                                 </group>
                             </page>
-                            <page string='Referencias' attrs="{'invisible':['|',('state','=', 'disponible'),('state','=', 'borrador')]}">
+                            <page string='Referencias' attrs="{'invisible':[('state','=', 'borrador')]}">
                                 <group col='4'>
+                                    <field name='factura_proveedor_id' attrs="{'invisible':[('factura_proveedor_id','=', False)]}"/>
                                     <field name='asignacion_id' attrs="{'invisible':[('asignacion_id','=', False)]}"/>
+                                    <field name='asignacion2_id' attrs="{'invisible':[('asignacion2_id','=', False)]}"/>
+                                    <field name='asignacion3_id' attrs="{'invisible':[('asignacion3_id','=', False)]}"/>
                                     <field name='reposicion_id' attrs="{'invisible':[('reposicion_id','=', False)]}"/>
                                     <field name='facturado' attrs="{'invisible':[('facturado','=', False)]}"/>
                                     <field name='factura_id' attrs="{'invisible':[('factura_id','=', False)]}"/>
@@ -197,6 +201,10 @@
                                     <field name='fecha_asignada' attrs="{'invisible':[('fecha_asignada','=', False)]}"/>
                                     <field name='facturado_por' attrs="{'invisible':[('facturado_por','=', False)]}"/>
                                     <field name='fecha_facturado' attrs="{'invisible':[('fecha_facturado','=', False)]}"/>
+                                    <field name='desasignado_por' attrs="{'invisible':[('desasignado_por','=', False)]}"/>
+                                    <field name='fecha_desasignado' attrs="{'invisible':[('fecha_desasignado','=', False)]}"/>
+                                    <field name='desasignado2_por' attrs="{'invisible':[('desasignado2_por','=', False)]}"/>
+                                    <field name='fecha_desasignado2' attrs="{'invisible':[('fecha_desasignado2','=', False)]}"/>
                                     <field name='completo_por' attrs="{'invisible':[('completo_por','=', False)]}"/>
                                     <field name='fecha_completo' attrs="{'invisible':[('fecha_completo','=', False)]}"/>
                                     <field name='enviado_por' attrs="{'invisible':[('enviado_por','=', False)]}"/>

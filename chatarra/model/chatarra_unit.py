@@ -96,6 +96,12 @@ class chatarra_unit(osv.osv):
                 'fecha_exp'                : fields.date('Fecha de expedicion', required=True),
                 'document_ids'             : fields.one2many('chatarra.documentos', 'unit_id', 'Documentos', readonly=True),
                 'asignacion_id'            : fields.many2one('chatarra.asignacion', 'No. de Asignacion', readonly=True),
+                'desasignado_por'          : fields.many2one('res.users', 'Desasignado por', readonly=True),
+                'fecha_desasignado'        : fields.datetime('Fecha Desasignado', readonly=True),
+                'asignacion2_id'           : fields.many2one('chatarra.asignacion', 'Asignacion anterior', readonly=True),
+                'desasignado2_por'         : fields.many2one('res.users', 'Desasignado 2 por', readonly=True),
+                'fecha_desasignado2'       : fields.datetime('Fecha Desasignado 2', readonly=True),
+                'asignacion3_id'           : fields.many2one('chatarra.asignacion', 'Asignacion anterior 2', readonly=True),
                 'disponible_por'           : fields.many2one('res.users', 'Disponible por', readonly=True),
                 'fecha_disponible'         : fields.datetime('Fecha Disponible', readonly=True),
                 'asignada_por'             : fields.many2one('res.users', 'Asignado por', readonly=True),
@@ -159,6 +165,7 @@ class chatarra_unit(osv.osv):
                 'cita_anterior2'           : fields.datetime('Fecha de Cita Anterior 2', readonly=True),
                 'certificado'              : fields.char('Certificado', size=10, readonly=True),
                 'certificado_fecha'        : fields.date('Fecha del Certificado', readonly=True),
+                'factura_proveedor_id'     : fields.many2one('account.invoice', 'Factura de Proveedor', readonly=True),
         }
 
     _defaults = {
@@ -205,9 +212,12 @@ class chatarra_unit(osv.osv):
                                                            'invoice_line_tax_id':[(6,0,[x.id for x in product.supplier_taxes_id])],
                                                           })]
                                     }, context=None)
+        invoice_id = invoice_obj.search(cr, uid, [('unit_id','=',unidad.id),('type','=','in_invoice')])
+        invoice = invoice_obj.browse(cr, uid, invoice_id)
         self.write(cr, uid, ids, {  'state':'disponible',
                                     'disponible_por':uid,
                                     'fecha_disponible':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                                    'factura_proveedor_id':invoice.id,
                                     'document_ids': [(0, 0, {'name':'visual', 'unit_id':unidad.id}),
                                                      (0, 0, {'name':'carta', 'unit_id':unidad.id}),
                                                      (0, 0, {'name':'consulta', 'unit_id':unidad.id}),
@@ -289,6 +299,29 @@ class chatarra_unit(osv.osv):
         asignacion_obj.write(cr, uid, asignacion_id, {'unit_ids': [(3, unidad.id)]})
         return True
 
+    def action_desasignar(self, cr, uid, ids, vals, context=None):
+        unidad = self.browse(cr, uid, ids)
+        invoice_obj = self.pool.get('account.invoice')
+        invoice_id = invoice_obj.search(cr, uid, [('unit_id','=',unidad.id),('type','=','out_invoice')])
+        invoice = invoice_obj.browse(cr, uid, invoice_id, context=None)
+        asignacion_obj = self.pool.get('chatarra.asignacion')
+        asignacion_id = asignacion_obj.search(cr, uid, [('unit_ids','=',unidad.id)])
+        asignacion_obj.write(cr, uid, unidad.asignacion_id.id, {'unit_ids': [(3, unidad.id)]})
+        if unidad.asignacion2_id == False:
+            self.write(cr, uid, ids, {'state':'disponible',
+                                      'asignacion_id':False,
+                                      'asignacion2_id':unidad.asignacion_id.id,
+                                      'desasignado_por':uid,
+                                      'fecha_desasignado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        else:
+            self.write(cr, uid, ids, {'state':'disponible',
+                                      'asignacion_id':False,
+                                      'asignacion2_id':unidad.asignacion_id.id,
+                                      'asignacion3_id':unidad.asignacion2_id.id,
+                                      'desasignado2_por':uid,
+                                      'fecha_desasignado2':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        invoice.signal_workflow('invoice_cancel')
+
 #    def send_mail_chatarra(self, cr, uid, ids, context=None):
 #      email_template_obj = self.pool.get('email.template')
 #      template_ids = email_template_obj.search(cr, uid, [('model_id.model', '=','chatarra.unit')], context=context) 
@@ -338,43 +371,43 @@ class chatarra_unit(osv.osv):
 #          mail_mail_obj.send(cr, uid, [msg_id], context=context)
 #      return True
 
-class chatarra_notificacion(osv.osv_memory):
-    _name = 'chatarra.notificacion'
-
-    def _get_date(self, cr, uid, ids, context=None):
-      val = self.pool.get('ir.config_parameter').get_param(cr, uid, 'chatarra_enviado_notificacion_x_dias', context=context)
-      xdays = int(val) or 0
-      date = datetime.now()  + timedelta(days=xdays)
-      return date.strftime(DEFAULT_SERVER_DATE_FORMAT)
-
-    _columns = {
-             'date'    : fields.date('Date', required=True),
-             }
-
-    _defaults = {
-         'date'   : _get_date,
-             }
-   
-    def button_get_units(self, cr, uid, ids, to_attach=False, context=None):
-      """
-#         To get the date and print the report
-#         @return : return report
-#         """
-      if context is None:
-        context = {}
-       
-      date = self.browse(cr, uid, ids)[0].date
-      chatarra_unit_obj = self.pool.get('chatarra.unit')
-      condition = [('fecha_enviado',">=", date)]
-      unit_ids = chatarra_unit_obj.search(cr, uid, condition, order='fecha_enviado desc')      
-      if unit_ids:
-        datas = {   'ids': unit_ids, 
-                    'count': len(unit_ids),
-                    'date': date}
-        return {
-              'type': 'ir.actions.report.xml',
-              'report_name': 'chatarra.unit.report',
-              'datas': datas,
-              }
-      else:
-        raise osv.except_osv(_('Warning!'), _('There are no Driver Licenses expired or to expire on this date'))#
+#class chatarra_notificacion(osv.osv_memory):
+#    _name = 'chatarra.notificacion'
+#
+#    def _get_date(self, cr, uid, ids, context=None):
+#      val = self.pool.get('ir.config_parameter').get_param(cr, uid, 'chatarra_enviado_notificacion_x_dias', context=context)
+#      xdays = int(val) or 0
+#      date = datetime.now()  + timedelta(days=xdays)
+#      return date.strftime(DEFAULT_SERVER_DATE_FORMAT)
+#
+#    _columns = {
+#             'date'    : fields.date('Date', required=True),
+#             }
+#
+#    _defaults = {
+#         'date'   : _get_date,
+#             }
+#   
+#    def button_get_units(self, cr, uid, ids, to_attach=False, context=None):
+#      """
+##         To get the date and print the report
+##         @return : return report
+##         """
+#      if context is None:
+#        context = {}
+#       
+#      date = self.browse(cr, uid, ids)[0].date
+#      chatarra_unit_obj = self.pool.get('chatarra.unit')
+#      condition = [('fecha_enviado',">=", date)]
+#      unit_ids = chatarra_unit_obj.search(cr, uid, condition, order='fecha_enviado desc')      
+#      if unit_ids:
+#        datas = {   'ids': unit_ids, 
+#                    'count': len(unit_ids),
+#                    'date': date}
+#        return {
+#              'type': 'ir.actions.report.xml',
+#              'report_name': 'chatarra.unit.report',
+#              'datas': datas,
+#              }
+#      else:
+#        raise osv.except_osv(_('Warning!'), _('There are no Driver Licenses expired or to expire on this date'))##
