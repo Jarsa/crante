@@ -322,6 +322,15 @@ class chatarra_unit(osv.osv):
                                       'fecha_desasignado2':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         invoice.signal_workflow('invoice_cancel')
 
+    def action_completo_unidad(self, cr, uid, ids, vals, context=None):
+        unidad = self.browse(cr, uid, ids)
+        for documento in unidad.document_ids:
+            if documento.state == 'pendiente':
+                raise osv.except_osv(_('Advertencia!'), _('Un documento sigue en estado pendiente'))
+            else:
+                self.write(cr, uid, ids, {'state':'completo',
+                                          'completo_por':uid,
+                                          'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 #    def send_mail_chatarra(self, cr, uid, ids, context=None):
 #      email_template_obj = self.pool.get('email.template')
 #      template_ids = email_template_obj.search(cr, uid, [('model_id.model', '=','chatarra.unit')], context=context) 

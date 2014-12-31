@@ -89,6 +89,7 @@
     			<form string='Lista de Unidades'>
                     <header>
                         <button name="action_disponible" groups="chatarra.chatarra_group_disponible" states="borrador" string="Disponible" type="object" icon="gtk-apply" class="oe_highlight"/>
+                        <button name="action_completo_unidad" groups="chatarra.chatarra_group_documentos" states="asignada" string="Expediente Completo" class="oe_highlight" type="object" icon="gtk-apply"/>
                         <button name="action_recibir_consulta" groups="chatarra.chatarra_group_recibir_sct" attrs="{'invisible':['|',('consulta','=',True),('state','!=','enviado')]}" string="Recibir Consulta" type="object" class="oe_highlight"/>
                         <button name="action_recibir_tarjeta" groups="chatarra.chatarra_group_recibir_sct" attrs="{'invisible':['|',('tarjeta_circulacion','=',True),('state','!=','enviado')]}" string="Recibir TC" type="object" class="oe_highlight"/>
                         <button name="%(chatarra.action_wizard_tarjeta)d" groups="chatarra.chatarra_group_recibir_sct" attrs="{'invisible':['|',('copia_tc','=',True),('state','!=','enviado')]}" string="Copia TC" type="action" class="oe_highlight" context="{'default_unit_id': active_id}"/>
