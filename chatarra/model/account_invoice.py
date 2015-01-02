@@ -1,14 +1,9 @@
 # -*- encoding: utf-8 -*-
-from openerp.osv import fields, osv
+from openerp import models, fields
 
-class chatarra_invoice(osv.osv):
-    _name = 'account.invoice'
+class chatarra_invoice(models.Model):
     _inherit = 'account.invoice'
-    _columns = {
-        'asignacion_id'	: fields.many2one('chatarra.asignacion','No. de Asignacion', readonly=True),
-        'unit_id'		: fields.many2one('chatarra.unit','Unidad', readonly=True),
-        'agencia_id'	: fields.many2one('res.partner','Agencia', readonly=True),
-        'contacto_id'	: fields.many2one('res.partner','Contacto', readonly=True),
-    }
-
-chatarra_invoice()
+    asignacion_id = fields.Many2one('chatarra.asignacion', string='No. de Asignacion', readonly=True)
+    unit_id = fields.Many2one('chatarra.unit', string='Unidad', readonly=True)
+    agencia_id = fields.Many2one('res.partner',string='Agencia', readonly=True)
+    contacto_id	= fields.Many2one('res.partner',string='Contacto', readonly=True)

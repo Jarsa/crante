@@ -1,13 +1,8 @@
 # -*- encoding: utf-8 -*-
-from openerp.osv import fields, osv
+from openerp import models, fields
 
-class chatarra_motivo(osv.osv):
+class chatarra_motivo(models.Model):
     _name = 'chatarra.motivo'
     _description = 'Motivo'
-    _columns = {
-        'name'      : fields.char('Motivo', size=64, required=True),
-        'active'    : fields.boolean('Activo'),
-    }
-    _defaults = {
-        'active': 'True',
-    }
+    name = fields.Char(string='Motivo', size=64, required=True)
+    active = fields.Boolean(string='Activo', default=True)

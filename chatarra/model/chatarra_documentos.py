@@ -49,7 +49,6 @@ class chatarra_documentos(osv.osv):
         unidad_obj.write(cr, uid, [unidad.id], {'state':'completo',
                                                 'completo_por':uid,
                                                 'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return { 'type' :  'ir.actions.act_close_wizard_and_reload_view' }
 
     def action_completo(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {  'state':'completo',
@@ -61,4 +60,3 @@ class chatarra_documentos(osv.osv):
                                     'completo_por':uid,
                                     'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
                                   })
-        return True
