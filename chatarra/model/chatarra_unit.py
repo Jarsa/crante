@@ -166,7 +166,7 @@ class chatarra_unit(osv.osv):
                 'numero'                   : fields.char('Numero', required=True),
                 'colonia'                  : fields.char('Colonia', required=True),
                 'codigo_postal'            : fields.char('Codigo Postal', required=True),
-                'ciudad'                   : fieds.char('Ciudad',required=True),
+                'ciudad'                   : fields.char('Ciudad',required=True),
         }
 
     _defaults = {
