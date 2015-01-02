@@ -100,10 +100,10 @@
                         <button name="action_chatarrizado" groups="chatarra.chatarra_group_chatarrizado" states="exp_enviado" string="Chatarrizado" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="%(chatarra.action_chatarra_certificado)d" groups="chatarra.chatarra_group_certificado" states="chatarrizado" string="Certificado" type="action" icon="gtk-apply" class="oe_highlight" context="{'default_unit_id': active_id, 'default_fecha': programacion_cita}"/>
                         <button name="action_baja" groups="chatarra.chatarra_group_baja" states="certificado" string="Baja" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="action_cancelado" groups="chatarra.chatarra_group_desestimiento" states="recibido,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento" type="object" icon="gtk-close"/>
-                        <button name="%(chatarra.action_chatarra_reposicion)d" groups="chatarra.chatarra_group_desestimiento_reposicion" states="recibido,enviado_agencia,bloqueado,cita,exp_enviado,chatarrizado,certificado" string="Desestimiento y Reposicion" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
+                        <button name="action_cancelado" groups="chatarra.chatarra_group_desestimiento" states="recibido,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento" type="object" icon="gtk-close"/>
+                        <button name="%(chatarra.action_chatarra_reposicion)d" groups="chatarra.chatarra_group_desestimiento_reposicion" states="recibido,bloqueado,cita,exp_enviado,chatarrizado,certificado" string="Desestimiento y Reposicion" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
                         <button  name="%(chatarra.action_chatarra_reposicion)d" groups="chatarra.chatarra_group_reposiciones" states="asignada,completo" string="Reponer" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
-                        <button  name="action_desasignar" groups="chatarra.chatarra_group_desasingar" states="asignada,elaboracion,completo,enviado" string="Desasignar" type="object" icon="gtk-ok"/>
+                        <button  name="action_desasignar" groups="chatarra.chatarra_group_desasingar" states="asignada,completo,enviado" string="Desasignar" type="object" icon="gtk-ok"/>
                         <field name='state' widget="statusbar" statusbar_visible="borrador,disponible,asignada,reposicion"/>
                     </header>
     				<sheet>
@@ -148,7 +148,7 @@
                                     <field name='color_placa' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
                                     <field name='folio_tarjeta' attrs="{'invisible':[('folio_tarjeta','=',False)]}"/>
                                     <field name='fecha_tarjeta' attrs="{'invisible':[('fecha_tarjeta','=',False)]}"/>
-                                    <field name='folio_modalidad' attrs="{'invisible':[('folio_modalidad','=',False)]}"/>
+                                    <field name='folio_modalidad' attrs="{'invisible':[('folio_modalidad','=','0')]}"/>
                                 </group>
     						</page>
                             <page string='Datos del Propietario Ant.'>

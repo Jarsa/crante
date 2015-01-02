@@ -74,7 +74,7 @@ class chatarra_unit_reposicion(osv.osv):
                                                'facturado_por':uid,
                                                'factura_id':invoice_nueva.id,
                                                'fecha_facturado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        if anterior.state in ['asignada','completo','seleccion','enviado','elaboracion']:
+        if anterior.state in ['asignada','completo','seleccion','enviado']:
             unidad_obj.write(cr, uid, [anterior.id], {'repuesta_id':nueva.id,
                                                       'state':'reposicion',
                                                       'reposicion_id':reposicion.id,
