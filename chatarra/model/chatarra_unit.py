@@ -30,12 +30,6 @@ class chatarra_unit(osv.osv):
             if self_obj.serie and self_obj.serie.lower() in  lst:
                 return False
             return True
-
-    def onchange_vat(self, cr, uid, ids, propietario_id, context=None):
-        vat = False
-        if propietario_id:
-            vat = self.pool.get('res.partner').browse(cr, uid, propietario_id, context=context).vat
-        return {'value': {'vat': vat}}
     
     _columns = {  
                 'name'                     : fields.char('Placa', size=40, required=True),
@@ -76,9 +70,7 @@ class chatarra_unit(osv.osv):
                 'motor'                    : fields.char('Motor',size=40, required=True),
                 'combustible'              : fields.selection([('diesel','Diesel'),('gasolina','Gasolina')],'Combustible', required=True),
                 'peso_vehicular'           : fields.float('Peso Vehicular', required=True),
-                'propietario_id'           : fields.many2one('res.partner','Nombre del Propietario', required=True),
-                'vat'                      : fields.char('R.F.C.', size=20, required=True),
-                'reg_fed'                  : fields.char('Reg. Fed', size=40, required=True),
+                'rfc'                      : fields.char('R.F.C.', size=20, required=True),
                 'modalidad'                : fields.char('Modalidad', size=64, required=True),
                 'no_ejes'                  : fields.integer('Numero de ejes', required=True),
                 'no_llantas'               : fields.integer('Numero de llantas', required=True),
@@ -166,6 +158,9 @@ class chatarra_unit(osv.osv):
                 'certificado'              : fields.char('Certificado', size=10, readonly=True),
                 'certificado_fecha'        : fields.date('Fecha del Certificado', readonly=True),
                 'factura_proveedor_id'     : fields.many2one('account.invoice', 'Factura de Proveedor', readonly=True),
+                'tramite'                  : fields.char('Tramite', required=True),
+                'observacion'              : fields.text('Observacion'),
+                'fecha_sustitucion'        : fields.char('Fecha de sustitucion'),
         }
 
     _defaults = {
