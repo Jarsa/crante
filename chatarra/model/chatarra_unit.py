@@ -161,6 +161,12 @@ class chatarra_unit(osv.osv):
                 'tramite'                  : fields.char('Tramite', required=True),
                 'observacion'              : fields.text('Observacion'),
                 'fecha_sustitucion'        : fields.char('Fecha de sustitucion'),
+                'propietario_anterior'     : fields.char('Razon Social', required=True,),
+                'calle'                    : fields.char('Calle', required=True),            
+                'numero'                   : fields.char('Numero', required=True),
+                'colonia'                  : fields.char('Colonia', required=True),
+                'codigo_postal'            : fields.char('Codigo Postal', required=True),
+                'ciudad'                   : fieds.char('Ciudad',required=True),
         }
 
     _defaults = {
