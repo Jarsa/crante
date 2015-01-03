@@ -49,6 +49,8 @@
                     <field name='name'/>
                     <field name='serie'/>
                     <field name='secretaria_id'/>
+                    <field name='contacto_id'/>
+                    <field name='gestor_id'/>
                     <field name='paqueteria_id'/>
                     <field name='guia'/>
                     <field name='consulta'/>
@@ -195,6 +197,8 @@
                                     <field name='envio_id' attrs="{'invisible':[('envio_id','=', False)]}"/>
                                     <field name='guia' attrs="{'invisible':[('guia','=', False)]}"/>
                                     <field name='secretaria_id' attrs="{'invisible':[('secretaria_id','=', False)]}"/>
+                                    <field name='contacto_id' attrs="{'invisible':[('contacto_id','=', False)]}"/>
+                                    <field name='gestor_id' attrs="{'invisible':[('gestor_id','=', False)]}"/>
                                     <field name='paqueteria_id' attrs="{'invisible':[('paqueteria_id','=', False)]}"/>
                                     <field name='consulta' attrs="{'invisible':[('consulta','=', False)]}"/>
                                     <field name='tarjeta_circulacion' attrs="{'invisible':[('tarjeta_circulacion','=', False)]}"/>

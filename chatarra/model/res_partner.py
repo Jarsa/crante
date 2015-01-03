@@ -1,20 +1,15 @@
 # -*- encoding: utf-8 -*-
-from openerp.osv import fields, osv
+from openerp import fields, models
 
-class res_partner(osv.osv):
+class res_partner(models.Model):
     _name = 'res.partner'
     _inherit = 'res.partner'
-    _columns = {
-        'categoria' : fields.selection([('none', 'N/A'),
-        								('agencia','Agencia'),
-        								('paqueteria','Paqueteria'),
-        								('secretaria','Secretaria'),
-                                        ('chatarrera','Chatarrera'),
-                                        ('gestor','Gestor')
-        								], 'Categoria'),
-    }
-    _defaults = {
-        'categoria':'none',
-    }
-
-res_partner()
+    categoria = fields.Selection([
+                    ('none', 'N/A'),
+                    ('agencia','Agencia'),
+                    ('paqueteria','Paqueteria'),
+                    ('secretaria','Secretaria'),
+                    ('chatarrera','Chatarrera'),
+                    ('gestor','Gestor'),
+                    ('proveedor_visual','Proveedor Visual')
+                ], default='none')

@@ -10,18 +10,19 @@ class chatarra_envio(osv.osv):
     _name = 'chatarra.envio'
     _description = 'Envios'
     _columns = {
-        'name'			: fields.char('No. de envio', readonly=True),
-        'state'			: fields.selection([
-        					('borrador','Borrador'),
-        					('enviado','Enviado')
-        					],'Estado', readonly=True),
-        'guia'			: fields.char('Guia', required=True),
-        'paqueteria_id'	: fields.many2one('res.partner','Paqueteria', required=True),
-        'secretaria_id'	: fields.many2one('res.partner','Secretaria', required=True),
-        'unit_ids'		: fields.many2many('chatarra.unit', 'chatarra_envio_unidad_rel', 'envio_id', 'unit_id', 'Unidades', required=True),
-        'enviado_por'	: fields.many2one('res.users','Enviado por:', readonly=True),
-        'fecha_enviado'	: fields.datetime('Fecha Enviado:', readonly=True),
-        'gestor'        : fields.many2one('res.partner','Gestor'),
+        'name'          : fields.char('No. de envio', readonly=True),
+        'state'         : fields.selection([
+                            ('borrador','Borrador'),
+                            ('enviado','Enviado')
+                            ],'Estado', readonly=True),
+        'guia'          : fields.char('Guia', required=True),
+        'paqueteria_id' : fields.many2one('res.partner','Paqueteria', required=True),
+        'secretaria_id' : fields.many2one('chatarra.secretaria','Secretaria', required=True),
+        'contacto_id'   : fields.many2one('res.partner','Contacto', required=True),
+        'unit_ids'      : fields.many2many('chatarra.unit', 'chatarra_envio_unidad_rel', 'envio_id', 'unit_id', 'Unidades', required=True),
+        'enviado_por'   : fields.many2one('res.users','Enviado por:', readonly=True),
+        'fecha_enviado' : fields.datetime('Fecha Enviado:', readonly=True),
+        'gestor_id'     : fields.many2one('res.partner','Gestor'),
     }
 
     _defaults = {
@@ -38,14 +39,18 @@ class chatarra_envio(osv.osv):
                                                    'state':'completo',
                                                    'guia': False,
                                                    'paqueteria_id': False,
+                                                   'gestor_id': False,
+                                                   'contacto_id': False,
                                                    'secretaria_id': False,})
             unit_ids = []
             for unidad in envio.unit_ids:
-            	unit_obj.write(cr, uid, [unidad.id], {'envio_id':envio.id,
+                unit_obj.write(cr, uid, [unidad.id], {'envio_id':envio.id,
                                                       'state':'seleccion',
                                                       'guia':envio.guia,
                                                       'paqueteria_id':envio.paqueteria_id.id,
-                                                      'secretaria_id':envio.secretaria_id.id,})
+                                                      'secretaria_id':envio.secretaria_id.id,
+                                                      'contacto_id':envio.contacto_id.id,
+                                                      'gestor_id':envio.gestor_id.id,})
 
     def enviar_unidad(self, cr, uid, ids, vals, context=None):
         envio = self.browse(cr, uid, ids)
@@ -93,48 +98,50 @@ class chatarra_envio(osv.osv):
                                                         })]
                                   }, context=None)
         for unidad in envio.unit_ids:
-            invoice_obj.create(cr, uid, {'partner_id':envio.secretaria_id.id,
-                                   'account_id':envio.secretaria_id.property_account_payable.id,
-                                   'origin':envio.name + '/' + envio.secretaria_id.name + '/' + unidad.name,
-                                   'type':'in_invoice',
-                                   'journal_id':journal.id,
-                                   'fiscal_position':envio.secretaria_id.property_account_position.id,
-                                   'unit_id':unidad.id,
-                                   'invoice_line':[(0,0,{'product_id':product2.id,
-                                                         'name':'Envio: ' + envio.name + '\nNo. de Guia: ' + envio.guia + '\nPaqueteria: ' + envio.paqueteria_id.name + '\Secretaria: ' + envio.secretaria_id.name,
-                                                         'account_id':prod_account2,
-                                                         'quantity':'1',
-                                                         'price_unit':product2.lst_price,
-                                                         'invoice_line_tax_id':[(6,0,[x.id for x in product2.supplier_taxes_id])],
-                                                        })]
-                                  }, context=None)
-            if envio.gestor:
-                invoice_obj.create(cr, uid, {'partner_id':envio.gestor.id,
-                                   'account_id':envio.gestor.property_account_payable.id,
-                                   'origin':envio.name + '/' + envio.gestor.name + '/' + unidad.name,
-                                   'type':'in_invoice',
-                                   'journal_id':journal.id,
-                                   'fiscal_position':envio.gestor.property_account_position.id,
-                                   'unit_id':unidad.id,
-                                   'invoice_line':[(0,0,{'product_id':product2.id,
-                                                         'name':'Envio: ' + envio.name + '\nNo. de Guia: ' + envio.guia + '\nPaqueteria: ' + envio.paqueteria_id.name + '\Gestor: ' + envio.gestor.name,
-                                                         'account_id':prod_account2,
-                                                         'quantity':'1',
-                                                         'price_unit':product2.lst_price,
-                                                         'invoice_line_tax_id':[(6,0,[x.id for x in product2.supplier_taxes_id])],
-                                                        })]
-                                  }, context=None)
+            invoice_obj.create(cr, uid, {'partner_id':envio.contacto_id.id,
+                                         'account_id':envio.contacto_id.property_account_payable.id,
+                                         'origin':envio.name + '/' + envio.secretaria_id.name + '/' + envio.contacto_id.name + '/' + unidad.name,
+                                         'type':'in_invoice',
+                                         'journal_id':journal.id,
+                                         'fiscal_position':envio.contacto_id.property_account_position.id,
+                                         'unit_id':unidad.id,
+                                         'invoice_line':[(0,0,{'product_id':product2.id,
+                                                               'name':'Envio: ' + envio.name + '\nNo. de Guia: ' + envio.guia + '\nPaqueteria: ' + envio.paqueteria_id.name + '\nSecretaria: ' + envio.secretaria_id.name + '\nContacto: ' + envio.contacto_id.name,
+                                                               'account_id':prod_account2,
+                                                               'quantity':'1',
+                                                               'price_unit':product2.lst_price,
+                                                               'invoice_line_tax_id':[(6,0,[x.id for x in product2.supplier_taxes_id])],
+                                                              })]
+                                        }, context=None)
+            if envio.gestor_id:
+                invoice_obj.create(cr, uid, {'partner_id':envio.gestor_id.id,
+                                             'account_id':envio.gestor_id.property_account_payable.id,
+                                             'origin':envio.name + '/' + envio.secretaria_id.name + '/' + envio.gestor_id.name + '/' + unidad.name,
+                                             'type':'in_invoice',
+                                             'journal_id':journal.id,
+                                             'fiscal_position':envio.gestor_id.property_account_position.id,
+                                             'unit_id':unidad.id,
+                                             'invoice_line':[(0,0,{'product_id':product2.id,
+                                                                   'name':'Envio: ' + envio.name + '\nNo. de Guia: ' + envio.guia + '\nPaqueteria: ' + envio.paqueteria_id.name + '\nGestor: ' + envio.gestor_id.name,
+                                                                   'account_id':prod_account2,
+                                                                   'quantity':'1',
+                                                                   'price_unit':product2.lst_price,
+                                                                   'invoice_line_tax_id':[(6,0,[x.id for x in product2.supplier_taxes_id])],
+                                                                  })]
+                                            }, context=None)
             self.write(cr, uid, ids, {'state':'enviado',
-    							  'enviado_por':uid,
-    							  'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+                                      'enviado_por':uid,
+                                      'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
             for unidad in envio.unit_ids:
                 unit_obj.write(cr, uid, [unidad.id], {'envio_id':envio.id,
-    											  'state':'enviado',
-    											  'guia':envio.guia,
-    											  'enviado_por':uid,
-                                                  'paqueteria_id':envio.paqueteria_id.id,
-                                                  'secretaria_id':envio.secretaria_id.id,
-    											  'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+                                                      'state':'enviado',
+                                                      'guia':envio.guia,
+                                                      'enviado_por':uid,
+                                                      'paqueteria_id':envio.paqueteria_id.id,
+                                                      'secretaria_id':envio.secretaria_id.id,
+                                                      'gestor_id':envio.gestor_id.id,
+                                                      'contacto_id':envio.contacto_id.id,
+                                                      'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
     def create(self, cr, uid, vals, context={}):
         if (not 'name' in vals) or (vals['name'] == False):
@@ -153,4 +160,3 @@ class chatarra_envio(osv.osv):
                 if envio.state in ('borrador'):
                     self.seleccionar_unidad(cr, uid, ids, vals)
         return True
-chatarra_envio()

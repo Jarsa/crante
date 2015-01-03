@@ -47,6 +47,7 @@
             'views/chatarra_envio_view.xml',
             'views/chatarra_marca_view.xml',
             'views/chatarra_tipo_view.xml',
+            'views/chatarra_secretaria_view.xml',
             'views/chatarra_motivo_view.xml',
             'wizard/chatarra_certificado_wizard_view.xml',
             'wizard/chatarra_cita_wizard_view.xml',

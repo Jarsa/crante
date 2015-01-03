@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from openerp.osv import osv, fields
-from openerp import tools
+from openerp import tools, api
 import openerp.netsvc
 import openerp.pooler
 import time
@@ -15,12 +15,13 @@ class chatarra_unit(osv.osv):
     _name = 'chatarra.unit'
     _description = 'Unidad'
 
+    @api.onchange('name')
     def _check_unique_insesitive(self, cr, uid, ids, context=None):
         sr_ids = self.search(cr, 1 , [], context=context)
         lst = [x.name.lower() for x in self.browse(cr, uid, sr_ids, context=context) if x.name and x.id not in ids]
         for self_obj in self.browse(cr, uid, ids, context=context):
             if self_obj.name and self_obj.name.lower() in  lst:
-                return False
+                raise osv.except_osv(_('Error !'),_('Esta placa ya existe'))
             return True
 
     def _check_unique_serie(self, cr, uid, ids, context=None):
@@ -29,7 +30,7 @@ class chatarra_unit(osv.osv):
         for self_obj in self.browse(cr, uid, ids, context=context):
             if self_obj.serie and self_obj.serie.lower() in  lst:
                 return False
-            return True
+            return True    
     
     _columns = {  
                 'name'                     : fields.char('Placa', size=40, required=True),
@@ -149,7 +150,9 @@ class chatarra_unit(osv.osv):
                 'fecha_tarjeta'			   : fields.date('Fecha de Tarjeta de Circulacion', readonly=True),
                 'chatarrera_id'            : fields.many2one('res.partner','Chatarrera', readonly=True),
                 'paqueteria_id'            : fields.many2one('res.partner','Paqueteria', readonly=True),
-                'secretaria_id'            : fields.many2one('res.partner', 'Secretaria', readonly=True),
+                'contacto_id'              : fields.many2one('res.partner','Contacto', readonly=True),
+                'secretaria_id'            : fields.many2one('chatarra.secretaria', 'Secretaria', readonly=True),
+                'gestor_id'                : fields.many2one('res.partner','Gestor', readonly=True),
                 'programacion_cita'        : fields.datetime('Fecha de Cita', readonly=True),
                 'cita_anterior'            : fields.datetime('Fecha de Cita Anterior', readonly=True),
                 'cita_anterior2'           : fields.datetime('Fecha de Cita Anterior 2', readonly=True),
