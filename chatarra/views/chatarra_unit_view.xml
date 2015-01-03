@@ -114,7 +114,8 @@
     					</h1>
     					<group col='4'>
     						<field name='name' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
-                            <field name='supplier_id' domain="[('supplier','=',True),('is_company','=',True)]" context="{'default_customer': False, 'default_supplier': True, 'default_is_company': True,}" attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                            <field name='supplier_id' domain="[('supplier','=',True),('is_company','=',True),('categoria','=','proveedor_visual')]" context="{'default_customer': False, 'default_supplier': True, 'default_is_company': True, 'default_categoria': 'proveedor_visual'}" attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+                            <field name='importe' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
                             <field name='client_id' attrs="{'invisible':[('client_id','=',False)],'readonly': [('state', '!=', 'borrador')]}"/>
     					</group>
     					<notebook>

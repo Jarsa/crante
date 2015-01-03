@@ -15,13 +15,12 @@ class chatarra_unit(osv.osv):
     _name = 'chatarra.unit'
     _description = 'Unidad'
 
-    @api.onchange('name')
     def _check_unique_insesitive(self, cr, uid, ids, context=None):
         sr_ids = self.search(cr, 1 , [], context=context)
         lst = [x.name.lower() for x in self.browse(cr, uid, sr_ids, context=context) if x.name and x.id not in ids]
         for self_obj in self.browse(cr, uid, ids, context=context):
             if self_obj.name and self_obj.name.lower() in  lst:
-                raise osv.except_osv(_('Error !'),_('Esta placa ya existe'))
+                return False
             return True
 
     def _check_unique_serie(self, cr, uid, ids, context=None):
@@ -32,6 +31,16 @@ class chatarra_unit(osv.osv):
                 return False
             return True    
     
+    @api.onchange('name')
+    def _onchange(self, cr, uid, ids, context=None):
+        unit_ids = self.search(cr, uid, [], context=context)
+        name_list = [x.name.lower() for x in self.browse(cr, uid, unit_ids, context) if x.name and x.id not in ids]
+        for unit in self.browse(cr, uid, ids, context=context):
+            if unit.name and unit.name.lower() in name_list:
+        #unidad = self.browse(cr, uid, ids)
+        #if unidad.name != unq
+        #raise osv.except_osv(_('Error !'),_('Esta placa ya existe'))
+
     _columns = {  
                 'name'                     : fields.char('Placa', size=40, required=True),
                 'state'                    : fields.selection([
@@ -168,6 +177,7 @@ class chatarra_unit(osv.osv):
                 'colonia'                  : fields.char('Colonia', required=True),
                 'codigo_postal'            : fields.char('Codigo Postal', required=True),
                 'ciudad'                   : fields.char('Ciudad',required=True),
+                'importe'                  : fields.float('Importe', required=True),
         }
 
     _defaults = {
@@ -210,7 +220,7 @@ class chatarra_unit(osv.osv):
                                                            'name':'Marca: ' + unidad.marca.name + '\nSerie: ' + unidad.serie + '\nPlacas: ' + unidad.name,
                                                            'account_id':prod_account,
                                                            'quantity':'1',
-                                                           'price_unit':product.lst_price,
+                                                           'price_unit':unidad.importe,
                                                            'invoice_line_tax_id':[(6,0,[x.id for x in product.supplier_taxes_id])],
                                                           })]
                                     }, context=None)
