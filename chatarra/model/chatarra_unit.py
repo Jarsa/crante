@@ -1,434 +1,323 @@
 # -*- encoding: utf-8 -*-
-from openerp.osv import osv, fields
-from openerp import tools, api
-import openerp.netsvc
-import openerp.pooler
+from openerp import models, fields, _, api
 import time
-from openerp.osv.orm import browse_record, browse_null
-from datetime import datetime, date, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
-from openerp.tools.translate import _
-import base64
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
+from openerp.exceptions import except_orm
 
-class chatarra_unit(osv.osv):
+class chatarra_unit(models.Model):
     _name = 'chatarra.unit'
     _description = 'Unidad'
 
-    def _check_unique_insesitive(self, cr, uid, ids, context=None):
-        sr_ids = self.search(cr, 1 , [], context=context)
-        lst = [x.name.lower() for x in self.browse(cr, uid, sr_ids, context=context) if x.name and x.id not in ids]
-        for self_obj in self.browse(cr, uid, ids, context=context):
-            if self_obj.name and self_obj.name.lower() in  lst:
-                return False
-            return True
-
-    def _check_unique_serie(self, cr, uid, ids, context=None):
-        sr_ids = self.search(cr, 1 , [], context=context)
-        lst = [x.serie.lower() for x in self.browse(cr, uid, sr_ids, context=context) if x.serie and x.id not in ids]
-        for self_obj in self.browse(cr, uid, ids, context=context):
-            if self_obj.serie and self_obj.serie.lower() in  lst:
-                return False
-            return True    
-    
-    @api.onchange('name')
-    def _onchange(self, cr, uid, ids, context=None):
-        unit_ids = self.search(cr, uid, [], context=context)
-        name_list = [x.name.lower() for x in self.browse(cr, uid, unit_ids, context) if x.name and x.id not in ids]
-        for unit in self.browse(cr, uid, ids, context=context):
-            if unit.name and unit.name.lower() in name_list:
-        #unidad = self.browse(cr, uid, ids)
-        #if unidad.name != unq
-        #raise osv.except_osv(_('Error !'),_('Esta placa ya existe'))
-
-    _columns = {  
-                'name'                     : fields.char('Placa', size=40, required=True),
-                'state'                    : fields.selection([
-                                               ('borrador','Borrador'),
-                                               ('disponible','Disponible'),
-                                               ('por_asignar','Seleccionado para Asignacion'),
-                                               ('asignada','Asignada'),
-                                               ('completo','Expediente Completo'),
-                                               ('seleccion','Seleccionado para Envio'),
-                                               ('enviado','Enviado a SCT'),
-                                               ('recibido','Recibido'),
-                                               ('consulta','Consulta'),
-                                               ('reposicion','Reposicion'),
-                                               ('bloqueado','Bloqueado'),
-                                               ('cita','Cita'),
-                                               ('exp_enviado','Expediente Enviado'),
-                                               ('chatarrizado','Chatarrizado'),
-                                               ('certificado','Certificado Recibido'),
-                                               ('baja','Baja'),
-                                               ('cancelado','Cancelado'),
-                                               ('desestimiento','Desestimiento'),
-                                               ], 'Estado', readonly=True),
-                'client_id'                : fields.many2one('res.partner', 'Cliente', readonly=True),
-                'supplier_id'              : fields.many2one('res.partner', 'Proveedor', required=True),
-                'serie'                    : fields.char('Número de serie', size=40, required=True),
-                'marca'                    : fields.many2one('chatarra.marca', 'Marca', required=True),
-                'modelo'                   : fields.char('Modelo', size=40, required=True),
-                'color_placa'              : fields.char('Color de la Placa', required=True),
-                'tipo_placa'               : fields.selection([('carga','CARGA'),
-                                                               ('pasaje','PASAJE'),
-                                                               ('turismo','TURISMO')
-                                                               ],'Tipo de Placa', required=True),
-                'clase'                    : fields.selection([('t2','T 2'),('t3','T 3'),('c2','C 2'),('c3','C 3')],'Clase', required=True),
-                'tipo'                     : fields.many2one('chatarra.tipo','Tipo', required=True),
-                'motor'                    : fields.char('Motor',size=40, required=True),
-                'combustible'              : fields.selection([('diesel','Diesel'),('gasolina','Gasolina')],'Combustible', required=True),
-                'peso_vehicular'           : fields.float('Peso Vehicular', required=True),
-                'rfc'                      : fields.char('R.F.C.', size=20, required=True),
-                'modalidad'                : fields.char('Modalidad', size=64, required=True),
-                'no_ejes'                  : fields.integer('Numero de ejes', required=True),
-                'no_llantas'               : fields.integer('Numero de llantas', required=True),
-                'cap_litros'               : fields.char('Litros', size=10, required=True),
-                'cap_toneladas'            : fields.char('Toneladas', size=10, required=True),
-                'cap_personas'             : fields.char('Personas', size=10, required=True),
-                'alto'                     : fields.float('Alto', required=True),
-                'ancho'                    : fields.float('Ancho', required=True),
-                'largo'                    : fields.float('Largo', required=True),
-                'eje_direccional'          : fields.char('Eje Direccional', size=10, required=True),
-                'eje_motriz'               : fields.char('Eje Motriz', size=10, required=True),
-                'eje_carga'                : fields.char('Eje Carga', size=10, required=True),
-                'permiso_ruta'             : fields.char('Permiso de ruta', size=10, required=True),
-                'lugar_exp'                : fields.char('Lugar de expedicion', size=10, required=True),
-                'fecha_exp'                : fields.date('Fecha de expedicion', required=True),
-                'document_ids'             : fields.one2many('chatarra.documentos', 'unit_id', 'Documentos', readonly=True),
-                'asignacion_id'            : fields.many2one('chatarra.asignacion', 'No. de Asignacion', readonly=True),
-                'desasignado_por'          : fields.many2one('res.users', 'Desasignado por', readonly=True),
-                'fecha_desasignado'        : fields.datetime('Fecha Desasignado', readonly=True),
-                'asignacion2_id'           : fields.many2one('chatarra.asignacion', 'Asignacion anterior', readonly=True),
-                'desasignado2_por'         : fields.many2one('res.users', 'Desasignado 2 por', readonly=True),
-                'fecha_desasignado2'       : fields.datetime('Fecha Desasignado 2', readonly=True),
-                'asignacion3_id'           : fields.many2one('chatarra.asignacion', 'Asignacion anterior 2', readonly=True),
-                'disponible_por'           : fields.many2one('res.users', 'Disponible por', readonly=True),
-                'fecha_disponible'         : fields.datetime('Fecha Disponible', readonly=True),
-                'asignada_por'             : fields.many2one('res.users', 'Asignado por', readonly=True),
-                'fecha_asignada'           : fields.datetime('Fecha Asignado:', readonly=True),
-                'completo_por'             : fields.many2one('res.users', 'Expediente Completo por', readonly=True),
-                'fecha_completo'           : fields.datetime('Fecha Expediente Completo', readonly=True),
-                'enviado_por'              : fields.many2one('res.users', 'Enviado por', readonly=True),
-                'fecha_enviado'            : fields.datetime('Fecha Enviado', readonly=True),
-                'consulta_por'             : fields.many2one('res.users', 'Consulta por', readonly=True),
-                'fecha_consulta'           : fields.datetime('Fecha Consulta', readonly=True),
-                'tc_por'                   : fields.many2one('res.users', 'TC por', readonly=True),
-                'fecha_tc'                 : fields.datetime('Fecha TC:', readonly=True),
-                'copia_tc_por'             : fields.many2one('res.users', 'Copia TC por', readonly=True),
-                'fecha_copia_tc'           : fields.datetime('Fecha Copia TC', readonly=True),
-                'recibido_por'             : fields.many2one('res.users', 'Recibido por', readonly=True),
-                'fecha_recibido'           : fields.datetime('Fecha Recibido', readonly=True),
-                'bloqueado_por'            : fields.many2one('res.users', 'Bloqueado por', readonly=True),
-                'fecha_bloqueado'          : fields.datetime('Fecha Bloqueado', readonly=True),
-                'cita_por'                 : fields.many2one('res.users', 'Cita por', readonly=True),
-                'fecha_cita'               : fields.datetime('Fecha Cita', readonly=True),
-                'cita_reprogramada_por'    : fields.many2one('res.users', 'Cita Reprogramada por', readonly=True),
-                'fecha_cita_reprogramada'  : fields.datetime('Fecha Cita Reprogramada', readonly=True),
-                'cita_reprogramada2_por'   : fields.many2one('res.users', 'Cita Reprogramada 2 por', readonly=True),
-                'fecha_cita_reprogramada2' : fields.datetime('Fecha Cita Reprogramada 2', readonly=True),
-                'exp_enviado_por'          : fields.many2one('res.users', 'Exp. Enviado por', readonly=True),
-                'fecha_exp_enviado'        : fields.datetime('Fecha Exp. Enviado', readonly=True),
-                'chatarrizado_por'         : fields.many2one('res.users', 'Chatarrizado por', readonly=True),
-                'fecha_chatarrizado'       : fields.datetime('Fecha Chatarrizado', readonly=True),
-                'certificado_por'          : fields.many2one('res.users', 'Certificado por', readonly=True),
-                'fecha_certificado'        : fields.datetime('Fecha Certificado', readonly=True),
-                'baja_por'                 : fields.many2one('res.users', 'Baja por', readonly=True),
-                'fecha_baja'               : fields.datetime('Fecha Baja:', readonly=True),
-                'cancelado_por'            : fields.many2one('res.users', 'Cancelada por', readonly=True),
-                'fecha_cancelado'          : fields.datetime('Fecha Cancelada', readonly=True),
-                'desestimiento_por'        : fields.many2one('res.users', 'Desestimiento por', readonly=True),
-                'fecha_desestimiento'      : fields.datetime('Fecha Desestimiento', readonly=True),
-                'reposicion_por'           : fields.many2one('res.users', 'Reposicion por', readonly=True),
-                'fecha_reposicion'         : fields.datetime('Fecha Reposicion', readonly=True),
-                'facturado_por'            : fields.many2one('res.users', 'Facturado por', readonly=True),
-                'fecha_facturado'          : fields.datetime('Fecha Facturado', readonly=True),
-                'fact_cancelada_por'       : fields.many2one('res.users', 'Fact. Cancelada por', readonly=True),
-                'fecha_fact_cancelada'     : fields.datetime('Fecha Cancelada', readonly=True),
-                'repuesta_id'              : fields.many2one('chatarra.unit', 'Repuesta por', readonly=True),
-                'sustituye_id'             : fields.many2one('chatarra.unit', 'Sustituye a', readonly=True),
-                'reposicion_id'            : fields.many2one('chatarra.reposicion', 'No. de Reposicion', readonly=True),
-                'factura_id'               : fields.many2one('account.invoice', 'No. de Factura', readonly=True),
-                'facturado'                : fields.boolean('Facturado', readonly=True),
-                'envio_id'                 : fields.many2one('chatarra.envio','No. Envio', readonly=True),
-                'guia'                     : fields.char('Guia:', readonly=True),
-                'copia_tc'				   : fields.boolean('Copia TC', readonly=True),
-                'consulta'				   : fields.boolean('Consulta', readonly=True),
-                'tarjeta_circulacion'	   : fields.boolean('Tarjeta de Circulacion', readonly=True),
-                'folio_modalidad'		   : fields.integer('Folio Modalidad', readonly=True, size=10),
-                'folio_tarjeta'			   : fields.char('No. de Folio TC', readonly=True),
-                'fecha_tarjeta'			   : fields.date('Fecha de Tarjeta de Circulacion', readonly=True),
-                'chatarrera_id'            : fields.many2one('res.partner','Chatarrera', readonly=True),
-                'paqueteria_id'            : fields.many2one('res.partner','Paqueteria', readonly=True),
-                'contacto_id'              : fields.many2one('res.partner','Contacto', readonly=True),
-                'secretaria_id'            : fields.many2one('chatarra.secretaria', 'Secretaria', readonly=True),
-                'gestor_id'                : fields.many2one('res.partner','Gestor', readonly=True),
-                'programacion_cita'        : fields.datetime('Fecha de Cita', readonly=True),
-                'cita_anterior'            : fields.datetime('Fecha de Cita Anterior', readonly=True),
-                'cita_anterior2'           : fields.datetime('Fecha de Cita Anterior 2', readonly=True),
-                'certificado'              : fields.char('Certificado', size=10, readonly=True),
-                'certificado_fecha'        : fields.date('Fecha del Certificado', readonly=True),
-                'factura_proveedor_id'     : fields.many2one('account.invoice', 'Factura de Proveedor', readonly=True),
-                'tramite'                  : fields.char('Tramite', required=True),
-                'observacion'              : fields.text('Observacion'),
-                'fecha_sustitucion'        : fields.char('Fecha de sustitucion'),
-                'propietario_anterior'     : fields.char('Razon Social', required=True,),
-                'calle'                    : fields.char('Calle', required=True),            
-                'numero'                   : fields.char('Numero', required=True),
-                'colonia'                  : fields.char('Colonia', required=True),
-                'codigo_postal'            : fields.char('Codigo Postal', required=True),
-                'ciudad'                   : fields.char('Ciudad',required=True),
-                'importe'                  : fields.float('Importe', required=True),
-        }
-
-    _defaults = {
-        'state': 'borrador',
-    }
-
+    name                     = fields.Char(string='Placa', size=10, required=True)
+    state                    = fields.Selection([
+                                                ('borrador','Borrador'),
+                                                ('disponible','Disponible'),
+                                                ('por_asignar','Seleccionado para Asignacion'),
+                                                ('asignada','Asignada'),
+                                                ('completo','Expediente Completo'),
+                                                ('seleccion','Seleccionado para Envio'),
+                                                ('enviado','Enviado a SCT'),
+                                                ('recibido','Recibido'),
+                                                ('consulta','Consulta'),
+                                                ('reposicion','Reposicion'),
+                                                ('bloqueado','Bloqueado'),
+                                                ('cita','Cita'),
+                                                ('exp_enviado','Expediente Enviado'),
+                                                ('chatarrizado','Chatarrizado'),
+                                                ('certificado','Certificado Recibido'),
+                                                ('baja','Baja'),
+                                                ('cancelado','Cancelado'),
+                                                ('desestimiento','Desestimiento'),
+                                                ], readonly=True, default='borrador')
+    client_id                = fields.Many2one('res.partner', string='Cliente', readonly=True)
+    supplier_id              = fields.Many2one('res.partner', string='Proveedor', required=True)
+    serie                    = fields.Char(string='Numero de serie', size=40, required=True)
+    marca_id                 = fields.Many2one('chatarra.marca', string='Marca', required=True)
+    modelo                   = fields.Char(required=True)
+    color_placa              = fields.Char(string='Color de la Placa', required=True)
+    tipo_placa               = fields.Selection([('carga','CARGA'),
+                                                ('pasaje','PASAJE'),
+                                                ('turismo','TURISMO'),
+                                                ], string='Tipo de Placa', required=True)
+    clase                    = fields.Selection([('t2','T 2'),
+                                                ('t3','T 3'),
+                                                ('c2','C 2'),
+                                                ('c3','C 3'),
+                                                ], string='Clase', required=True)
+    tipo_id                  = fields.Many2one('chatarra.tipo', string='Tipo', required=True)
+    motor                    = fields.Char(required=True)
+    combustible              = fields.Selection([('diesel','Diesel'),
+                                                ('gasolina','Gasolina')
+                                                ], required=True)
+    peso_vehicular           = fields.Float(required=True)
+    rfc                      = fields.Char(string='R.F.C.', size=13, required=True)
+    modalidad                = fields.Char(required=True)
+    no_ejes                  = fields.Integer(string='Numero de ejes', required=True)
+    no_llantas               = fields.Integer(string='Numero de llantas', required=True)
+    cap_litros               = fields.Char(string='Litros', size=10, required=True)
+    cap_toneladas            = fields.Char(string='Toneladas', size=10, required=True)
+    cap_personas             = fields.Char(string='Personas', size=10, required=True)
+    alto                     = fields.Float(required=True)
+    ancho                    = fields.Float(required=True)
+    largo                    = fields.Float(required=True)
+    eje_direccional          = fields.Char(required=True)
+    eje_motriz               = fields.Char(required=True)
+    eje_carga                = fields.Char(required=True)
+    permiso_ruta             = fields.Char(string='Permiso de ruta', required=True)
+    lugar_exp                = fields.Char(string='Lugar de expedicion', required=True)
+    fecha_exp                = fields.Date(string='Fecha de expedicion', required=True)
+    document_ids             = fields.One2many('chatarra.documentos', 'unit_id', string='Documentos', readonly=True)
+    asignacion_id            = fields.Many2one('chatarra.asignacion', string='No. de Asignacion', readonly=True)
+    desasignado_por          = fields.Many2one('res.users', string='Desasignado por', readonly=True)
+    fecha_desasignado        = fields.Datetime(string='Fecha Desasignado', readonly=True)
+    asignacion2_id           = fields.Many2one('chatarra.asignacion', string='Asignacion anterior', readonly=True)
+    desasignado2_por         = fields.Many2one('res.users', string='Desasignado 2 por', readonly=True)
+    fecha_desasignado2       = fields.Datetime(string='Fecha Desasignado 2', readonly=True)
+    asignacion3_id           = fields.Many2one('chatarra.asignacion', string='Asignacion anterior 2', readonly=True)
+    disponible_por           = fields.Many2one('res.users', string='Disponible por', readonly=True)
+    fecha_disponible         = fields.Datetime(string='Fecha Disponible', readonly=True)
+    asignada_por             = fields.Many2one('res.users', string='Asignado por', readonly=True)
+    fecha_asignada           = fields.Datetime(string='Fecha Asignado', readonly=True)
+    completo_por             = fields.Many2one('res.users', string='Expediente Completo por', readonly=True)
+    fecha_completo           = fields.Datetime(string='Fecha Expediente Completo', readonly=True)
+    enviado_por              = fields.Many2one('res.users', string='Enviado por', readonly=True)
+    fecha_enviado            = fields.Datetime(string='Fecha Enviado', readonly=True)
+    consulta_por             = fields.Many2one('res.users', string='Consulta por', readonly=True)
+    fecha_consulta           = fields.Datetime(string='Fecha Consulta', readonly=True)
+    tc_por                   = fields.Many2one('res.users', string='TC por', readonly=True)
+    fecha_tc                 = fields.Datetime(string='Fecha TC', readonly=True)
+    copia_tc_por             = fields.Many2one('res.users', string='Copia TC por', readonly=True)
+    fecha_copia_tc           = fields.Datetime(string='Fecha Copia TC', readonly=True)
+    recibido_por             = fields.Many2one('res.users', string='Recibido por', readonly=True)
+    fecha_recibido           = fields.Datetime(string='Fecha Recibido', readonly=True)
+    bloqueado_por            = fields.Many2one('res.users', string='Bloqueado por', readonly=True)
+    fecha_bloqueado          = fields.Datetime(string='Fecha Bloqueado', readonly=True)
+    cita_por                 = fields.Many2one('res.users', string='Cita por', readonly=True)
+    fecha_cita               = fields.Datetime(string='Fecha Cita', readonly=True)
+    cita_reprogramada_por    = fields.Many2one('res.users', string='Cita Reprogramada por', readonly=True)
+    fecha_cita_reprogramada  = fields.Datetime(string='Fecha Cita Reprogramada', readonly=True)
+    cita_reprogramada2_por   = fields.Many2one('res.users', string='Cita Reprogramada 2 por', readonly=True)
+    fecha_cita_reprogramada2 = fields.Datetime(string='Fecha Cita Reprogramada 2', readonly=True)
+    exp_enviado_por          = fields.Many2one('res.users', string='Exp. Enviado por', readonly=True)
+    fecha_exp_enviado        = fields.Datetime(string='Fecha Exp. Enviado', readonly=True)
+    chatarrizado_por         = fields.Many2one('res.users', string='Chatarrizado por', readonly=True)
+    fecha_chatarrizado       = fields.Datetime(string='Fecha Chatarrizado', readonly=True)
+    certificado_por          = fields.Many2one('res.users', string='Certificado por', readonly=True)
+    fecha_certificado        = fields.Datetime(string='Fecha Certificado', readonly=True)
+    baja_por                 = fields.Many2one('res.users', string='Baja por', readonly=True)
+    fecha_baja               = fields.Datetime(string='Fecha Baja', readonly=True)
+    cancelado_por            = fields.Many2one('res.users', string='Cancelada por', readonly=True)
+    fecha_cancelado          = fields.Datetime(string='Fecha Cancelada', readonly=True)
+    desestimiento_por        = fields.Many2one('res.users', string='Desestimiento por', readonly=True)
+    fecha_desestimiento      = fields.Datetime(string='Fecha Desestimiento', readonly=True)
+    reposicion_por           = fields.Many2one('res.users', string='Reposicion por', readonly=True)
+    fecha_reposicion         = fields.Datetime(string='Fecha Reposicion', readonly=True)
+    facturado_por            = fields.Many2one('res.users', string='Facturado por', readonly=True)
+    fecha_facturado          = fields.Datetime(string='Fecha Facturado', readonly=True)
+    fact_cancelada_por       = fields.Many2one('res.users', string='Fact. Cancelada por', readonly=True)
+    fecha_fact_cancelada     = fields.Datetime(string='Fecha Cancelada', readonly=True)
+    repuesta_id              = fields.Many2one('chatarra.unit', string='Repuesta por', readonly=True)
+    sustituye_id             = fields.Many2one('chatarra.unit', string='Sustituye a', readonly=True)
+    reposicion_id            = fields.Many2one('chatarra.reposicion', string='No. de Reposicion', readonly=True)
+    factura_id               = fields.Many2one('account.invoice', string='No. de Factura', readonly=True)
+    facturado                = fields.Boolean(string='Facturado', readonly=True)
+    envio_id                 = fields.Many2one('chatarra.envio', string='No. Envio', readonly=True)
+    guia                     = fields.Char(readonly=True)
+    copia_tc                 = fields.Boolean(string='Copia TC', readonly=True)
+    consulta                 = fields.Boolean(string='Consulta', readonly=True)
+    tarjeta_circulacion      = fields.Boolean(string='Tarjeta de Circulacion', readonly=True)
+    folio_modalidad          = fields.Integer(string='Folio Modalidad', readonly=True, size=10)
+    folio_tarjeta            = fields.Char(string='No. de Folio TC', readonly=True)
+    fecha_tarjeta            = fields.Date(string='Fecha de Tarjeta de Circulacion', readonly=True)
+    chatarrera_id            = fields.Many2one('res.partner', string='Chatarrera', readonly=True)
+    paqueteria_id            = fields.Many2one('res.partner', string='Paqueteria', readonly=True)
+    contacto_id              = fields.Many2one('res.partner', string='Contacto', readonly=True)
+    secretaria_id            = fields.Many2one('chatarra.secretaria', string='Secretaria', readonly=True)
+    gestor_id                = fields.Many2one('res.partner', string='Gestor', readonly=True)
+    programacion_cita        = fields.Datetime(string='Fecha de Cita', readonly=True)
+    cita_anterior            = fields.Datetime(string='Fecha de Cita Anterior', readonly=True)
+    cita_anterior2           = fields.Datetime(string='Fecha de Cita Anterior 2', readonly=True)
+    certificado              = fields.Char(readonly=True)
+    certificado_fecha        = fields.Date(string='Fecha del Certificado', readonly=True)
+    factura_proveedor_id     = fields.Many2one('account.invoice', string='Factura de Proveedor', readonly=True)
+    tramite                  = fields.Char(required=True)
+    observacion              = fields.Text()
+    fecha_sustitucion        = fields.Char(string='Fecha de sustitucion')
+    propietario_anterior     = fields.Char(string='Razon Social', required=True,)
+    calle                    = fields.Char(required=True)
+    numero                   = fields.Char(required=True)
+    colonia                  = fields.Char(required=True)
+    codigo_postal            = fields.Char(required=True)
+    ciudad                   = fields.Char(required=True)
+    importe                  = fields.Float(required=True)
+   
     _sql_constraints = [('chatarra_unit_name_unique', 'unique(name)', 'La Placa ya existe'),
                         ('chatarra_unit_serie_unique', 'unique(serie)', 'La Serie ya existe')]
-    
-    _constraints = [(_check_unique_insesitive, 'La Placa ya existe', ['name']),
-                    (_check_unique_serie, 'La Serie ya existe', ['serie'])]
 
-    def action_disponible(self, cr, uid, ids, context=None):
-        invoice_obj = self.pool.get('account.invoice')
-        fpos_obj = self.pool.get('account.fiscal.position')
-        prod_obj = self.pool.get('product.product')
-        prod_id = prod_obj.search(cr, uid, [('categoria', '=', 'chatarra'),('active','=', 1)], limit=1)
-        product = prod_obj.browse(cr, uid, prod_id, context=None)
+    @api.one
+    @api.constrains('name','serie')
+    def _check_unique_insesitive(self):
+        units = [unit.name.lower() for unit in self.search([]) if unit.id not in self.ids]
+        for unit in self:
+            if unit.name and unit.name.lower() in units:
+                raise except_orm('La placa ya existe')
+
+    @api.one
+    def action_disponible(self):
+        invoice_obj = self.env['account.invoice']
+        fpos_obj = self.env['account.fiscal.position']
+        prod_obj = self.env['product.product']
+        product = prod_obj.search([('categoria', '=', 'chatarra'),('active','=', 1)], limit=1)
         prod_account = product.product_tmpl_id.property_account_expense.id
         if not prod_account:
           prod_account = product.categ_id.property_account_expense_categ.id
           if not prod_account:
-            raise osv.except_osv(_('Error !'),
-                                   _('There is no expense account defined ' \
-                                     'for this product: "%s" (id:%d)') % \
-                                     (product.name, product.id,))
-        prod_account = fpos_obj.map_account(cr, uid, False, prod_account)
-        journal_obj = self.pool.get('account.journal')
-        journal_id = journal_obj.search(cr, uid, [('type', '=', 'purchase')], limit=1)
-        journal = journal_obj.browse(cr, uid, journal_id, context=None)
-        unidad = self.browse(cr, uid, ids)
-        invoice_obj.create(cr, uid, {'partner_id':unidad.supplier_id.id,
-                                     'account_id':unidad.supplier_id.property_account_payable.id,
-                                     'origin':unidad.name,
-                                     'unit_id':unidad.id,
-                                     'type':'in_invoice',
-                                     'journal_id':journal.id,
-                                     'fiscal_position':unidad.supplier_id.property_account_position.id,
-                                     'invoice_line':[(0,0,{'product_id':product.id,
-                                                           'name':'Marca: ' + unidad.marca.name + '\nSerie: ' + unidad.serie + '\nPlacas: ' + unidad.name,
-                                                           'account_id':prod_account,
-                                                           'quantity':'1',
-                                                           'price_unit':unidad.importe,
-                                                           'invoice_line_tax_id':[(6,0,[x.id for x in product.supplier_taxes_id])],
-                                                          })]
-                                    }, context=None)
-        invoice_id = invoice_obj.search(cr, uid, [('unit_id','=',unidad.id),('type','=','in_invoice')])
-        invoice = invoice_obj.browse(cr, uid, invoice_id)
-        self.write(cr, uid, ids, {  'state':'disponible',
-                                    'disponible_por':uid,
-                                    'fecha_disponible':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                                    'factura_proveedor_id':invoice.id,
-                                    'document_ids': [(0, 0, {'name':'visual', 'unit_id':unidad.id}),
-                                                     (0, 0, {'name':'carta', 'unit_id':unidad.id}),
-                                                     (0, 0, {'name':'consulta', 'unit_id':unidad.id}),
-                                                     (0, 0, {'name':'copia_tc', 'unit_id':unidad.id}),
-                                                     (0, 0, {'name':'factura_origen', 'unit_id':unidad.id}),
-                                                     (0, 0, {'name':'factura_venta', 'unit_id':unidad.id}),
-                                                     (0, 0, {'name':'factura_compra', 'unit_id':unidad.id}),
-                                                     (0, 0, {'name':'foto_frente', 'unit_id':unidad.id}),
-                                                     (0, 0, {'name':'foto_chasis', 'unit_id':unidad.id}),
-                                                     (0, 0, {'name':'foto_motor', 'unit_id':unidad.id})
-                                                     ]})
-        return True
+            raise except_orm(_('Error'),_('There is no expense account defined for this product: "%s" (id:%d)') % (product.name, product.id,))
+        prod_account = fpos_obj.map_account(prod_account)
+        journal_obj = self.env['account.journal']
+        journal = journal_obj.search([('type', '=', 'purchase')], limit=1)
+        unidad = self
+        invoice_obj.create({'partner_id':unidad.supplier_id.id,
+                            'account_id':unidad.supplier_id.property_account_payable.id,
+                            'origin':unidad.name,
+                            'unit_id':unidad.id,
+                            'type':'in_invoice',
+                            'journal_id':journal.id,
+                            'fiscal_position':unidad.supplier_id.property_account_position.id,
+                            'invoice_line':[(0,0,{'product_id':product.id,
+                                                  'name':'Marca: ' + unidad.marca_id.name + '\nSerie: ' + unidad.serie + '\nPlacas: ' + unidad.name,
+                                                  'account_id':prod_account,
+                                                  'quantity':'1',
+                                                  'price_unit':unidad.importe,
+                                                  'invoice_line_tax_id':[(6,0,[x.id for x in product.supplier_taxes_id])],
+                                                })]
+                            })
+        invoice = invoice_obj.search([('unit_id','=',unidad.id),('type','=','in_invoice')])
+        self.write({'state':'disponible',
+                    'disponible_por':self.env.user.id,
+                    'fecha_disponible':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                    'factura_proveedor_id':invoice.id,
+                    'document_ids': [(0, 0, {'name':'visual', 'unit_id':unidad.id}),
+                                     (0, 0, {'name':'carta', 'unit_id':unidad.id}),
+                                     (0, 0, {'name':'consulta', 'unit_id':unidad.id}),
+                                     (0, 0, {'name':'copia_tc', 'unit_id':unidad.id}),
+                                     (0, 0, {'name':'factura_origen', 'unit_id':unidad.id}),
+                                     (0, 0, {'name':'factura_venta', 'unit_id':unidad.id}),
+                                     (0, 0, {'name':'factura_compra', 'unit_id':unidad.id}),
+                                     (0, 0, {'name':'foto_frente', 'unit_id':unidad.id}),
+                                     (0, 0, {'name':'foto_chasis', 'unit_id':unidad.id}),
+                                     (0, 0, {'name':'foto_motor', 'unit_id':unidad.id}),
+                                     ]})
 
-    def action_recibir_consulta(self, cr, uid, ids, vals,context=None):
-        unidad = self.browse(cr, uid, ids)
-        self.write(cr, uid, ids, {'consulta': True,
-                                  'consulta_por': uid,
-                                  'fecha_consulta':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        if unidad.tarjeta_circulacion == True and unidad.copia_tc == True:
-        	self.write(cr, uid, ids, {'state':'recibido',
-                                  'recibido_por': uid,
-                                  'fecha_recibido':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return True
+    @api.one
+    def action_recibir_consulta(self):
+        self.write({'consulta': True,
+                    'consulta_por': self.env.user.id,
+                    'fecha_consulta':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        if self.tarjeta_circulacion == True and self.copia_tc == True:
+            self.write({'state':'recibido',
+                        'recibido_por': self.env.user.id,
+                        'fecha_recibido':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
-    def action_recibir_tarjeta(self, cr, uid, ids, vals,context=None):
-    	unidad = self.browse(cr, uid, ids)
-        self.write(cr, uid, ids, {'tarjeta_circulacion': True, 
-                                  'tc_por': uid,
-                                  'fecha_tc':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+    @api.one
+    def action_recibir_tarjeta(self):
+        unidad = self
+        self.write({'tarjeta_circulacion': True,
+                    'tc_por': self.env.user.id,
+                    'fecha_tc':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         if unidad.consulta == True and unidad.copia_tc == True:
-        	self.write(cr, uid, ids, {'state':'recibido',
-                                  'recibido_por': uid,
-                                  'fecha_recibido':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return True
+            self.write({'state':'recibido',
+                        'recibido_por': self.env.user.id,
+                        'fecha_recibido':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
-    def action_bloqueado(self, cr, uid, ids, vals,context=None):
-        self.write(cr, uid, ids, {'state':'bloqueado',
-                                  'bloqueado_por': uid,
-                                  'fecha_bloqueado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return True
+    @api.one
+    def action_bloqueado(self):
+        self.write({'state':'bloqueado',
+                    'bloqueado_por': self.env.user.id,
+                    'fecha_bloqueado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
-    def action_cita(self, cr, uid, ids, vals,context=None):
-        self.write(cr, uid, ids, {'state':'cita',
-                                  'cita_por': uid,
-                                  'fecha_cita':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return True
+    @api.one
+    def action_exp_enviado(self):
+        self.write({'state':'exp_enviado',
+                    'exp_enviado_por': self.env.user.id,
+                    'fecha_exp_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
-    def action_exp_enviado(self, cr, uid, ids, vals,context=None):
-        self.write(cr, uid, ids, {'state':'exp_enviado',
-                                  'exp_enviado_por': uid,
-                                  'fecha_exp_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return True
+    @api.one
+    def action_chatarrizado(self):
+        self.write({'state':'chatarrizado',
+                    'chatarrizado_por': self.env.user.id,
+                    'fecha_chatarrizado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
-    def action_chatarrizado(self, cr, uid, ids, vals,context=None):
-        self.write(cr, uid, ids, {'state':'chatarrizado',
-                                  'chatarrizado_por': uid,
-                                  'fecha_chatarrizado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return True
+    @api.one
+    def action_baja(self):
+        self.write({'state':'baja',
+                    'baja_por': self.env.user.id,
+                    'fecha_baja':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
-    def action_certificado(self, cr, uid, ids, vals,context=None):
-        self.write(cr, uid, ids, {'state':'certificado',
-                                  'certificado_por': uid,
-                                  'fecha_certificado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return True
+    @api.one
+    def action_cancelado(self):
+        unidad = self
+        asignacion_obj = self.env['chatarra.asignacion']
+        asignacion = asignacion_obj.search([('unit_ids','=',unidad.id)])
+        self.write({'state':'cancelado',
+                    'cancelado_por': self.env.user.id,
+                    'fecha_cancelado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        asignacion.write({'unit_ids': [(3, unidad.id)]})
 
-    def action_baja(self, cr, uid, ids, vals,context=None):
-        self.write(cr, uid, ids, {'state':'baja',
-                                  'baja_por': uid,
-                                  'fecha_baja':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return True
-
-    def action_cancelado(self, cr, uid, ids, vals,context=None):
-        unidad = self.browse(cr, uid, ids)
-        asignacion_obj = self.pool.get('chatarra.asignacion')
-        asignacion_id = asignacion_obj.search(cr, uid, [('unit_ids','=',unidad.id)])
-        self.write(cr, uid, ids, {'state':'cancelado',
-                                  'cancelado_por': uid,
-                                  'fecha_cancelado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        asignacion_obj.write(cr, uid, asignacion_id, {'unit_ids': [(3, unidad.id)]})
-        return True
-
-    def action_desasignar(self, cr, uid, ids, vals, context=None):
-        unidad = self.browse(cr, uid, ids)
-        invoice_obj = self.pool.get('account.invoice')
-        invoice_id = invoice_obj.search(cr, uid, [('unit_id','=',unidad.id),('type','=','out_invoice')])
-        invoice = invoice_obj.browse(cr, uid, invoice_id, context=None)
-        asignacion_obj = self.pool.get('chatarra.asignacion')
-        asignacion_id = asignacion_obj.search(cr, uid, [('unit_ids','=',unidad.id)])
-        asignacion_obj.write(cr, uid, unidad.asignacion_id.id, {'unit_ids': [(3, unidad.id)]})
+    @api.one
+    def action_desasignar(self):
+        unidad = self
+        invoice_obj = self.env['account.invoice']
+        invoice = invoice_obj.search([('unit_id','=',unidad.id),('type','=','out_invoice')])
+        asignacion_obj = self.env['chatarra.asignacion']
+        asignacion = asignacion_obj.search([('unit_ids','=',unidad.id)])
+        asignacion.write({'unit_ids': [(3, unidad.id)]})
         if unidad.asignacion2_id == False:
-            self.write(cr, uid, ids, {'state':'disponible',
-                                      'asignacion_id':False,
-                                      'asignacion2_id':unidad.asignacion_id.id,
-                                      'desasignado_por':uid,
-                                      'fecha_desasignado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            self.write({'state':'disponible',
+                        'asignacion_id':False,
+                        'asignacion2_id':unidad.asignacion_id.id,
+                        'desasignado_por':self.env.user.id,
+                        'fecha_desasignado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         else:
-            self.write(cr, uid, ids, {'state':'disponible',
-                                      'asignacion_id':False,
-                                      'asignacion2_id':unidad.asignacion_id.id,
-                                      'asignacion3_id':unidad.asignacion2_id.id,
-                                      'desasignado2_por':uid,
-                                      'fecha_desasignado2':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            self.write({'state':'disponible',
+                        'asignacion_id':False,
+                        'asignacion2_id':unidad.asignacion_id.id,
+                        'asignacion3_id':unidad.asignacion2_id.id,
+                        'desasignado2_por':self.env.user.id,
+                        'fecha_desasignado2':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         invoice.signal_workflow('invoice_cancel')
 
-    def action_completo_unidad(self, cr, uid, ids, vals, context=None):
-        unidad = self.browse(cr, uid, ids)
+    @api.one
+    def action_completo_unidad(self):
+        unidad = self
         for documento in unidad.document_ids:
             if documento.state == 'pendiente':
-                raise osv.except_osv(_('Advertencia!'), _('Un documento sigue en estado pendiente'))
+                raise except_orm(_('Error'),_('El documento "%s" sigue pendiente') % documento.name.upper())
             else:
-                self.write(cr, uid, ids, {'state':'completo',
-                                          'completo_por':uid,
-                                          'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-#    def send_mail_chatarra(self, cr, uid, ids, context=None):
-#      email_template_obj = self.pool.get('email.template')
-#      template_ids = email_template_obj.search(cr, uid, [('model_id.model', '=','chatarra.unit')], context=context) 
-#      if not template_ids:
-#          return True #raise osv.except_osv(_('Warning!'), _('There are no Template configured for sending mail'))
-#      values = email_template_obj.generate_email(cr, uid, template_ids[0], ids, context=context)
-#      values['res_id'] = False
-#      mail_mail_obj = self.pool.get('mail.mail')
-#      msg_id = mail_mail_obj.create(cr, uid, values, context=context)
-#
-#      attachment_obj = self.pool.get('ir.attachment')
-#      ir_actions_report = self.pool.get('ir.actions.report.xml')
-#
-#      matching_reports = ir_actions_report.search(cr, uid, [('report_name','=','chatarra.unit.report')])
-#      if not matching_reports:
-#          return True #raise osv.except_osv(_('Warning!'), _('There is no Report to send')) 
-#
-#      report = ir_actions_report.browse(cr, uid, matching_reports[0])
-#      report_service = 'report.' + report.report_name
-#      service = netsvc.LocalService(report_service)
-#      date = self.pool.get('chatarra.notificacion')._get_date(cr, uid, ids)
-#      unit_ids = self.search(cr, uid, [('fecha_enviado',">=", date),
-#                                            ('state','=','enviado')
-#                                            ], order='fecha_enviado desc')
-#      if not unit_ids:
-#          return True #raise osv.except_osv(_('Warning!'), _('There are no records to print'))
-#
-#      (result, format) = service.create(cr, uid, unit_ids, 
-#                                        {'model': 'chatarra.unit', 'count': len(unit_ids),'date': date}, context=context)
-#
-#      result = base64.b64encode(result)
-#      file_name = _('Unidades_retrasadas')
-#      file_name += ".pdf"
-#      attachment_id = attachment_obj.create(cr, uid,
-#          {
-#              'name': file_name,
-#              'datas': result,
-#              'datas_fname': file_name,
-#              'res_model': self._name,
-#              'res_id': msg_id,
-#              'type': 'binary'
-#          }, context=context)
-#                
-#
-#      if msg_id and attachment_id:
-#          mail_mail_obj.write(cr, uid, msg_id, {'attachment_ids': [(6, 0, [attachment_id])]}, context=context)
-#          mail_mail_obj.send(cr, uid, [msg_id], context=context)
-#      return True
+                self.write({'state':'completo',
+                            'completo_por':self.env.user.id,
+                            'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
-#class chatarra_notificacion(osv.osv_memory):
-#    _name = 'chatarra.notificacion'
-#
-#    def _get_date(self, cr, uid, ids, context=None):
-#      val = self.pool.get('ir.config_parameter').get_param(cr, uid, 'chatarra_enviado_notificacion_x_dias', context=context)
-#      xdays = int(val) or 0
-#      date = datetime.now()  + timedelta(days=xdays)
-#      return date.strftime(DEFAULT_SERVER_DATE_FORMAT)
-#
-#    _columns = {
-#             'date'    : fields.date('Date', required=True),
-#             }
-#
-#    _defaults = {
-#         'date'   : _get_date,
-#             }
-#   
-#    def button_get_units(self, cr, uid, ids, to_attach=False, context=None):
-#      """
-##         To get the date and print the report
-##         @return : return report
-##         """
-#      if context is None:
-#        context = {}
-#       
-#      date = self.browse(cr, uid, ids)[0].date
-#      chatarra_unit_obj = self.pool.get('chatarra.unit')
-#      condition = [('fecha_enviado',">=", date)]
-#      unit_ids = chatarra_unit_obj.search(cr, uid, condition, order='fecha_enviado desc')      
-#      if unit_ids:
-#        datas = {   'ids': unit_ids, 
-#                    'count': len(unit_ids),
-#                    'date': date}
-#        return {
-#              'type': 'ir.actions.report.xml',
-#              'report_name': 'chatarra.unit.report',
-#              'datas': datas,
-#              }
-#      else:
-#        raise osv.except_osv(_('Warning!'), _('There are no Driver Licenses expired or to expire on this date'))##
+    @api.onchange('name')
+    def _verify_name(self):
+        units = [unit.name.lower() for unit in self.search([])]
+        for unit in self:
+            if unit.name and unit.name.lower() in units:
+                return {
+                    'warning': {
+                        'title': "Error",
+                        'message': "La placa ya existe",
+                    }
+                }
+
+    @api.onchange('serie')
+    def _verify_serie(self):
+        units = [unit.serie.lower() for unit in self.search([])]
+        for unit in self:
+            if unit.serie and unit.serie.lower() in units:
+                return {
+                    'warning': {
+                        'title': "Error",
+                        'message': "La serie ya existe",
+                    }
+                }

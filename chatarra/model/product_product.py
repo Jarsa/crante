@@ -1,28 +1,32 @@
 # -*- encoding: utf-8 -*-
-from openerp.osv import fields, osv
+from openerp import fields, models, api, _
+from openerp.exceptions import except_orm
 
-class chatarra_product(osv.osv):
+class chatarra_product(models.Model):
     _name = 'product.product'
     _inherit = 'product.product'
-    _columns = {
-        'categoria' : fields.selection([('no_chatarra','No Chatarra'),
-        								('chatarra','Chatarra'),
-        								('envio','Envio'),
-        								('secretaria','Secretaria')], 'Categoria'),
-    }
+    
+    categoria = fields.Selection([('no_chatarra','No Chatarra'),
+                                  ('chatarra','Chatarra'),
+                                  ('envio','Envio'),
+                                  ('secretaria','Secretaria')], required=True, default='no_chatarra')
 
-    def _check_category(self, cr, uid, ids, context=None):
-        prod_obj = self.pool.get('product.product')
-        for record in self.browse(cr, uid, ids, context=context):
-            if record.categoria == 'chatarra':
-                res = prod_obj.search(cr, uid, [('categoria', '=', 'chatarra')], context=None)
-                if res and res[0] and res[0] != record.id:
-                    return False
+    @api.one
+    @api.constrains('categoria')
+    def _check_category(self):
+        if self.categoria == 'chatarra':
+            productos = self.search([('categoria', '=', 'chatarra'),('active', '=',True)])
+            for producto in productos:
+                if producto.id != self.id:
+                    raise except_orm(_("Error !"),_("No puedes tener mas de un producto definido como Chatarra"))
+        if self.categoria == 'envio':
+            productos = self.search([('categoria', '=', 'envio'),('active', '=',True)])
+            for producto in productos:
+                if producto.id != self.id:
+                    raise except_orm(_("Error !"),_("No puedes tener mas de un producto definido como Envio"))
+        if self.categoria == 'secretaria':
+            productos = self.search([('categoria', '=', 'secretaria'),('active', '=',True)])
+            for producto in productos:
+                if producto.id != self.id:
+                    raise except_orm(_("Error !"),_("No puedes tener mas de un producto definido como Secretaria"))
         return True
-
-    _constraints = [
-        (_check_category, 'Error ! No puedes tener mas de un producto definido como Chatarra', ['categoria']),
-        
-        ]
-
-chatarra_product()

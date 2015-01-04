@@ -13,7 +13,7 @@
                     <group col='4'>
                         <field name='folio'/>
                         <field name='unit_id'/>
-                        <field name='fecha' on_change='onchange_date(fecha)'/>
+                        <field name='fecha'/>
                         <field name='modalidad'/>
                     </group>
                     <group colspan="4">

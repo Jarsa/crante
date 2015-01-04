@@ -1,138 +1,120 @@
 # -*- encoding: utf-8 -*-
-from openerp.osv import osv, fields
-from openerp import tools
+from openerp import models, fields, api, _
 import time
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
-import logging
-from openerp.tools.translate import _
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
+from openerp.exceptions import except_orm
 
-
-class chatarra_asignacion(osv.osv):
+class chatarra_asignacion(models.Model):
     _name = 'chatarra.asignacion'
-
-    def onchange_contacto(self, cr, uid, ids, contacto_id, context=None):
-        agencia = False
-        if contacto_id:
-            agencia = self.pool.get('res.partner').browse(cr, uid, contacto_id, context=context).parent_id.id
-        return {'value': {'agencia_id': agencia}}
-
-    def _get_total_quantity(self, cr, uid, ids, unit_ids, args, context = None):
-        res = {}
-        for asignacion in self.browse(cr, uid, ids, context = context):
-            res[asignacion.id] = sum([1 for x in asignacion.unit_ids])
-        return res
-
     _description = 'Asignacion'
-    _columns = {
-        'name'              : fields.char('No. de Asignacion', size=64, readonly='True'),
-        'state'             : fields.selection([
-                                ('borrador','Borrador'),
-                                ('confirmado','Confirmado'),
-                                ('pagado','Pagado'),
-                                ('cerrado','Cerrado'),
-                                ], 'Estado', readonly=True),
-        'client_id'         : fields.many2one('res.partner', 'Cliente'),
-        'contacto_id'       : fields.many2one('res.partner', 'Contacto'),
-        'agencia_id'        : fields.many2one('res.partner','Agencia'),
-        'unit_ids'		    : fields.many2many('chatarra.unit', 'chatarra_asignacion_unidad_rel', 'asignacion_id', 'unit_id', 'Unidades', required=True),
-        'confirmado_por'    : fields.many2one('res.users','Confirmado por:', readonly=True),
-        'cantidad'          : fields.function(_get_total_quantity, type='integer', method = True, string = 'No. de Unidades', readonly = True),
-        'fecha_confirmado'  : fields.datetime('Fecha Confirmado:', readonly=True),
-    }
 
-    _defaults = {
-        'state': 'borrador',
-    }
+    name             = fields.Char('No. de Asignacion', size=64, readonly='True')
+    state            = fields.Selection([
+                                        ('borrador','Borrador'),
+                                        ('confirmado','Confirmado'),
+                                        ('pagado','Pagado'),
+                                        ('cerrado','Cerrado'),
+                                        ], readonly=True, default='borrador')
+    client_id        = fields.Many2one('res.partner', string='Cliente', required=True)
+    contacto_id      = fields.Many2one('res.partner', string='Contacto', required=True)
+    agencia_id       = fields.Many2one('res.partner', string='Agencia', required=True)
+    unit_ids         = fields.Many2many('chatarra.unit', string='Unidades', required=True)
+    confirmado_por   = fields.Many2one('res.users', readonly=True)
+    cantidad         = fields.Integer(compute='_get_total_quantity', string='No. de Unidades', readonly=True)
+    fecha_confirmado = fields.Datetime(readonly=True)
 
-    def asignar_unidad(self, cr, uid, ids, vals, context=None):
-        unit_obj = self.pool.get('chatarra.unit')
-        for asignacion in self.browse(cr, uid, ids):
-            unit_ids = False
-            unit_ids = unit_obj.search(cr, uid, [('asignacion_id', '=', asignacion.id),('state', '=', 'por_asignar')])
-            if unit_ids:
-                unit_obj.write(cr, uid, unit_ids, {'asignacion_id': False, 'client_id': False, 'state':'disponible', 'asignada_por': False,'fecha_asignada': False})
-            unit_ids = []
-            for unidad in asignacion.unit_ids:
-                if unidad.state in ('borrador'):
-                    raise osv.except_osv(('Advertencia !'),
-                        ('La Unidad %s esta en estado Borrador...') % (unidad.name)
-                        )
-                if unidad.state in ('disponible'):
-                    unit_obj.write(cr, uid, [unidad.id], {'asignacion_id':asignacion.id,
-                                                          'state':'por_asignar',
-                                                          'client_id':asignacion.client_id.id,
-                                                          'asignada_por':uid,
-                                                          'fecha_asignada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+    @api.one
+    @api.depends('unit_ids')
+    def _get_total_quantity(self):
+        if not self.unit_ids:
+            self.cantidad = 0
+        else:
+            self.cantidad = len(self.unit_ids)
 
-    def write(self, cr, uid, ids, vals, context=None):
-        values = vals
-        super(chatarra_asignacion, self).write(cr, uid, ids, values, context=context)
-        for asignacion in self.browse(cr, uid, ids):
-            for unidad in asignacion.unit_ids:
-                if unidad.state in 'reposicion':
-                    self.write(cr, uid, ids, {'unit_ids': [(3, unidad.id)]})
-            if asignacion.state in ('confirmado','borrador'):
-                self.asignar_unidad(cr, uid, ids, vals)
-        return True
+    @api.onchange('contacto_id')
+    def asign_agencia(self):
+        self.agencia_id = self.contacto_id.parent_id.id
 
-    def create(self, cr, uid, vals, context={}):
-        if (not 'name' in vals) or (vals['name'] == False):
-            vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'asignacion.sequence.number')
-        res = super(chatarra_asignacion, self).create(cr, uid, vals, context)
-        self.asignar_unidad(cr, uid, [res], vals)
-        return res
+    @api.multi
+    def _asignar_unidad(self, asignacion):
+        unit_obj = self.env['chatarra.unit']
+        if asignacion == True:
+            asignacion = self
+        units = unit_obj.search([('asignacion_id', '=', asignacion.id),('state', '=', 'por_asignar')])
+        if units:
+            units.write({'asignacion_id': False,
+                         'client_id': False,
+                         'state':'disponible',
+                         'asignada_por': False,
+                         'fecha_asignada': False})
+        for unit in asignacion.unit_ids:
+            unit.write({'asignacion_id':asignacion.id,
+                        'state':'por_asignar',
+                        'client_id':asignacion.client_id.id,
+                        'asignada_por':asignacion.env.user.id,
+                        'fecha_asignada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
-    def action_confirmado(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {  'state':'confirmado',
-                                    'confirmado_por':uid,
-                                    'fecha_confirmado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        invoice_obj = self.pool.get('account.invoice')
-        fpos_obj = self.pool.get('account.fiscal.position')
-        asignacion = self.browse(cr, uid, ids)
-        prod_obj = self.pool.get('product.product')
-        unidad_obj = self.pool.get('chatarra.unit')
-        prod_id = prod_obj.search(cr, uid, [('categoria', '=', 'chatarra'),('active','=', 1)], limit=1)
-        product = prod_obj.browse(cr, uid, prod_id, context=None)
+    @api.multi
+    def write(self, vals):
+        asignacion = super(chatarra_asignacion, self).write(vals)
+        self._asignar_unidad(asignacion)
+        return asignacion
+
+    @api.model
+    def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_id(self.env.ref('chatarra.sequence_chatarra_asignacion').id)
+        asignacion = super(chatarra_asignacion, self).create(vals)
+        self._asignar_unidad(asignacion)
+        return asignacion
+
+    @api.multi
+    def unlink(self):
+        for asignacion in self:
+            for unit in asignacion.unit_ids:
+                if unit:
+                    raise except_orm(_('Error'),_('No se puede borrar una asignacion con unidades (%s)') % unit.name)
+        return super(chatarra_asignacion, self).unlink()
+
+    @api.one
+    def action_confirmado(self):
+        self.write({'state':'confirmado',
+                    'confirmado_por':self.env.user.id,
+                    'fecha_confirmado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+        asignacion = self
+        invoice_obj = self.env['account.invoice']
+        fpos_obj = self.env['account.fiscal.position']
+        prod_obj = self.env['product.product']
+        unidad_obj = self.env['chatarra.unit']
+        product = prod_obj.search([('categoria', '=', 'chatarra'),('active','=', 1)], limit=1)
         prod_account = product.product_tmpl_id.property_account_expense.id
         if not prod_account:
             prod_account = product.categ_id.property_account_expense_categ.id
             if not prod_account:
-                raise osv.except_osv(_('Error !'),
-                                     _('There is no expense account defined ' \
-                                       'for this product: "%s" (id:%d)') % \
-                                       (product.name, product.id,))
-        prod_account = fpos_obj.map_account(cr, uid, False, prod_account)
-        if not prod_id:
-            raise osv.except_osv(
-                    ('Falta Configuracion !'),
-                    ('No existe un producto definido como chatarra !!!'))
+                raise except_orm(_('Error'),_('There is no expense account defined for this product: "%s" (id:%d)') % (product.name, product.id,))
+        prod_account = fpos_obj.map_account(prod_account)
+        if not product:
+            raise except_orm(_('Falta configuracion'),_('No existe un producto definido como chatarra !!!'))
         for unidad in asignacion.unit_ids:
-            invoice_obj.create(cr, uid, {'partner_id':asignacion.client_id.id,
-                                         'contacto_id':asignacion.contacto_id.id,
-                                         'agencia_id':asignacion.agencia_id.id,
-                                         'asignacion_id':asignacion.id,
-                                         'unit_id':unidad.id,
-                                         'account_id':asignacion.client_id.property_account_receivable.id,
-                                         'origin':asignacion.name,
-                                         'fiscal_position':asignacion.client_id.property_account_position.id,
-                                         'invoice_line':[(0,0,{'product_id':product.id,
-                                                               'name':'Marca: ' + unidad.marca.name + '\nSerie: ' + unidad.serie + '\nPlacas: ' + unidad.name,
-                                                               'account_id':prod_account,
-                                                               'quantity':'1',
-                                                               'price_unit':product.lst_price,
-                                                               'invoice_line_tax_id':[(6,0,[x.id for x in product.taxes_id])],
-                                                              })]
-                                        }, context=None)
-            invoice_id = invoice_obj.search(cr, uid, [('unit_id','=',unidad.id),('type','=','out_invoice'),('state','=','draft')])
-            invoice = invoice_obj.browse(cr, uid, invoice_id)
-            unidad_obj.write(cr, uid, unidad.id, {'facturado_por':uid,
-                                                  'fecha_facturado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                                                  'factura_id':invoice.id,
-                                                  'facturado':True,
-                                                  'state':'asignada'
-                                                 })
-        return True
-
-chatarra_asignacion()
+            invoice_obj.create({'partner_id':asignacion.client_id.id,
+                                'contacto_id':asignacion.contacto_id.id,
+                                'agencia_id':asignacion.agencia_id.id,
+                                'asignacion_id':asignacion.id,
+                                'unit_id':unidad.id,
+                                'account_id':asignacion.client_id.property_account_receivable.id,
+                                'origin':asignacion.name,
+                                'fiscal_position':asignacion.client_id.property_account_position.id,
+                                'invoice_line':[(0,0,{'product_id':product.id,
+                                                      'name':'Marca: ' + unidad.marca_id.name + '\nSerie: ' + unidad.serie + '\nPlacas: ' + unidad.name,
+                                                      'account_id':prod_account,
+                                                      'quantity':'1',
+                                                      'price_unit':product.lst_price,
+                                                      'invoice_line_tax_id':[(6,0,[x.id for x in product.taxes_id])],
+                                                      })]
+                                        })
+            invoice = invoice_obj.search([('unit_id','=',unidad.id),('type','=','out_invoice'),('state','=','draft')])
+            unidad.write({'facturado_por':self.env.user.id,
+                          'fecha_facturado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                          'factura_id':invoice.id,
+                          'facturado':True,
+                          'state':'asignada'
+                          })

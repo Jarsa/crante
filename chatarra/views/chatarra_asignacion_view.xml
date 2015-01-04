@@ -46,7 +46,7 @@
         				</h1>
         				<group>
         					<field name='client_id' domain="[('customer','=',True),('is_company','=',True)]" context="{'default_customer': True, 'default_supplier': False, 'default_is_company': True,}" attrs="{'readonly': [('state', '=', 'confirmado')]}"/>
-        					<field name='contacto_id' domain="[('parent_id.categoria','=', 'agencia')]" context="{'default_categoria': 'agencia', 'default_customer': False, 'default_supplier': True,}" on_change='onchange_contacto(contacto_id)' attrs="{'readonly': [('state', '=', 'confirmado')]}"/>
+        					<field name='contacto_id' domain="[('parent_id.categoria','=', 'agencia')]" context="{'default_categoria': 'agencia', 'default_customer': False, 'default_supplier': True,}" attrs="{'readonly': [('state', '=', 'confirmado')]}"/>
         					<field name='agencia_id' domain="[('is_company','=', True),('categoria','=','agencia')]" context="{'default_categoria': 'agencia', 'default_customer': False, 'default_supplier': True, 'default_is_company': True,}" attrs="{'readonly': [('state', '=', 'confirmado')]}"/>
         				</group>
                         <notebook>

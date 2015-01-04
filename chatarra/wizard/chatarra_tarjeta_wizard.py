@@ -1,59 +1,53 @@
 # -*- encoding: utf-8 -*-
-from openerp.osv import fields, osv
-from openerp import tools, _
+from openerp import models, fields, api
 import time
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
+from datetime import datetime
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
-class chatarra_tarjeta_wizard(osv.TransientModel):
+class chatarra_tarjeta_wizard(models.TransientModel):
     _name = 'chatarra.tarjeta'
+    _rec_name = 'folio'
+    
+    unit_id   = fields.Many2one('chatarra.unit', string='Unidad', readonly=True)
+    folio     = fields.Char(string='No. de Folio', required=True)
+    fecha     = fields.Date(required=True, default=lambda *a: time.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
+    modalidad = fields.Integer(string='Folio Modalidad', required=True, size=10)
 
-    def onchange_date(self, cr, uid, ids, fecha, context=None):
-        if datetime.strptime(fecha, DEFAULT_SERVER_DATE_FORMAT).date() > datetime.now().date():
-            raise osv.except_osv(('Advertencia!'), ('La fecha es futura'))
-            return { 'value': { 'fecha': False } }
-        return fecha
+    @api.onchange('fecha')
+    def onchange_date(self):
+        if datetime.strptime(self.fecha, DEFAULT_SERVER_DATE_FORMAT).date() > datetime.now().date():
+            return {
+                        'warning': {
+                            'title': "Error",
+                            'message': "La fecha es futura",
+                        }
+                    }
 
-    def _check_date(self, cr, uid, ids, context=None):
-        obj = self.browse(cr, uid, ids[0], context=context)
-        if datetime.strptime(obj.fecha, DEFAULT_SERVER_DATE_FORMAT).date() > datetime.now().date():
+    @api.one
+    @api.constrains('fecha')
+    def _check_date(self):
+        if datetime.strptime(self.fecha, DEFAULT_SERVER_DATE_FORMAT).date() > datetime.now().date():
             return False
-        return True
 
-    _columns = {
-        'unit_id'   : fields.many2one('chatarra.unit','Unidad', readonly=True),
-        'folio'     : fields.char('No. de Folio', required=True),
-        'fecha'     : fields.date('Fecha', required=True),
-        'modalidad' : fields.integer('Folio Modalidad', required=True, size=10),
-    }
-
-    _constraints = [(_check_date, '¡La fecha es futura!',['fecha'])]
-
-    _defaults = {
-        'fecha': lambda *a: time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-    }
-
-    def recibir_tarjeta(self,cr,uid,ids,context=None):
-        unidad_obj = self.pool.get('chatarra.unit')
-        wiz = self.browse(cr,uid,ids)
-        unit = wiz.unit_id
-        unidad_obj.write(cr, uid, [unit.id], {'folio_tarjeta': wiz.folio,
-                                              'fecha_tarjeta': wiz.fecha,
-                                              'folio_modalidad': wiz.modalidad,
-                                              'copia_tc': True,
-                                              'copia_tc_por': uid,
-                                              'fecha_copia_tc': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+    @api.one
+    def recibir_tarjeta(self):
+        unit = self.unit_id
+        unit.write({'folio_tarjeta': self.folio,
+                    'fecha_tarjeta': self.fecha,
+                    'folio_modalidad': self.modalidad,
+                    'copia_tc': True,
+                    'copia_tc_por': self.env.user.id,
+                    'fecha_copia_tc': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         if unit.tarjeta_circulacion == True and unit.tarjeta_circulacion == True:
-            unidad_obj.write(cr, uid, [unit.id], {'state':'recibido',
-                                  'recibido_por': uid,
-                                  'fecha_recibido':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            unit.write({'state':'recibido',
+                       'recibido_por': self.env.user.id,
+                       'fecha_recibido':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 #         return {
 #             'type': 'ir.actions.client',
 #             'tag': 'chatarra_unit_enviado_sct_tree',
 #             'params': {'wait': True},
 # }
-        #return { 'type' :  'ir.actions.act_close_wizard_and_reload_view' }
+        return { 'type' :  'ir.actions.act_close_wizard_and_reload_view' }
         # return {
         #         'type': 'ir_actions_act_window',
         #         'tag': 'reload',
