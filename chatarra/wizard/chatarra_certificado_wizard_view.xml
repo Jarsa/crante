@@ -21,7 +21,7 @@
             </field>
         </record>
         <!-- Accion Form Certificado (Boton en chatarra.unit) -->
-        <record id='action_chatarra_certificado' model='ir.actions.act_window'>
+        <record id='action_wizard_chatarra_certificado' model='ir.actions.act_window'>
             <field name='name'>Certificado</field>
             <field name='res_model'>chatarra.certificado</field>
             <field name='view_type'>form</field>

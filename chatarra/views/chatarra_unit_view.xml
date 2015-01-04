@@ -34,6 +34,8 @@
                     <button name="action_disponible" groups="chatarra.chatarra_group_disponible" states="borrador" string="Disponible" type="object" icon="gtk-go-forward"/>
                     <button name="action_bloqueado" groups="chatarra.chatarra_group_bloqueo" attrs="{'invisible':[('state','!=','recibido')]}" string="Bloqueado" type="object" icon="gtk-dialog-authentication"/>
                     <button name="%(chatarra.action_chatarra_cita_1)d" groups="chatarra.chatarra_group_cita" states="bloqueado" string="Programar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
+                    <button name="action_chatarrizado" groups="chatarra.chatarra_group_chatarrizado" states="exp_enviado" string="Chatarrizado" type="object" icon="gtk-apply" class="oe_highlight"/>
+                    <button name="action_baja" groups="chatarra.chatarra_group_baja" states="certificado" string="Baja" type="object" icon="gtk-apply" class="oe_highlight"/>
 				</tree>
 			</field>
 		</record>
@@ -100,7 +102,7 @@
                         <button name="action_exp_enviado" groups="chatarra.chatarra_group_enviar_expediente" states="cita" string="Expediente Enviado" type="object" icon="gtk-revert-to-saved" class="oe_highlight"/>
                         <button  name="%(chatarra.action_chatarra_cita_1)d" groups="chatarra.chatarra_group_cita2" states="cita" string="Reprogramar Cita" type="action" icon="stock_calendar" context="{'default_unidad_id': active_id,}"/>
                         <button name="action_chatarrizado" groups="chatarra.chatarra_group_chatarrizado" states="exp_enviado" string="Chatarrizado" type="object" icon="gtk-apply" class="oe_highlight"/>
-                        <button name="%(chatarra.action_chatarra_certificado)d" groups="chatarra.chatarra_group_certificado" states="chatarrizado" string="Certificado" type="action" icon="gtk-apply" class="oe_highlight" context="{'default_unit_id': active_id, 'default_fecha': programacion_cita}"/>
+                        <button name="%(chatarra.action_wizard_chatarra_certificado)d" groups="chatarra.chatarra_group_certificado" states="chatarrizado" string="Certificado" type="action" icon="gtk-apply" class="oe_highlight" context="{'default_unit_id': active_id, 'default_fecha': programacion_cita}"/>
                         <button name="action_baja" groups="chatarra.chatarra_group_baja" states="certificado" string="Baja" type="object" icon="gtk-apply" class="oe_highlight"/>
                         <button name="action_cancelado" groups="chatarra.chatarra_group_desestimiento" states="recibido,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja" string="Desestimiento" type="object" icon="gtk-close"/>
                         <button name="%(chatarra.action_chatarra_reposicion)d" groups="chatarra.chatarra_group_desestimiento_reposicion" states="recibido,bloqueado,cita,exp_enviado,chatarrizado,certificado" string="Desestimiento y Reposicion" type="action" icon="gtk-convert" context="{'default_unidad_anterior_id': active_id,}"/>
@@ -122,11 +124,11 @@
     						<page string='Datos de la Unidad'>
     							<group col='4'>
  									<field name='serie' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
- 									<field name='marca' widget='selection' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+ 									<field name='marca_id' widget='selection' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
                                     <field name='modelo' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
  									<field name='clase' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
                                     <field name='no_ejes' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
- 									<field name='tipo' widget='selection' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
+ 									<field name='tipo_id' widget='selection' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
                                     <field name='no_llantas' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
  									<field name='motor' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
                                     <field name='combustible' attrs="{'readonly': [('state', '!=', 'borrador')]}"/>
@@ -208,6 +210,7 @@
                                     <field name='programacion_cita' attrs="{'invisible':[('programacion_cita','=', False)]}"/>
                                     <field name='cita_anterior' attrs="{'invisible':[('cita_anterior','=', False)]}"/>
                                     <field name='cita_anterior2' attrs="{'invisible':[('cita_anterior2','=', False)]}"/>
+                                    <field name='certificado' attrs="{'invisible':[('certificado','=', False)]}"/>
                                 </group>
                             </page>
                             <page string='Log'>
@@ -334,6 +337,42 @@
             <field name='view_type'>form</field>
             <field name='view_mode'>tree,form</field>
         </record>
+        <!-- Accion Chatarra/Unidades/Exp. Enviado -->
+        <record id='action_chatarra_exp_enviado' model='ir.actions.act_window'>
+            <field name='name'>Exp. Enviado</field>
+            <field name='res_model'>chatarra.unit</field>
+            <field name="view_id" ref="chatarra_unit_tree"/>
+            <field name="domain">[('state','=','exp_enviado')]</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>tree,form</field>
+        </record>
+        <!-- Accion Chatarra/Unidades/Chatarrizadas -->
+        <record id='action_chatarra_chatarrizado' model='ir.actions.act_window'>
+            <field name='name'>Chatarrizadas</field>
+            <field name='res_model'>chatarra.unit</field>
+            <field name="view_id" ref="chatarra_unit_tree"/>
+            <field name="domain">[('state','=','chatarrizado')]</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>tree,form</field>
+        </record>
+        <!-- Accion Chatarra/Unidades/Certificado -->
+        <record id='action_chatarra_certificado' model='ir.actions.act_window'>
+            <field name='name'>Certificado</field>
+            <field name='res_model'>chatarra.unit</field>
+            <field name="view_id" ref="chatarra_unit_tree"/>
+            <field name="domain">[('state','=','certificado')]</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>tree,form</field>
+        </record>
+        <!-- Accion Chatarra/Unidades/Bajas -->
+        <record id='action_chatarra_baja' model='ir.actions.act_window'>
+            <field name='name'>Bajas</field>
+            <field name='res_model'>chatarra.unit</field>
+            <field name="view_id" ref="chatarra_unit_tree"/>
+            <field name="domain">[('state','=','baja')]</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>tree,form</field>
+        </record>
         <!-- Menu Chatarra/Unidades/Inventario -->
         <menuitem id="chatarra_lists_menu" name="Inventario" parent="chatarra_list_menu" sequence="0"/>
         <!-- Menu Chatarra/Unidades/Inventario/Inventario -->
@@ -352,5 +391,13 @@
         <menuitem id="chatarra_recibido_bloqueadas" name="Bloqueadas" parent="chatarra_lists_menu" action="action_chatarra_bloqueadas" sequence="5"/>
         <!-- Menu Chatarra/Unidades/Inventario/Cita -->
         <menuitem id="chatarra_cita_menu" name="Cita" parent="chatarra_lists_menu" action="action_chatarra_cita" sequence="6"/>
+        <!-- Menu Chatarra/Unidades/Inventario/Exp. Enviado -->
+        <menuitem id="chatarra_exp_enviado_menu" name="Exp. Enviado" parent="chatarra_lists_menu" action="action_chatarra_exp_enviado" sequence="7"/>
+        <!-- Menu Chatarra/Unidades/Inventario/Exp. Enviado -->
+        <menuitem id="chatarra_chatarrizado_menu" name="Chatarrizadas" parent="chatarra_lists_menu" action="action_chatarra_chatarrizado" sequence="8"/>
+        <!-- Menu Chatarra/Unidades/Inventario/Certificado -->
+        <menuitem id="chatarra_certificado_menu" name="Certificado" parent="chatarra_lists_menu" action="action_chatarra_certificado" sequence="9"/>
+        <!-- Menu Chatarra/Unidades/Inventario/Baja -->
+        <menuitem id="chatarra_baja_menu" name="Baja" parent="chatarra_lists_menu" action="action_chatarra_baja" sequence="10"/>
     </data>
 </openerp>

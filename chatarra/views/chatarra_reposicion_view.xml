@@ -27,7 +27,7 @@
                             <label string='Reposicion'/>
                         </h1>
                         <group col='4'>
-                            <field name='motivo' widget='selection'/>
+                            <field name='motivo_id' widget='selection'/>
                             <field name='date'/>
                             <field name='unidad_nueva_id' domain="[
                                                             ('name','!=', unidad_anterior_id),
@@ -51,7 +51,7 @@
                     <field name='unidad_anterior_id'/>
                     <field name='unidad_nueva_id'/>
                     <field name='date'/>
-                    <field name='motivo'/>
+                    <field name='motivo_id'/>
                 </tree>
             </field>
         </record>

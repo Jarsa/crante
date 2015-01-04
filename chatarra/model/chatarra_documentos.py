@@ -1,62 +1,45 @@
 # -*- encoding: utf-8 -*-
-from openerp.osv import osv, fields
-from openerp import tools
+from openerp import models, fields, api, _
 import time
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
-class chatarra_documentos(osv.osv):
+class chatarra_documentos(models.Model):
     _name = 'chatarra.documentos'
     _description = 'Documentos'
-    _columns = {
-        'name'		        :fields.selection([
-	       				            ('visual','Visual'),
-    	   				            ('carta','Carta de Asignacion'),
-       					            ('consulta','Consulta'),
-       					            ('copia_tc','Tarjeta de Circulacion Prop. Anterior'),
-       					            ('factura_origen','Factura de origen'),
+
+    name           = fields.Selection([
+                                    ('visual','Visual'),
+                                    ('carta','Carta de Asignacion'),
+                                    ('consulta','Consulta'),
+                                    ('copia_tc','Tarjeta de Circulacion Prop. Anterior'),
+                                    ('factura_origen','Factura de origen'),
                                     ('factura_venta','Factura de venta'),
                                     ('factura_compra','Factura de compra'),
-       					            ('foto_frente','Foto frente'),
+                                    ('foto_frente','Foto frente'),
                                     ('foto_chasis','Foto chasis'),
                                     ('foto_motor','Foto motor')
-       					            ], 'Tipo de Documento'),
-        'unit_id'	        :fields.many2one('chatarra.unit', 'Placa', required=True),
-        'imagen' 	        :fields.binary('Imagen'),
-        'state'             :fields.selection([
-        				            ('pendiente','Pendiente'),
-        				            ('completo','Completo'),
+                                    ], string='Tipo de Documento', required=True)
+    unit_id        =fields.Many2one('chatarra.unit', string='Placa', required=True)
+    imagen         =fields.Binary()
+    state          =fields.Selection([
+                                    ('pendiente','Pendiente'),
+                                    ('completo','Completo'),
                                     ('no_requerido','No Requerido'),
-                                    ('cancelado', 'Cancelado'),
-        				            ], 'Estado', readonly='True'),
-        'completo_por'      :fields.many2one('res.users','Completo por:', readonly=True),
-        'fecha_completo'    :fields.datetime('Fecha completo:', readonly=True),
-    }
-    _defaults = {
-        'state': 'pendiente'
-    }
+                                    ('cancelado','Cancelado'),
+                                    ], 'Estado', readonly='True', default='pendiente')
+    completo_por   = fields.Many2one('res.users', string='Completo por', readonly=True)
+    fecha_completo = fields.Datetime(string='Fecha completo:', readonly=True)
 
-    def write(self, cr, uid, ids, vals, context=None):
-        values = vals
-        documento = self.browse(cr, uid, ids)
-        unidad_obj = self.pool.get('chatarra.unit')
-        unidad = documento.unit_id
-        super(chatarra_documentos, self).write(cr, uid, ids, values, context=context)
-        for document in unidad.document_ids:
-            if document.state in ('pendiente'):
-                return False
-        unidad_obj.write(cr, uid, [unidad.id], {'state':'completo',
-                                                'completo_por':uid,
-                                                'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+    @api.one
+    def action_completo(self):
+        self.write({'state':'completo',
+                    'completo_por':self.env.user.id,
+                    'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                    })
 
-    def action_completo(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {  'state':'completo',
-                                    'completo_por':uid,
-                                    'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-                                  })
-    def action_no_requerido(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {  'state':'no_requerido',
-                                    'completo_por':uid,
-                                    'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-                                  })
+    @api.one
+    def action_no_requerido(self):
+        self.write({'state':'no_requerido',
+                    'completo_por':self.env.user.id,
+                    'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                    })

@@ -29,8 +29,7 @@
     "author": "JARSA Sistemas, S.A. de C.V.",
     "website": "http://www.jarsa.com.mx",
     "category": "Chatarra",
-    "depends": ['base_vat',
-                'vat_override',
+    "depends": ['base_vat',                
                 'account_accountant',
                 'account_cancel'],
     "data":[

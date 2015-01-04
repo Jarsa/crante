@@ -1,43 +1,38 @@
 # -*- encoding: utf-8 -*-
-from openerp.osv import fields, osv
-from openerp import tools
+from openerp import models, fields, api
 import time
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, float_compare
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
-class chatarra_cita_wizard(osv.TransientModel):
+class chatarra_cita_wizard(models.TransientModel):
     _name = 'chatarra.cita'
-    _columns = {
-        'name'          : fields.char('Nombre'),
-        'fecha'         : fields.datetime('Fecha', required=True),
-        'unidad_id'     : fields.many2one('chatarra.unit', 'Unidad', readonly=True),
-        'chatarrera_id' : fields.many2one('res.partner', 'Chatarrera', required=True),
-    }
+    
+    name          = fields.Char(string='Nombre')
+    fecha         = fields.Datetime(required=True)
+    unidad_id     = fields.Many2one('chatarra.unit', string='Unidad', readonly=True)
+    chatarrera_id = fields.Many2one('res.partner', string='Chatarrera', required=True)
 
-    def action_programar_cita(self, cr, uid, ids, vals, context=None):
-        unidad_obj = self.pool.get('chatarra.unit')
-        cita = self.browse(cr, uid, ids)
-        unidad = cita.unidad_id
+    @api.one
+    def action_programar_cita(self):
+        unidad = self.unidad_id
         if unidad.programacion_cita == False:
-            unidad_obj.write(cr, uid, [unidad.id], {'state':'cita',
-                                                'cita_por': uid,
-                                                'programacion_cita': cita.fecha,
-                                                'chatarrera_id': cita.chatarrera_id.id,
-                                                'fecha_cita':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            unidad.write({'state':'cita',
+                          'cita_por': self.env.user.id,
+                          'programacion_cita': self.fecha,
+                          'chatarrera_id': self.chatarrera_id.id,
+                          'fecha_cita':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         elif unidad.cita_anterior == False:
-            unidad_obj.write(cr, uid, [unidad.id], {'cita_reprogramada_por': uid,
-                                                    'cita_anterior':unidad.programacion_cita,
-                                                    'programacion_cita': cita.fecha,
-                                                    'chatarrera_id': cita.chatarrera_id.id,
-                                                    'fecha_cita_reprogramada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            unidad.write({'cita_reprogramada_por': self.env.user.id,
+                          'cita_anterior':unidad.programacion_cita,
+                          'programacion_cita': self.fecha,
+                          'chatarrera_id': self.chatarrera_id.id,
+                          'fecha_cita_reprogramada':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         else:
-            unidad_obj.write(cr, uid, [unidad.id], {'cita_reprogramada2_por': uid,
-                                                    'cita_anterior2':unidad.cita_anterior,
-                                                    'cita_anterior':unidad.programacion_cita,
-                                                    'programacion_cita': cita.fecha,
-                                                    'chatarrera_id': cita.chatarrera_id.id,
-                                                    'fecha_cita_reprogramada2':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            unidad.write({'cita_reprogramada2_por': self.env.user.id,
+                          'cita_anterior2':unidad.cita_anterior,
+                          'cita_anterior':unidad.programacion_cita,
+                          'programacion_cita': self.fecha,
+                          'chatarrera_id': self.chatarrera_id.id,
+                          'fecha_cita_reprogramada2':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         return {
                 'type': 'ir.actions.client',
                 'tag': 'reload',
