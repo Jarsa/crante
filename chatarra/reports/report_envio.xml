@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Reporte Envio -->
+        <report
+            id="chatarra_envio_report"
+            model="chatarra.envio"
+            string="Envio"
+            report_type="qweb-pdf"
+            name="chatarra.report_envio_view"
+            file="chatarra.report_envio"
+        />
+        <!-- Email Template -->
+        <record id="email_template_reporte_envio" model="email.template">
+            <field name="name">Envios Realizados</field>
+            <field name="email_from">${(object.user_id.email}</field>
+            <field name='email_to'>alan196@gmail.com</field>
+            <field name="subject">Reporte de Unidades Retrasadas</field>
+            <field name="auto_delete" eval="True" />
+            <field name="model_id" ref="chatarra.model_chatarra_envio"/>
+            <field name="report_template" ref="chatarra_envio_report"/>
+            <field name='report_name'>Envios de prueba</field>
+            <field name="body_html"><![CDATA[
+<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+
+    <p>Hola,</p>
+
+    <p>Adjunto encontrará un reporte por cada envio</p>
+
+    <p>Un cordial saludo</p>
+
+    <p>================</p>
+    <p>Este correo se envia automaticamente desde Odoo, no lo responda por favor.</p>
+
+</div>
+            ]]></field>
+        </record>
+        <!-- Accion Cron -->
+        <record forcecreate="True" id="ir_cron_scheduler_action_envio" model="ir.cron">
+            <field name="name">Enviar Reporte de Envios</field>
+            <field eval="True" name="active"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall"/>
+            <field eval="'chatarra.envio'" name="model"/>
+            <field name="function">send_envio_mail</field>
+            <field name="args">()</field>
+        </record>
+        <!-- Reporte -->
+        <template id="report_envio_view">
+            <t t-call="report.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="report.external_layout">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            <h2>
+                                <strong>Envio <strong t-field="doc.name"/></strong>
+                            </h2>
+                            <table class="table table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th>Placa</th>
+                                        <th>Cliente</th>
+                                        <th>Marca</th>
+                                        <th>Tipo</th>
+                                        <th>Modelo</th>
+                                        <th>Serie</th>
+                                        <th>Motor</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="sale_tbody">
+                                    <tr t-foreach="docs.unit_ids" t-as="l">
+                                        <td>
+                                            <span t-field="l.name"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="l.client_id.name"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="l.marca_id.name"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="l.tipo_id.name"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="l.modelo"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="l.serie"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="l.motor"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="oe_structure"/>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</openerp>

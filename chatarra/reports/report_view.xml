@@ -10,40 +10,5 @@
             file="chatarra.report_chatarra_document" 
             name="chatarra.report_chatarra_document" 
         />
-        <!-- Email Template -->
-        <record id="email_template_reporte_unidades_retrasadas" model="email.template">
-            <field name="name">chatarra.unit.report</field>
-            <field name="email_from">${(object.user_id.email or '')|safe}</field>
-            <field name="subject">Reporte de Unidades Retrasadas</field>
-            <field name="auto_delete" eval="True" />
-            <field name="model_id" ref="chatarra.model_chatarra_unit" />
-            <field name="report_template" ref="chatarra.reporte_unidades_retrasadas"/>
-            <field name="body_html"><![CDATA[
-<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
-
-    <p>Hola,</p>
-
-    <p>Adjunto encontrará la lista de unidades retrasadas</p>
-
-    <p>Un cordial saludo</p>
-
-    <p>================</p>
-    <p>Este correo se envia automaticamente desde Odoo, no lo responda por favor.</p>
-
-</div>
-            ]]></field>
-        </record>
-        <record forcecreate="True" id="ir_cron_scheduler_action" model="ir.cron">
-            <field name="name">Enviar Reporte de Unidades Retrasadas</field>
-            <field eval="True" name="active"/>
-            <field name="user_id" ref="base.user_root"/>
-            <field name="interval_number">1</field>
-            <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
-            <field eval="False" name="doall"/>
-            <field eval="'chatarra.unit'" name="model"/>
-            <field eval="" name="function"/>
-            <!--<field eval="'(False,True)'" name="args"/>-->
-        </record>
     </data>
 </openerp>

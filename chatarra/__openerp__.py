@@ -54,6 +54,7 @@
             'views/chatarra_unit_view.xml',
             'reports/report_view.xml',
             'reports/report_units_late.xml',
+            'reports/report_envio.xml',
             'data/chatarra_marca_data.xml',
             'data/chatarra_tipo_data.xml',
             'data/chatarra_motivo_data.xml',

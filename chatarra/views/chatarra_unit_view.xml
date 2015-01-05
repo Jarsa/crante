@@ -8,14 +8,58 @@
             <field name="type">search</field>
             <field name="arch" type="xml">
                 <search string="Unidades">
-                   <filter string="Disponibles" icon="terp-gtk-media-pause" domain="[('state','=','disponible')]"/>
-                   <filter string="Borrador" icon="terp-gtk-media-pause" domain="[('state','=','borrador')]"/>
-                   <filter string="Asignada" icon="terp-gtk-media-pause" domain="[('state','=','asignada')]"/>
-                   <filter string="Enviada a SCT" icon="terp-gtk-media-pause" domain="[('state','=','enviado')]"/>
-                   <separator orientation="vertical"/>
-                   <group  expand='0' string='Agrupar por...'>
-                       <filter string='Estado' icon="terp-gdu-smart-failing" domain="[]" context="{'group_by' : 'state'}" />
-                   </group>
+                    <field name='name'/>
+                    <field name='client_id'/>
+                    <field name='asignacion_id'/>
+                    <field name='secretaria_id'/>
+                    <field name='contacto_id'/>
+                    <field name='gestor_id'/>
+                    <group string="Filtrar por estado">
+                        <filter string="Borrador" domain="[('state','=','borrador')]"/>
+                        <filter string="Disponible" domain="[('state','=','disponible')]"/>
+                        <filter string="Seleccionado para Asignacion" domain="[('state','=','por_asignar')]"/>
+                        <filter string="Asignada" domain="[('state','=','asignada')]"/>
+                        <filter string="Expediente Completo" domain="[('state','=','completo')]"/>
+                        <filter string="Seleccionado para Envio" domain="[('state','=','seleccion')]"/>
+                        <filter string="Enviado a SCT" domain="[('state','=','enviado')]"/>
+                        <filter string="Recibido" domain="[('state','=','recibido')]"/>
+                        <filter string="Consulta" domain="[('state','=','consulta')]"/>
+                        <filter string="Reposicion" domain="[('state','=','reposicion')]"/>
+                        <filter string="Bloqueado" domain="[('state','=','bloqueado')]"/>
+                        <filter string="Cita" domain="[('state','=','cita')]"/>
+                        <filter string="Expediente Enviado" domain="[('state','=','exp_enviado')]"/>
+                        <filter string="Chatarrizado" domain="[('state','=','chatarrizado')]"/>
+                        <filter string="Certificado Recibo" domain="[('state','=','certificado')]"/>
+                        <filter string="Baja" domain="[('state','=','baja')]"/>
+                        <filter string="Cancelado" domain="[('state','=','cancelado')]"/>
+                        <filter string="Desestimiento" domain="[('state','=','desestimiento')]"/>
+                    </group>
+                    <group  expand='0' string='Agrupar por...'>
+                        <filter string='Estado' context="{'group_by' : 'state'}" />
+                        <filter string='Cliente' context="{'group_by' : 'client_id'}" />
+                        <filter string='Secretaria' context="{'group_by' : 'secretaria_id'}" />
+                        <filter string='Contacto' context="{'group_by' : 'contacto_id'}" />
+                        <filter string='Gestor' context="{'group_by' : 'gestor_id'}" />
+
+                    </group>
+                    <group string='Filtrar por fecha...'>
+                        <filter string="Year"
+                                name="Year"
+                                domain="[('date','&lt;=', time.strftime('%%Y-%%m-%%d')),('date','&gt;=',time.strftime('%%Y-01-01'))]"
+                                help="This Year" 
+                                context="{'group_by':'date'}"/>
+                        <filter string="Mes"
+                                name="mes"
+                                domain="[('date','&lt;=',(context_today()+relativedelta(day=31)).strftime('%%Y-%%m-%%d')),('date','&gt;=',(context_today()-relativedelta(day=1)).strftime('%%Y-%%m-%%d'))]"
+                                help="Este Mes" 
+                                context="{'group_by':'date'}"/>
+                        <filter string="Semana"
+                                separator="1"
+                                name="semana"
+                                domain="[('date','&lt;=', (context_today() + relativedelta(weeks=0,day=7, weekday=-1)).strftime('%%Y-%%m-%%d')),('date','&gt;=',(context_today() - relativedelta(weeks=1, weekday=0)).strftime('%%Y-%%m-%%d'))]"
+                                help="Esta Semana" 
+                                context="{'group_by':'date'}"/>
+                    </group>
                 </search>
             </field>
         </record>

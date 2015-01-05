@@ -148,3 +148,11 @@ class chatarra_envio(models.Model):
                               'gestor_id':envio.gestor_id.id,
                               'contacto_id':envio.contacto_id.id,
                               'fecha_enviado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+
+    def send_envio_mail(self, cr, uid):
+        envios_id = self.search(cr, uid, [])
+        email_template_obj = self.pool.get('email.template')
+        template = email_template_obj.search(cr, uid, [('model_id.model', '=','chatarra.envio')]) 
+        for envio in envios_id:
+            email_template_obj.send_mail(cr, uid, template[0], envio)
+        return True

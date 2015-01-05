@@ -26,7 +26,7 @@
                                     <span t-field="l.name"/>
                                 </td>
                                 <td>
-                                    <span t-field="l.vat"/>
+                                    <span t-field="l.rfc"/>
                                 </td>
                                 <td>
                                     <span t-field="l.serie"/>
