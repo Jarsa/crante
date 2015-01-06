@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    	<record id="chatarra_provisual_alfredovaldez" model="res.partner">
+    		<field name="name">ALFREDO VALDEZ</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_coronel" model="res.partner">
+    		<field name="name">CORONEL</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_foto" model="res.partner">
+    		<field name="name">FOTO</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_fredy" model="res.partner">
+    		<field name="name">FREDY</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_geim" model="res.partner">
+    		<field name="name">GEIM</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_magi" model="res.partner">
+    		<field name="name">MA GI</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_maiz" model="res.partner">
+    		<field name="name">MAIZ</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_martha" model="res.partner">
+    		<field name="name">MARTHA</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_napoles" model="res.partner">
+    		<field name="name">NAPOLES</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_pagi" model="res.partner">
+    		<field name="name">PA GI</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_pako" model="res.partner">
+    		<field name="name">PAKO</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_pedroquintero" model="res.partner">
+    		<field name="name">PEDRO QUINTERO</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_pedroreyes" model="res.partner">
+    		<field name="name">PEDRO REYES</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_roman" model="res.partner">
+    		<field name="name">ROMAN</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_vicente" model="res.partner">
+    		<field name="name">VICENTE</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    	<record id="chatarra_provisual_victor" model="res.partner">
+    		<field name="name">VICTOR</field>
+    		<field name="supplier" eval="True"/>
+    	</record>
+    </data>
+</openerp>

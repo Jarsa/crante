@@ -43,6 +43,9 @@
         <record model='chatarra.marca' id='chatarra_marca_dodge'>
         	<field name='name'>DODGE</field>
         </record>
+        <record model='chatarra.marca' id='chatarra_marca_dunn'>
+            <field name='name'>DUNN</field>
+        </record>
         <record model='chatarra.marca' id='chatarra_marca_famsa'>
         	<field name='name'>FAMSA</field>
         </record>
@@ -231,6 +234,9 @@
         </record>
         <record model='chatarra.marca' id='chatarra_marca_zamarripa'>
         	<field name='name'>ZAMARRIPA</field>
+        </record>
+        <record model='chatarra.marca' id='chatarra_marca_x'>
+            <field name='name'>X</field>
         </record>
     </data>
 </openerp>

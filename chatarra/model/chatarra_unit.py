@@ -150,6 +150,7 @@ class chatarra_unit(models.Model):
     codigo_postal            = fields.Char(required=True)
     ciudad                   = fields.Char(required=True)
     importe                  = fields.Float(required=True)
+    fecha_registro           = fields.Datetime(string='Fecha de registro', required=True, default=lambda *a: time.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
    
     _sql_constraints = [('chatarra_unit_name_unique', 'unique(name)', 'La Placa ya existe'),
                         ('chatarra_unit_serie_unique', 'unique(serie)', 'La Serie ya existe')]

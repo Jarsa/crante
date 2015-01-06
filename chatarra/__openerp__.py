@@ -59,6 +59,7 @@
             'data/chatarra_tipo_data.xml',
             'data/chatarra_motivo_data.xml',
             'data/product_data.xml',
+            'data/res_partner_data.xml',
             'security/security_menu.xml',
             'static/src/js/chatarra.js',
             ],

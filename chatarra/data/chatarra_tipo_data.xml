@@ -61,9 +61,6 @@
         <record model='chatarra.tipo' id='chatarra_tipo_redil_o_plat'>
         	<field name='name'>REDIL O PLAT</field>
         </record>
-        <record model='chatarra.tipo' id='chatarra_tipo_redil_o_plat'>
-        	<field name='name'>REDIL. O PLAT.</field>
-        </record>
         <record model='chatarra.tipo' id='chatarra_tipo_redilas'>
         	<field name='name'>REDILAS</field>
         </record>
@@ -84,6 +81,9 @@
         </record>
         <record model='chatarra.tipo' id='chatarra_tipo_volteo'>
         	<field name='name'>VOLTEO</field>
+        </record>
+        <record model='chatarra.tipo' id='chatarra_tipo_x'>
+            <field name='name'>X</field>
         </record>
     </data>
 </openerp>
