@@ -43,3 +43,10 @@ class chatarra_documentos(models.Model):
                     'completo_por':self.env.user.id,
                     'fecha_completo':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
                     })
+
+    @api.multi
+    def write(self, vals):
+        documents_ids = self.search([('unit_id', '=', self.unit.id)])
+        print '##########################', documents_ids
+        documento = super(chatarra_documentos, self).write(vals)
+        return documento

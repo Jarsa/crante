@@ -16,7 +16,7 @@ class chatarra_envio(models.Model):
     guia          = fields.Char(required=True)
     paqueteria_id = fields.Many2one('res.partner', string='Paqueteria', required=True)
     secretaria_id = fields.Many2one('chatarra.secretaria', sting='Secretaria', required=True)
-    contacto_id   = fields.Many2one('res.partner', sting='Contacto', required=True)
+    contacto_id   = fields.Many2one('res.partner', string='Contacto', required=True)
     unit_ids      = fields.Many2many('chatarra.unit', string='Unidades', required=True)
     enviado_por   = fields.Many2one('res.users', readonly=True)
     fecha_enviado = fields.Datetime(readonly=True)

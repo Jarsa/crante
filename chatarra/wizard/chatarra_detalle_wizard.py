@@ -4,11 +4,11 @@ import time
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
 class chatarra_certificado_wizard(models.TransientModel):
-    _name = 'chatarra.certificado'
+    _name = 'chatarra.detalle'
     
-    unit_id     = fields.Many2one('chatarra.unit',string='Unidad', readonly=True)
-    certificado = fields.Char(string='No. de Certificado', required=True)
-    fecha       = fields.Datetime(readonly=True)
+    unit_id = fields.Many2one('chatarra.unit',string='Unidad', readonly=True)
+    motivo_id = fields.Many2one(string='No. de Certificado', required=True)
+    fecha = fields.Datetime(readonly=True)
 
     @api.one
     def recibir_certificado(self):

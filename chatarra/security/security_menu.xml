@@ -26,16 +26,10 @@
         <record model='ir.ui.menu' id='chatarra_asignadas_menu'>
             <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
         </record>
-        <record model='ir.ui.menu' id='chatarra_expediente_completo_menu'>
-            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
-        </record>
         <record model='ir.ui.menu' id='chatarra_enviadas_sct_menu'>
             <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
         </record>
-        <record model='ir.ui.menu' id='chatarra_recibido_sct_menu'>
-            <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
-        </record>
-        <record model='ir.ui.menu' id='chatarra_recibido_bloqueadas'>
+        <record model='ir.ui.menu' id='chatarra_bloqueadas_menu'>
             <field name='groups_id' eval="[(4, ref('chatarra_group_manager')),(4, ref('chatarra_group_user'))]"/>
         </record>
         <record model='ir.ui.menu' id='chatarra_cita_menu'>

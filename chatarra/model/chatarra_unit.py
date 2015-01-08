@@ -8,18 +8,19 @@ from openerp.exceptions import except_orm
 class chatarra_unit(models.Model):
     _name = 'chatarra.unit'
     _description = 'Unidad'
+    _inherit = 'pad.common'
 
     name = fields.Char(string='Placa', size=10, required=True)
     state = fields.Selection([('borrador', 'Borrador'),
                               ('disponible', 'Disponible'),
                               ('por_asignar', 'Seleccionado para Asignacion'),
                               ('asignada', 'Asignada'),
-                              ('completo', 'Expediente Completo'),
                               ('seleccion', 'Seleccionado para Envio'),
                               ('enviado', 'Enviado a SCT'),
-                              ('recibido', 'Recibido'),
+                              ('en_actualizacion', 'En Actualizacion'),
                               ('consulta', 'Consulta'),
                               ('reposicion', 'Reposicion'),
+                              ('actualizada', 'Actualizada'),
                               ('bloqueado', 'Bloqueado'),
                               ('cita', 'Cita'),
                               ('exp_enviado', 'Expediente Enviado'),
@@ -80,16 +81,20 @@ class chatarra_unit(models.Model):
     fecha_asignada = fields.Datetime(string='Fecha Asignado', readonly=True)
     completo_por = fields.Many2one('res.users', string='Expediente Completo por', readonly=True)
     fecha_completo = fields.Datetime(string='Fecha Expediente Completo', readonly=True)
-    enviado_por = fields.Many2one('res.users', string='Enviado por', readonly=True)
-    fecha_enviado = fields.Datetime(string='Fecha Enviado', readonly=True)
-    consulta_por = fields.Many2one('res.users', string='Consulta por', readonly=True)
-    fecha_consulta = fields.Datetime(string='Fecha Consulta', readonly=True)
+    enviado_por = fields.Many2one('res.users', readonly=True)
+    fecha_enviado = fields.Datetime(readonly=True)
+    consulta_por = fields.Many2one('res.users', readonly=True)
+    fecha_consulta = fields.Datetime(readonly=True)
     tc_por = fields.Many2one('res.users', string='TC por', readonly=True)
     fecha_tc = fields.Datetime(string='Fecha TC', readonly=True)
     copia_tc_por = fields.Many2one('res.users', string='Copia TC por', readonly=True)
     fecha_copia_tc = fields.Datetime(string='Fecha Copia TC', readonly=True)
-    recibido_por = fields.Many2one('res.users', string='Recibido por', readonly=True)
-    fecha_recibido = fields.Datetime(string='Fecha Recibido', readonly=True)
+    en_actualizacion_por = fields.Many2one('res.users', readonly=True)
+    fecha_en_actualizacion = fields.Datetime(readonly=True)
+    actualizada_por = fields.Many2one('res.users', readonly=True)
+    fecha_actualizada = fields.Datetime(readonly=True)
+    detalle_por = fields.Many2one('res.users', readonly=True)
+    fecha_detalle = fields.Datetime(readonly=True)
     bloqueado_por = fields.Many2one('res.users', string='Bloqueado por', readonly=True)
     fecha_bloqueado = fields.Datetime(string='Fecha Bloqueado', readonly=True)
     cita_por = fields.Many2one('res.users', string='Cita por', readonly=True)
@@ -151,6 +156,8 @@ class chatarra_unit(models.Model):
     ciudad = fields.Char(required=True)
     importe = fields.Float(required=True)
     fecha_registro = fields.Datetime(string='Fecha de registro', required=True, default=lambda *a: time.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
+    expediente_completo = fields.Boolean(readonly=True)
+    notas = fields.Text(pad_content_field=('notas'))
 
     _sql_constraints = [('chatarra_unit_name_unique', 'unique(name)', 'La Placa ya existe'),
                         ('chatarra_unit_serie_unique', 'unique(serie)', 'La Serie ya existe')]
@@ -158,6 +165,8 @@ class chatarra_unit(models.Model):
     @api.one
     @api.constrains('name', 'serie')
     def _check_unique_insesitive(self):
+        """ Restriccion que no deja guardar un registro con placa y/o serie duplicada
+            sin importar si se escribe en mayusculas o minusculas  """
         units = [unit.name.lower() for unit in self.search([]) if unit.id not in self.ids]
         for unit in self:
             if unit.name and unit.name.lower() in units:
@@ -165,7 +174,7 @@ class chatarra_unit(models.Model):
 
     @api.one
     def action_disponible(self):
-        ''' Camibia la unidad a estado disponible, genera factura de proveedor y crea documentos por unidad. '''
+        """ Camibia la unidad a estado disponible, genera factura de proveedor y crea documentos por unidad. """
         invoice_obj = self.env['account.invoice']
         fpos_obj = self.env['account.fiscal.position']
         prod_obj = self.env['product.product']
@@ -217,9 +226,9 @@ class chatarra_unit(models.Model):
                     'consulta_por': self.env.user.id,
                     'fecha_consulta': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         if self.tarjeta_circulacion is True and self.copia_tc is True:
-            self.write({'state': 'recibido',
-                        'recibido_por': self.env.user.id,
-                        'fecha_recibido': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            self.write({'state': 'en_actualizacion',
+                        'en_actualizacion_por': self.env.user.id,
+                        'fecha_en_actualizacion': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
     @api.one
     def action_recibir_tarjeta(self):
@@ -228,9 +237,9 @@ class chatarra_unit(models.Model):
                     'tc_por': self.env.user.id,
                     'fecha_tc': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         if unidad.consulta is True and unidad.copia_tc is True:
-            self.write({'state': 'recibido',
-                        'recibido_por': self.env.user.id,
-                        'fecha_recibido': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+            self.write({'state': 'en_actualizacion',
+                        'en_actualizacion_por': self.env.user.id,
+                        'fecha_en_actualizacion': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
     @api.one
     def action_bloqueado(self):
@@ -268,6 +277,8 @@ class chatarra_unit(models.Model):
 
     @api.one
     def action_desasignar(self):
+        """ Metodo que regresa unidad a estado disponible,
+            elimina la unidad de una asignacion y cancela la factura de cliente """
         unidad = self
         invoice_obj = self.env['account.invoice']
         invoice = invoice_obj.search([('unit_id', '=', unidad.id), ('type', '=', 'out_invoice')])
@@ -290,18 +301,28 @@ class chatarra_unit(models.Model):
         invoice.signal_workflow('invoice_cancel')
 
     @api.one
-    def action_completo_unidad(self):
-        unidad = self
-        for documento in unidad.document_ids:
-            if documento.state == 'pendiente':
-                raise except_orm(_('Error'), _('El documento "%s" sigue pendiente') % documento.name.upper())
-            else:
-                self.write({'state': 'completo',
-                            'completo_por': self.env.user.id,
-                            'fecha_completo': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+    def action_actualizar(self):
+        """ Metodo para poner las unidades en estado actualizada """
+        self.write({'state': 'actualizada',
+                    'actualizada_por': self.env.user.id,
+                    'fecha_actualizada': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+
+    @api.one
+    def action_detalle(self):
+        """ Metodo para poner las unidades en estado detalle """
+        self.write({'state': 'detalle',
+                    'detalle_por': self.env.user.id,
+                    'fecha_detalle': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
+
+    # BORRAR ESTA FUNCION SOLO PARA PRUEBAS INICIO
+    @api.one
+    def action_borrador(self):
+        self.write({'state': 'disponible'})
+    # BORRAR ESTA FUNCION SOLO PARA PRUEBAS FIN
 
     @api.onchange('name')
     def _verify_name(self):
+        """ Metodo onchange que manda una alerta cuadno una placa ya existe """
         units = [unit.name.lower() for unit in self.search([])]
         for unit in self:
             if unit.name and unit.name.lower() in units:
@@ -314,6 +335,7 @@ class chatarra_unit(models.Model):
 
     @api.onchange('serie')
     def _verify_serie(self):
+        """ Metodo onchange que manda una alerta cuadno una serie ya existe """
         units = [unit.serie.lower() for unit in self.search([])]
         for unit in self:
             if unit.serie and unit.serie.lower() in units:

@@ -31,7 +31,8 @@
     "category": "Chatarra",
     "depends": ['base_vat',                
                 'account_accountant',
-                'account_cancel'],
+                'account_cancel',
+                'pad'],
     "data":[
             'security/security.xml',
             'security/ir.model.access.csv',
