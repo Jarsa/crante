@@ -45,7 +45,7 @@
             <field name='model'>visitor.log</field>
             <field name='type'>form</field>
             <field name='arch' type='xml'>
-                <form string='Visitor Log'>
+                <form string='Visitor Log' version="7.0">
                     <header>
                         <button string="In" 
                                 name="state_in"
@@ -67,6 +67,7 @@
                             <field name='name' class='oe_inline'/>
                         </h1>
                         <group col='4'>
+                            <!-- <field name='visitor_id' on_change="onchange_in_visitor(visitor_id)"/> -->
                             <field name='visitor_id'/>
                             <field name='date'/>
                             <field name='employee_id'/>
@@ -89,7 +90,17 @@
                     <field name='visitor_id'/>
                     <field name='employee_id'/>
                     <group  expand='0' string='Grouped by:'>
-                       <filter name='default' string='Default' domain="[('state', '!=', 'out')]"/>
+                        <filter name='default' string='Default' domain="[('state', '!=', 'out')]"/>
+                        <filter string="Year"
+                                context="{'group_by': 'year'}"/>
+                        <filter name='month'
+                                string='Month'
+                                context="{'group_by': 'date'}"/>
+                        <filter string="Week"
+                                separator="1"
+                                name="week"
+                                domain="[('date','&lt;=', (context_today() + relativedelta(weeks=0,day=7, weekday=-1)).strftime('%%Y-%%m-%%d')),('date','&gt;=',(context_today() - relativedelta(weeks=1, weekday=0)).strftime('%%Y-%%m-%%d'))]"
+                                context="{'group_by':'date'}"/>
                    </group>
                 </search>
             </field>

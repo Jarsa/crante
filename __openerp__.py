@@ -26,6 +26,19 @@
     "website": "http://www.jarsa.com.mx",
     "category": "security",
     "depends": ['hr'],
+    "description":
+    """
+Visitor Log System
+==========================
+
+This application allows you to capture visitor information.
+
+Managing:
+- Get full visitor information
+- Appointments
+- Track the time of a visit
+- Print personalized ID badge
+    """,
     "data": ['views/menu_view.xml',
              'security/security.xml',
              'security/ir.model.access.csv',
