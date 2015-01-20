@@ -28,6 +28,7 @@ class visitor_log(osv.osv):
                 'date_in': fields.datetime('Date in', readonly=True),
                 'date_out': fields.datetime('Date out', readonly=True),
                 'business': fields.text(required=True),
+                'shop_id' : field.many2one('sale.shop', 'Empresa')
                 }    
 
     _defaults = {

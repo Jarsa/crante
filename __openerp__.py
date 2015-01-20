@@ -25,7 +25,7 @@
     "author": "JARSA Sistemas, S.A. de C.V.",
     "website": "http://www.jarsa.com.mx",
     "category": "security",
-    "depends": ['hr'],
+    "depends": ['hr','sale'],
     "description":
     """
 Visitor Log System
