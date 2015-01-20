@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model='ir.ui.view' id='sale_shop_form'>
+            <field name='name'>sale.shop.visitor.log</field>
+            <field name='model'>sale.shop</field>
+            <field name='inherit_id' ref='sale.view_shop_form'/>
+            <field name='type'>form</field>
+            <field name='arch' type='xml'>
+                <field name="payment_default_id" position="after">
+                    <field name="user_id" widget="many2many_tags"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -22,9 +22,9 @@
         			<field name='date' attrs="{'readonly': [('state', '!=', 'draft')]}"/>
         			<field name='visitor_id' attrs="{'readonly': [('state', '!=', 'draft')]}"/>
         			<field name='employee_id' attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                    <field name='shop_id' widget='selection'/>
         			<field name='date_in'/>
         			<field name='date_out'/>
+                    <field name='shop_id'/>
         			<field name='state'/>
                     <button string="In" 
                             name="state_in"
@@ -72,6 +72,7 @@
                             <field name='visitor_id'/>
                             <field name='date'/>
                             <field name='employee_id'/>
+                            <field name='shop_id' widget='selection'/>
                         </group>
                         <group>
                             <field name='date_in'/>
@@ -102,6 +103,9 @@
                                 name="week"
                                 domain="[('date','&lt;=', (context_today() + relativedelta(weeks=0,day=7, weekday=-1)).strftime('%%Y-%%m-%%d')),('date','&gt;=',(context_today() - relativedelta(weeks=1, weekday=0)).strftime('%%Y-%%m-%%d'))]"
                                 context="{'group_by':'date'}"/>
+                        <filter string="Company"
+                                name="company"
+                                context="{'group_by': 'shop_id'}"/>
                    </group>
                 </search>
             </field>
