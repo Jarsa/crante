@@ -93,7 +93,8 @@
                     <field name='employee_id'/>
                     <group  expand='0' string='Grouped by:'>
                         <filter name='default' string='Default' domain="[('state', '!=', 'out')]"/>
-                        <filter string="Year"
+                        <filter name='year'
+                                string='Year'
                                 context="{'group_by': 'year'}"/>
                         <filter name='month'
                                 string='Month'

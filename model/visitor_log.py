@@ -16,6 +16,14 @@ class visitor_log(osv.osv):
         for record in self.browse(cr, uid, ids):
             date = record.date
             day = time.strptime(date, '%Y-%m-%d')
+            res[record.id] = day.tm_year
+            return res
+
+    def _get_year(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for record in self.browse(cr, uid, ids):
+            date = record.date
+            day = time.strptime(date, '%Y-%m-%d')
             res[record.id] = day.tm_mday
             return res
 
@@ -42,6 +50,10 @@ class visitor_log(osv.osv):
                                        type='char',
                                        store=True,
                                        string='Day'),
+                'year': fields.function(_get_year,
+                                       type='char',
+                                       store=True,
+                                       string='Year'),
                 }
 
     _defaults = {
