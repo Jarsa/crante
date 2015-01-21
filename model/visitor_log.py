@@ -29,32 +29,32 @@ class visitor_log(osv.osv):
 
     _description = 'Visitor Log'
     _columns = {
-                'name': fields.char('Log Number', readonly='True'),
-                'state': fields.selection([('draft', 'Draft'),
-                                           ('in', 'In'),
-                                           ('out', 'Out'),
-                                           ('appointment', 'Appointment')
-                                           ], 'State', readonly=True),
-                'date': fields.date('Date',required=True),
-                'employee_id': fields.many2one('hr.employee',
-                                               'Employee to visit',
-                                               required=True),
-                'visitor_id': fields.many2one('res.partner',
-                                              'Visitor',
-                                              required=True),
-                'date_in': fields.datetime('Date in', readonly=True),
-                'date_out': fields.datetime('Date out', readonly=True),
-                'business': fields.text('Business', required=True),
-                'shop_id' : fields.many2one('sale.shop', 'Company'),
-                'day': fields.function(_get_day,
-                                       type='char',
-                                       store=True,
-                                       string='Day'),
-                'year': fields.function(_get_year,
-                                       type='char',
-                                       store=True,
-                                       string='Year'),
-                }
+        'name': fields.char('Log Number', readonly='True'),
+        'state': fields.selection([('draft', 'Draft'),
+                                   ('in', 'In'),
+                                   ('out', 'Out'),
+                                   ('appointment', 'Appointment')
+                                   ], 'State', readonly=True),
+        'date': fields.date('Date', required=True),
+        'employee_id': fields.many2one('hr.employee',
+                                       'Employee to visit',
+                                       required=True),
+        'visitor_id': fields.many2one('res.partner',
+                                      'Visitor',
+                                      required=True),
+        'date_in': fields.datetime('Date in', readonly=True),
+        'date_out': fields.datetime('Date out', readonly=True),
+        'business': fields.text('Business', required=True),
+        'shop_id': fields.many2one('sale.shop', 'Company', required=True),
+        'day': fields.function(_get_day,
+                               type='char',
+                               store=True,
+                               string='Day'),
+        'year': fields.function(_get_year,
+                                type='char',
+                                store=True,
+                                string='Year'),
+        }
 
     _defaults = {
         'state': 'draft',
@@ -75,9 +75,10 @@ class visitor_log(osv.osv):
     #             return False
     #         else:
     #             return True
-    
+
     # _constraints = [
-    #     (_check_in_visitor, _('Error: This visitor is already in'), ['visitor_id']),
+    #     (_check_in_visitor, _('Error: Visitor is already in'),
+    #                         ['visitor_id']),
     # ]
 
     # def onchange_in_visitor(self, cr, uid, ids, visitor_id):
@@ -90,15 +91,17 @@ class visitor_log(osv.osv):
     #     visitor = [x.visitor_id.id for x in records]
     #     for visit in self.browse(cr, uid, ids):
     #         if visit.visitor_id.id in visitor:
-    #             raise osv.except_osv(_('Error'), _('This visitor is already in'))
+    #             raise osv.except_osv(_('Error'),
+    #    _('This visitor is already in'))
     #     return True
 
     def create(self, cr, uid, vals, context={}):
         """
         Assing a sequence number when the record is created
         """
-        if (not 'name' in vals) or (vals['name'] == False):
-            vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'visitor.log.sequence.number')
+        sequence = 'visitor.log.sequence.number'
+        if ('name' not in vals) or (vals['name'] is False):
+            vals['name'] = self.pool.get('ir.sequence').get(cr, uid, sequence)
         return super(visitor_log, self).create(cr, uid, vals, context)
 
     def state_in(self, cr, uid, ids, context=None):
