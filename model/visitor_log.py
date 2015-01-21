@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from openerp.osv import fields, osv
 from tools.translate import _
-import time
+import time, datetime
 from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
                            DEFAULT_SERVER_DATETIME_FORMAT)
 server_date = DEFAULT_SERVER_DATE_FORMAT
@@ -16,7 +16,7 @@ class visitor_log(osv.osv):
         for record in self.browse(cr, uid, ids):
             date = record.date
             day = time.strptime(date, '%Y-%m-%d')
-            res[record.id] = day.tm_year
+            res[record.id] = day.tm_mday
             return res
 
     def _get_year(self, cr, uid, ids, field_name, arg, context=None):
@@ -24,7 +24,15 @@ class visitor_log(osv.osv):
         for record in self.browse(cr, uid, ids):
             date = record.date
             day = time.strptime(date, '%Y-%m-%d')
-            res[record.id] = day.tm_mday
+            res[record.id] = day.tm_year
+            return res
+
+    def _get_week(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for record in self.browse(cr, uid, ids):
+            date = record.date
+            day = datetime.datetime.strptime(date, '%Y-%m-%d')
+            res[record.id] = _('Week ') + str(day.isocalendar()[1])
             return res
 
     _description = 'Visitor Log'
@@ -54,6 +62,10 @@ class visitor_log(osv.osv):
                                 type='char',
                                 store=True,
                                 string='Year'),
+        'week': fields.function(_get_week,
+                                type='char',
+                                store=True,
+                                string='Week'),
         }
 
     _defaults = {

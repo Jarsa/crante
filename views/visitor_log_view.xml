@@ -99,6 +99,9 @@
                         <filter name='month'
                                 string='Month'
                                 context="{'group_by': 'date'}"/>
+                        <filter name='week'
+                                string='Week'
+                                context="{'group_by': 'week'}"/>
                         <filter name='day'
                                 string='Day'
                                 context="{'group_by': 'day'}"/>

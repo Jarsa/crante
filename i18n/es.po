@@ -87,9 +87,20 @@ msgid "Default"
 msgstr "Predeterminado"
 
 #. module: visitor_log
+#: code:addons/visitor_log/model/visitor_log.py:35
+#, python-format
+msgid "Week "
+msgstr "Semana "
+
+#. module: visitor_log
 #: view:visitor.log:0 field:visitor.log,year:0
 msgid "Year"
 msgstr "Año"
+
+#. module: visitor_log
+#: view:visitor.log:0 field:visitor.log,week:0
+msgid "Week"
+msgstr "Semana"
 
 #. module: visitor_log
 #: field:visitor.log,date_in:0
