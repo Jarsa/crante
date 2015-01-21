@@ -10,6 +10,15 @@ server_datetime = DEFAULT_SERVER_DATETIME_FORMAT
 
 class visitor_log(osv.osv):
     _name = 'visitor.log'
+
+    def _get_day(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for record in self.browse(cr, uid, ids):
+            date = record.date
+            day = time.strptime(date, '%Y-%m-%d')
+            res[record.id] = day.tm_mday
+            return res
+
     _description = 'Visitor Log'
     _columns = {
                 'name': fields.char('Log Number', readonly='True'),
@@ -17,8 +26,8 @@ class visitor_log(osv.osv):
                                            ('in', 'In'),
                                            ('out', 'Out'),
                                            ('appointment', 'Appointment')
-                                           ], readonly=True),
-                'date': fields.date(required=True),
+                                           ], 'State', readonly=True),
+                'date': fields.date('Date',required=True),
                 'employee_id': fields.many2one('hr.employee',
                                                'Employee to visit',
                                                required=True),
@@ -27,9 +36,13 @@ class visitor_log(osv.osv):
                                               required=True),
                 'date_in': fields.datetime('Date in', readonly=True),
                 'date_out': fields.datetime('Date out', readonly=True),
-                'business': fields.text(required=True),
-                'shop_id' : fields.many2one('sale.shop', 'Empresa'),
-                }    
+                'business': fields.text('Business', required=True),
+                'shop_id' : fields.many2one('sale.shop', 'Company'),
+                'day': fields.function(_get_day,
+                                       type='char',
+                                       store=True,
+                                       string='Day'),
+                }
 
     _defaults = {
         'state': 'draft',
