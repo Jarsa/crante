@@ -20,5 +20,11 @@
             <field name="domain_force">[('user_id','=',user.id)]</field>
             <field name="groups" eval="[(4, ref('visitor_log_group_user'))]"/>
         </record>
+        <record id="visitor_log_restriction_user" model="ir.rule">
+            <field name="name">Restrict visitor log</field>
+            <field ref="model_visitor_log" name="model_id"/>
+            <field name="domain_force">[('shop_id.user_id.id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('visitor_log_group_user'))]"/>
+        </record>
     </data>
 </openerp>

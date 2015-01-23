@@ -1,7 +1,8 @@
 # -*- encoding: utf-8 -*-
 from openerp.osv import fields, osv
 from tools.translate import _
-import time, datetime
+import time
+import datetime
 from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
                            DEFAULT_SERVER_DATETIME_FORMAT)
 server_date = DEFAULT_SERVER_DATE_FORMAT
@@ -15,7 +16,7 @@ class visitor_log(osv.osv):
         res = {}
         for record in self.browse(cr, uid, ids):
             date = record.date
-            day = time.strptime(date, '%Y-%m-%d')
+            day = time.strptime(date, '%Y-%m-%d %H:%M:%S')
             res[record.id] = day.tm_mday
             return res
 
@@ -23,7 +24,7 @@ class visitor_log(osv.osv):
         res = {}
         for record in self.browse(cr, uid, ids):
             date = record.date
-            day = time.strptime(date, '%Y-%m-%d')
+            day = time.strptime(date, '%Y-%m-%d %H:%M:%S')
             res[record.id] = day.tm_year
             return res
 
@@ -31,7 +32,7 @@ class visitor_log(osv.osv):
         res = {}
         for record in self.browse(cr, uid, ids):
             date = record.date
-            day = datetime.datetime.strptime(date, '%Y-%m-%d')
+            day = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
             res[record.id] = _('Week ') + str(day.isocalendar()[1])
             return res
 
@@ -43,7 +44,7 @@ class visitor_log(osv.osv):
                                    ('out', 'Out'),
                                    ('appointment', 'Appointment')
                                    ], 'State', readonly=True),
-        'date': fields.date('Date', required=True),
+        'date': fields.datetime('Date', required=True),
         'employee_id': fields.many2one('hr.employee',
                                        'Employee to visit',
                                        required=True),
@@ -70,7 +71,7 @@ class visitor_log(osv.osv):
 
     _defaults = {
         'state': 'draft',
-        'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S')
+        'date': time.strftime(server_datetime)
     }
 
     # def _check_in_visitor(self, cr, uid, ids):
