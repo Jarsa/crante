@@ -13,3 +13,9 @@ class res_partner(models.Model):
                     ('gestor','Gestor'),
                     ('proveedor_visual','Proveedor Visual')
                 ], default='none')
+    agencia = fields.Boolean()
+    secretaria = fields.Boolean()
+    paqueteria = fields.Boolean()
+    chatarrera = fields.Boolean()
+    gestor = fields.Boolean()
+    proveedor_visual = fields.Boolean()

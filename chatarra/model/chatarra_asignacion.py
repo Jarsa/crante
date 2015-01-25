@@ -8,19 +8,18 @@ class chatarra_asignacion(models.Model):
     _name = 'chatarra.asignacion'
     _description = 'Asignacion'
 
-    name             = fields.Char('No. de Asignacion', size=64, readonly='True')
-    state            = fields.Selection([
-                                        ('borrador','Borrador'),
-                                        ('confirmado','Confirmado'),
-                                        ('pagado','Pagado'),
-                                        ('cerrado','Cerrado'),
-                                        ], readonly=True, default='borrador')
-    client_id        = fields.Many2one('res.partner', string='Cliente', required=True)
-    contacto_id      = fields.Many2one('res.partner', string='Contacto', required=True)
-    agencia_id       = fields.Many2one('res.partner', string='Agencia', required=True)
-    unit_ids         = fields.Many2many('chatarra.unit', string='Unidades', required=True)
-    confirmado_por   = fields.Many2one('res.users', readonly=True)
-    cantidad         = fields.Integer(compute='_get_total_quantity', string='No. de Unidades', readonly=True)
+    name = fields.Char('No. de Asignacion', size=64, readonly='True')
+    state = fields.Selection([('borrador','Borrador'),
+                              ('confirmado','Confirmado'),
+                              ('pagado','Pagado'),
+                              ('cerrado','Cerrado'),
+                              ], readonly=True, default='borrador')
+    client_id = fields.Many2one('res.partner', string='Cliente', required=True)
+    contacto_id = fields.Many2one('res.partner', string='Contacto', required=True)
+    agencia_id = fields.Many2one('res.partner', string='Agencia', required=True)
+    unit_ids = fields.Many2many('chatarra.unit', string='Unidades', required=True)
+    confirmado_por = fields.Many2one('res.users', readonly=True)
+    cantidad = fields.Integer(compute='_get_total_quantity', string='No. de Unidades', readonly=True)
     fecha_confirmado = fields.Datetime(readonly=True)
 
     @api.one
@@ -81,6 +80,7 @@ class chatarra_asignacion(models.Model):
                     'confirmado_por':self.env.user.id,
                     'fecha_confirmado':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         asignacion = self
+        documentos_obj = self.env['chatarra.documentos']
         invoice_obj = self.env['account.invoice']
         fpos_obj = self.env['account.fiscal.position']
         prod_obj = self.env['product.product']
@@ -95,6 +95,9 @@ class chatarra_asignacion(models.Model):
         if not product:
             raise except_orm(_('Falta configuracion'),_('No existe un producto definido como chatarra !!!'))
         for unidad in asignacion.unit_ids:
+            documentos = documentos_obj.search([('unit_id', '=', unidad.id)])
+            for documento in documentos:
+                documento.write({'cliente_id': asignacion.client_id.id})
             invoice_obj.create({'partner_id':asignacion.client_id.id,
                                 'contacto_id':asignacion.contacto_id.id,
                                 'agencia_id':asignacion.agencia_id.id,

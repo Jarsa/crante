@@ -11,6 +11,12 @@
                 <div name="buttons" position="inside">
                     <group col="2">
                         <field name="categoria" />
+                        <field name="agencia"/>
+                        <field name="secretaria"/>
+                        <field name="paqueteria"/>
+                        <field name="chatarrera"/>
+                        <field name="gestor"/>
+                        <field name="proveedor_visual"/>
                     </group>
                 </div>
             </field>

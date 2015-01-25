@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Email Template -->
+        <record id="email_template_reporte_envio" model="email.template">
+            <field name="name">Envios Realizados</field>
+            <field name="email_from">${(object.user_id.email}</field>
+            <field name='email_to'>alan196@gmail.com</field>
+            <field name="subject">Reporte de Unidades Retrasadas</field>
+            <field name="auto_delete" eval="True" />
+            <field name="model_id" ref="chatarra.model_chatarra_envio"/>
+            <field name="report_template" ref="chatarra_envio_report"/>
+            <field name='report_name'>Envios de prueba</field>
+            <field name="body_html"><![CDATA[
+<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+
+    <p>Hola,</p>
+
+    <p>Adjunto encontrará un reporte por cada envio</p>
+
+    <p>Un cordial saludo</p>
+
+    <p>================</p>
+    <p>Este correo se envia automaticamente desde Odoo, no lo responda por favor.</p>
+
+</div>
+            ]]></field>
+        </record>
+    </data>
+</openerp>

@@ -30,7 +30,7 @@ class chatarra_envio(models.Model):
         units = unit_obj.search([('envio_id', '=', envio.id),('state', '=', 'seleccion')])
         if units:
             units.write({'envio_id': False,
-                         'state':'completo',
+                         'state':'asignada',
                          'guia': False,
                          'paqueteria_id': False,
                          'gestor_id': False,

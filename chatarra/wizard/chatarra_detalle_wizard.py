@@ -6,19 +6,14 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FO
 class chatarra_certificado_wizard(models.TransientModel):
     _name = 'chatarra.detalle'
     
-    unit_id = fields.Many2one('chatarra.unit',string='Unidad', readonly=True)
-    motivo_id = fields.Many2one(string='No. de Certificado', required=True)
-    fecha = fields.Datetime(readonly=True)
+    unit_id = fields.Many2one('chatarra.unit', string='Unidad', readonly=True)
+    motivo_id = fields.Many2one('chatarra.motivo', string='Motivo', required=True)
 
     @api.one
-    def recibir_certificado(self):
-        unit = self.unit_id
-        unit.write({'certificado': self.certificado,
-                    'certificado_fecha': self.fecha,
-                    'certificado_por': self.env.user.id,
-                    'state': 'certificado',
-                    'fecha_certificado': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-        return {
-                'type': 'ir.actions.client',
-                'tag': 'reload',
-                }
+    def action_detalle(self):
+        unit_obj = self.env['chatarra.unit']
+        unit = unit_obj.search([('name', '=', self.unit_id.name)])
+        unit.write({'motivo_detalle': self.motivo_id.id,
+                    'detalle_por': self.env.user.id,
+                    'state': 'detalle',
+                    'fecha_detalle': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})

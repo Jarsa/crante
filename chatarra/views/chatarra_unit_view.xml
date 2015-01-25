@@ -85,7 +85,7 @@
                             groups="chatarra.chatarra_group_actualizar"
                             attrs="{'invisible':[('state','!=','en_actualizacion')]}"
                             type="object"
-                            icon="gtk-dialog-apply"/>
+                            icon="gtk-apply"/>
                     <button string="Bloqueado" 
                             name="action_bloqueado"
                             groups="chatarra.chatarra_group_bloqueo"
@@ -210,9 +210,16 @@
                         <button string="Actualizada" 
                                 name="action_actualizar"
                                 groups="chatarra.chatarra_group_actualizar"
-                                attrs="{'invisible':[('state','!=','en_actualizacion')]}"
+                                states="en_actualizacion,detalle"
                                 type="object"
-                                icon="gtk-dialog-apply"/>
+                                icon="gtk-apply"/>
+                        <button string="Detalle"
+                                name="%(chatarra.action_wizard_detalle)d" 
+                                groups="chatarra.chatarra_group_detalle"
+                                states="en_actualizacion"
+                                type="action"
+                                icon="gtk-dialog-error"
+                                context="{'default_unit_id': active_id,}"/>
                         <button string="Bloqueado" 
                                 name="action_bloqueado"
                                 groups="chatarra.chatarra_group_bloqueo"
@@ -266,13 +273,13 @@
                         <button string="Desestimiento"
                                 name="action_cancelado" 
                                 groups="chatarra.chatarra_group_desestimiento"
-                                states="en_actualizacion,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja"
+                                states="en_actualizacion,detalle,bloqueado,cita,exp_enviado,chatarrizado,certificado,baja"
                                 type="object"
                                 icon="gtk-close"/>
                         <button string="Desestimiento y Reposicion"
                                 name="%(chatarra.action_chatarra_reposicion)d" 
                                 groups="chatarra.chatarra_group_desestimiento_reposicion"
-                                states="en_actualizacion,bloqueado,cita,exp_enviado,chatarrizado,certificado"
+                                states="en_actualizacion,detalle,bloqueado,cita,exp_enviado,chatarrizado,certificado"
                                 type="action"
                                 icon="gtk-convert"
                                 context="{'default_unidad_anterior_id': active_id,}"/>
@@ -291,11 +298,10 @@
                                 icon="gtk-ok"/>
                         <!-- BOORRAR ESTE BOTON SOLO PARA PRUEBAS INICIO-->
                         <button string="Volver a Borrador" 
-                                name="action_borrador"
+                                name="send_detalle"
                                 type="object"/>
                         <!-- BOORRAR ESTE BOTON SOLO PARA PRUEBAS FIN-->
-                        <field
-                                name='state' widget="statusbar" statusbar_visible="borrador, disponible, asignada, reposicion"/>
+                        <field name='state' widget="statusbar" statusbar_visible="borrador, disponible, asignada, reposicion"/>
                     </header>
     				<sheet>
     					<h1>
@@ -364,12 +370,32 @@
                                             <field name='unit_id' readonly="True"/>
                                             <field name='state'/>
                                             <button name="action_no_requerido" 
-                                                attrs="{'invisible':['|','|','|','|','|','|','|',('name','=','visual'),('name','=','carta'),('name','=','consulta'),('name','=','copia_tc'),('name','=','foto_frente'),('name','=','foto_chasis'),('name','=','foto_motor'),('state','!=','pendiente')]}" 
-                                                string="Completo" 
-                                                groups="chatarra.chatarra_group_documentos"
-                                                type="object" 
-                                                icon="gtk-cancel"/>
-                                            <button name="action_completo" groups="chatarra.chatarra_group_documentos" states="pendiente" string="Completo" type="object" icon="gtk-apply"/>
+                                                    attrs="{'invisible':['|','|','|','|','|','|',('name','=','visual'),('name','=','carta'),('name','=','consulta'),('name','=','copia_tc'),('name','=','foto_frente'),('name','=','foto_chasis'),('state','!=','pendiente')]}" 
+                                                    string="Completo" 
+                                                    groups="chatarra.chatarra_group_documentos"
+                                                    type="object" 
+                                                    icon="gtk-cancel"/>
+                                            <field name='completo'/>
+                                            <button name="action_completo"
+                                                    groups="chatarra.chatarra_group_documentos"
+                                                    states="pendiente"
+                                                    string="Completo"
+                                                    type="object"
+                                                    icon="gtk-apply"/>
+                                            <field name="revision_1"/>
+                                            <button name="action_revision_1"
+                                                    groups="chatarra.chatarra_group_documentos_1"
+                                                    states="completo"
+                                                    string="Revision 1"
+                                                    type="object"
+                                                    icon="gtk-apply"/>
+                                            <field name='revision_2'/>
+                                            <button name="action_revision_2"
+                                                    groups="chatarra.chatarra_group_documentos_2"
+                                                    states="revision_1"
+                                                    string="Revision 2"
+                                                    type="object"
+                                                    icon="gtk-apply"/>
                                         </tree>
                                     </field>
                                 </group>
@@ -394,6 +420,7 @@
                                     <field name='consulta' attrs="{'invisible':[('consulta','=', False)]}"/>
                                     <field name='tarjeta_circulacion' attrs="{'invisible':[('tarjeta_circulacion','=', False)]}"/>
                                     <field name='copia_tc' attrs="{'invisible':[('copia_tc','=', False)]}"/>
+                                    <field name='motivo_detalle' attrs="{'invisible':[('motivo_detalle','=', False)]}"/>
                                     <field name='chatarrera_id' attrs="{'invisible':[('chatarrera_id','=', False)]}"/>
                                     <field name='programacion_cita' attrs="{'invisible':[('programacion_cita','=', False)]}"/>
                                     <field name='cita_anterior' attrs="{'invisible':[('cita_anterior','=', False)]}"/>
@@ -428,6 +455,8 @@
                                     <field name='fecha_en_actualizacion' attrs="{'invisible':[('fecha_en_actualizacion','=', False)]}"/>
                                     <field name='actualizada_por' attrs="{'invisible':[('actualizada_por','=', False)]}"/>
                                     <field name='fecha_actualizada' attrs="{'invisible':[('fecha_actualizada','=', False)]}"/>
+                                    <field name='detalle_por' attrs="{'invisible':[('detalle_por','=', False)]}"/>
+                                    <field name='fecha_detalle' attrs="{'invisible':[('fecha_detalle','=', False)]}"/>
                                     <field name='bloqueado_por' attrs="{'invisible':[('bloqueado_por','=', False)]}"/>
                                     <field name='fecha_bloqueado' attrs="{'invisible':[('fecha_bloqueado','=', False)]}"/>
                                     <field name='cita_por' attrs="{'invisible':[('cita_por','=', False)]}"/>

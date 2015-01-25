@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from openerp import models, fields, _, api
 import time
+from datetime import datetime, date, timedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.exceptions import except_orm
 
@@ -21,6 +22,7 @@ class chatarra_unit(models.Model):
                               ('consulta', 'Consulta'),
                               ('reposicion', 'Reposicion'),
                               ('actualizada', 'Actualizada'),
+                              ('detalle', 'Detalle'),
                               ('bloqueado', 'Bloqueado'),
                               ('cita', 'Cita'),
                               ('exp_enviado', 'Expediente Enviado'),
@@ -158,6 +160,7 @@ class chatarra_unit(models.Model):
     fecha_registro = fields.Datetime(string='Fecha de registro', required=True, default=lambda *a: time.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
     expediente_completo = fields.Boolean(readonly=True)
     notas = fields.Text(pad_content_field=('notas'))
+    motivo_detalle = fields.Many2one('chatarra.motivo', readonly=True)
 
     _sql_constraints = [('chatarra_unit_name_unique', 'unique(name)', 'La Placa ya existe'),
                         ('chatarra_unit_serie_unique', 'unique(serie)', 'La Serie ya existe')]
@@ -279,23 +282,26 @@ class chatarra_unit(models.Model):
     def action_desasignar(self):
         """ Metodo que regresa unidad a estado disponible,
             elimina la unidad de una asignacion y cancela la factura de cliente """
-        unidad = self
         invoice_obj = self.env['account.invoice']
-        invoice = invoice_obj.search([('unit_id', '=', unidad.id), ('type', '=', 'out_invoice')])
+        invoice = invoice_obj.search([('unit_id', '=', self.id), ('type', '=', 'out_invoice')])
         asignacion_obj = self.env['chatarra.asignacion']
-        asignacion = asignacion_obj.search([('unit_ids', '=', unidad.id)])
-        asignacion.write({'unit_ids': [(3, unidad.id)]})
-        if unidad.asignacion2_id is False:
+        asignacion = asignacion_obj.search([('unit_ids', '=', self.id)])
+        asignacion.write({'unit_ids': [(3, self.id)]})
+        documentos_obj = self.env['chatarra.documentos']
+        documentos = documentos_obj.search([('unit_id', '=', self.id)])
+        for documento in documentos:
+            documento.write({'cliente_id': False})
+        if self.asignacion2_id is False:
             self.write({'state': 'disponible',
                         'asignacion_id': False,
-                        'asignacion2_id': unidad.asignacion_id.id,
+                        'asignacion2_id': self.asignacion_id.id,
                         'desasignado_por': self.env.user.id,
                         'fecha_desasignado': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         else:
             self.write({'state': 'disponible',
                         'asignacion_id': False,
-                        'asignacion2_id': unidad.asignacion_id.id,
-                        'asignacion3_id': unidad.asignacion2_id.id,
+                        'asignacion2_id': self.asignacion_id.id,
+                        'asignacion3_id': self.asignacion2_id.id,
                         'desasignado2_por': self.env.user.id,
                         'fecha_desasignado2': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
         invoice.signal_workflow('invoice_cancel')
@@ -313,12 +319,6 @@ class chatarra_unit(models.Model):
         self.write({'state': 'detalle',
                     'detalle_por': self.env.user.id,
                     'fecha_detalle': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
-
-    # BORRAR ESTA FUNCION SOLO PARA PRUEBAS INICIO
-    @api.one
-    def action_borrador(self):
-        self.write({'state': 'disponible'})
-    # BORRAR ESTA FUNCION SOLO PARA PRUEBAS FIN
 
     @api.onchange('name')
     def _verify_name(self):
@@ -345,3 +345,15 @@ class chatarra_unit(models.Model):
                         'message': "La serie ya existe",
                     }
                 }
+
+    def send_detalle(self, cr, uid, vals, context=None):
+        units_ids = self.search(cr, uid, [])
+        units = self.browse(cr, uid, units_ids, context=None)
+        email_template_obj = self.pool.get('email.template')
+        template = email_template_obj.search(cr, uid, [('model_id.model', '=','chatarra.unit')]) 
+        for unit in units:
+            print "##################", unit.fecha_detalle
+            if unit.fecha_detalle + timedelta(days=5) > date.today():
+                print "FECHA es mayor a 5 dias"
+            #email_template_obj.send_mail(cr, uid, template[0], envio)
+        return True
