@@ -58,6 +58,7 @@ class vehicle_log(osv.osv):
         'date_out': fields.datetime('Date out', readonly=True),
         'business': fields.text('Business', required=True),
         'shop_id': fields.many2one('sale.shop', 'Company', required=True),
+        'image': fields.binary('Image'),
         'day': fields.function(_get_day,
                                type='char',
                                store=True,

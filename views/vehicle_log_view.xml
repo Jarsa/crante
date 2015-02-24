@@ -79,6 +79,7 @@
                             <field name='date_out'/>
                         </group>
                         <field name='business' nolabel='1'/>
+                        <field name="image" widget="webcam"/>
                     </sheet>
                 </form>
             </field>
