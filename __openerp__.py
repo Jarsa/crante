@@ -25,7 +25,7 @@
     "author": "JARSA Sistemas, S.A. de C.V.",
     "website": "http://www.jarsa.com.mx",
     "category": "security",
-    "depends": ['hr', 'sale', 'web_camera'],
+    "depends": ['hr', 'sale', 'web_camera', 'fleet'],
     "description":
     """
 Visitor Log System
@@ -43,8 +43,10 @@ Managing:
              'security/security.xml',
              'security/ir.model.access.csv',
              'views/visitor_log_view.xml',
+             'views/vehicle_log_view.xml',
              'security/security_menu.xml',
              'views/res_partner_view.xml',
+             'views/fleet_vehicle_view.xml',
              'views/sale_shop_view.xml'],
     "demo_xml": [],
     "update_xml": [],
