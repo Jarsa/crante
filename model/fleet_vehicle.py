@@ -9,7 +9,7 @@ class fleet_vehicle(osv.osv):
     def _vehicle_name_get_fnc(self, cr, uid, ids, prop, unknow_none, context=None):
         res = {}
         for record in self.browse(cr, uid, ids, context=context):
-            res[record.id] = record.model_id.brand_id.name + '/' + record.model_id.modelname + '/' + record.vin_sn + '/' + record.license_plate
+            res[record.id] = record.model_id.brand_id.name + '/' + record.model_id.modelname + '/' + record.vin_sn + '/' + record.license_plate + '/' + record.year
         return res
 
     _columns = {
