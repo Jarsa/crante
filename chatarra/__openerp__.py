@@ -22,10 +22,6 @@
 {
     "name": "Chatarra",
     "version": "1.0",
-    "description": 
-    """
-        Module designed for specific needs
-    """,
     "author": "JARSA Sistemas, S.A. de C.V.",
     "website": "http://www.jarsa.com.mx",
     "category": "Chatarra",
