@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+		<record id="sequence_visitor_log_type" model="ir.sequence.type">
+            <field name="name">Visitor Log</field>
+            <field name="code">visitor.log.sequence.number</field>
+        </record>
+        <record id="sequence_visitor_log" model="ir.sequence">
+            <field name="name">Visitor Log Sequence Number</field>
+            <field name="code">visitor.log.sequence.number</field>
+            <field name="prefix">VL</field>
+            <field name="padding">4</field>
+        </record>
+        <record model='ir.ui.view' id='visitor_log_tree'>
+        	<field name='name'>visitor_log.tree</field>
+        	<field name='model'>visitor.log</field>
+        	<field name='type'>tree</field>
+        	<field name='arch' type='xml'>
+        		<tree string='Visitor Log'
+                      colors="blue:state=='appointment';red:state=='in';gray:state=='draft';green:state=='out'">
+        			<field name='name'/>
+        			<field name='date' attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+        			<field name='visitor_id' attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+        			<field name='employee_id' attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+        			<field name='date_in'/>
+        			<field name='date_out'/>
+        			<field name='state'/>
+                    <button string="In" 
+                            name="state_in"
+                            groups=""
+                            states="draft,appointment"
+                            type="object"
+                            icon="gtk-paste-v"/>
+                    <button string="Out" 
+                            name="state_out"
+                            groups=""
+                            states="in"
+                            type="object"
+                            icon="gtk-quit"/>
+        		</tree>
+        	</field>
+        </record>
+        <record model='ir.ui.view' id='visitor_log_form'>
+            <field name='name'>visitor_log.form</field>
+            <field name='model'>visitor.log</field>
+            <field name='type'>form</field>
+            <field name='arch' type='xml'>
+                <form string='Visitor Log'>
+                    <header>
+                        <button string="In" 
+                                name="state_in"
+                                groups=""
+                                states="draft,appointment"
+                                type="object"
+                                icon="gtk-paste-v"/>
+                        <button string="Out" 
+                                name="state_out"
+                                groups=""
+                                states="in"
+                                type="object"
+                                icon="gtk-quit"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <h1>
+                            <label string='Visitor Log'/>
+                            <field name='name' class='oe_inline'/>
+                        </h1>
+                        <group col='4'>
+                            <field name='visitor_id'/>
+                            <field name='date'/>
+                            <field name='employee_id'/>
+                        </group>
+                        <group>
+                            <field name='date_in'/>
+                            <field name='date_out'/>
+                        </group>
+                        <field name='business' nolabel='1'/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="visitor_log_search" model="ir.ui.view">
+            <field name="name">Visitor Log Search</field>
+            <field name="model">visitor.log</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Visitor Log">
+                    <field name='visitor_id'/>
+                    <field name='employee_id'/>
+                    <group  expand='0' string='Grouped by:'>
+                       <filter name='default' string='Default' domain="[('state', '!=', 'out')]"/>
+                   </group>
+                </search>
+            </field>
+        </record>
+        <record id='action_visitor_log' model='ir.actions.act_window'>
+        	<field name='name'>Visitor Log</field>
+        	<field name='res_model'>visitor.log</field>
+        	<field name='view_type'>form</field>
+        	<field name='view_mode'>tree,form</field>
+            <field name="context" eval="{'search_default_default': 1}"/>
+        </record>
+        <menuitem id="visitor_log_menu" name="Visitor Log" parent="security_list_menu" action="action_visitor_log"/>
+    </data>
+</openerp>

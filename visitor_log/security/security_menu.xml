@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model='ir.ui.menu' id='security_menu'>
+            <field name='groups_id' eval="[(4, ref('visitor_log_group_manager')),(4, ref('visitor_log_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='security_list_menu'>
+            <field name='groups_id' eval="[(4, ref('visitor_log_group_manager')),(4, ref('visitor_log_group_user'))]"/>
+        </record>
+        <record model='ir.ui.menu' id='visitor_log_menu'>
+            <field name='groups_id' eval="[(4, ref('visitor_log_group_manager')),(4, ref('visitor_log_group_user'))]"/>
+        </record>
+    </data>
+</openerp>
