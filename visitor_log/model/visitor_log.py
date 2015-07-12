@@ -1,0 +1,128 @@
+# -*- encoding: utf-8 -*-
+from openerp.osv import fields, osv
+from tools.translate import _
+import time
+import datetime
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+                           DEFAULT_SERVER_DATETIME_FORMAT)
+server_date = DEFAULT_SERVER_DATE_FORMAT
+server_datetime = DEFAULT_SERVER_DATETIME_FORMAT
+
+
+class visitor_log(osv.osv):
+    _name = 'visitor.log'
+
+    def _get_day(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for record in self.browse(cr, uid, ids):
+            date = record.date
+            day = time.strptime(date, '%Y-%m-%d %H:%M:%S')
+            res[record.id] = day.tm_mday
+            return res
+
+    def _get_year(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for record in self.browse(cr, uid, ids):
+            date = record.date
+            day = time.strptime(date, '%Y-%m-%d %H:%M:%S')
+            res[record.id] = day.tm_year
+            return res
+
+    def _get_week(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for record in self.browse(cr, uid, ids):
+            date = record.date
+            day = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+            res[record.id] = _('Week ') + str(day.isocalendar()[1])
+            return res
+
+    _description = 'Visitor Log'
+    _columns = {
+        'name': fields.char('Log Number', readonly='True'),
+        'state': fields.selection([('draft', 'Draft'),
+                                   ('in', 'In'),
+                                   ('out', 'Out'),
+                                   ('appointment', 'Appointment')
+                                   ], 'State', readonly=True),
+        'date': fields.datetime('Date', required=True),
+        'employee_id': fields.many2one('hr.employee',
+                                       'Employee to visit',
+                                       required=True),
+        'visitor_id': fields.many2one('res.partner',
+                                      'Visitor',
+                                      required=True),
+        'date_in': fields.datetime('Date in', readonly=True),
+        'date_out': fields.datetime('Date out', readonly=True),
+        'business': fields.text('Business', required=True),
+        'shop_id': fields.many2one('sale.shop', 'Company', required=True),
+        'day': fields.function(_get_day,
+                               type='char',
+                               store=True,
+                               string='Day'),
+        'year': fields.function(_get_year,
+                                type='char',
+                                store=True,
+                                string='Year'),
+        'week': fields.function(_get_week,
+                                type='char',
+                                store=True,
+                                string='Week'),
+        }
+
+    _defaults = {
+        'state': 'draft',
+        'date': time.strftime(server_datetime)
+    }
+
+    # def _check_in_visitor(self, cr, uid, ids):
+    #     """
+    #         Constraint to avoid duplicate visitor inside the company
+    #     """
+    #     visitor_obj = self.pool.get('visitor.log')
+    #     search = self.search(cr, uid, [('state', '=', 'in')])
+    #     print search
+    #     records = visitor_obj.browse(cr, uid, search)
+    #     visitor = [x.visitor_id.id for x in records]
+    #     for visit in self.browse(cr, uid, ids):
+    #         if visit.visitor_id.id in visitor:
+    #             return False
+    #         else:
+    #             return True
+
+    # _constraints = [
+    #     (_check_in_visitor, _('Error: Visitor is already in'),
+    #                         ['visitor_id']),
+    # ]
+
+    # def onchange_in_visitor(self, cr, uid, ids, visitor_id):
+    #     """
+    #         Onchange method to raise an error if the visitor is already in
+    #     """
+    #     visitor_obj = self.pool.get('visitor.log')
+    #     search = self.search(cr, uid, [('state', '=', 'in')])
+    #     records = visitor_obj.browse(cr, uid, search)
+    #     visitor = [x.visitor_id.id for x in records]
+    #     for visit in self.browse(cr, uid, ids):
+    #         if visit.visitor_id.id in visitor:
+    #             raise osv.except_osv(_('Error'),
+    #    _('This visitor is already in'))
+    #     return True
+
+    def create(self, cr, uid, vals, context={}):
+        """
+        Assing a sequence number when the record is created
+        """
+        sequence = 'visitor.log.sequence.number'
+        if ('name' not in vals) or (vals['name'] is False):
+            vals['name'] = self.pool.get('ir.sequence').get(cr, uid, sequence)
+        return super(visitor_log, self).create(cr, uid, vals, context)
+
+    def state_in(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'in',
+                                  'date_in': time.strftime(server_datetime)
+                                  })
+
+    def state_out(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'out',
+                                  'date_out': time.strftime(server_datetime)
+                                  })

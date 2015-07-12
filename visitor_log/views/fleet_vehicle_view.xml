@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model='ir.ui.view' id='fleet_vehicle_log_form'>
+        	<field name='name'>fleet_vehicle_log.form</field>
+        	<field name='model'>fleet.vehicle</field>
+        	<field name='type'>form</field>
+        	<field name='inherit_id' ref='fleet.fleet_vehicle_form'/>
+        	<field name='arch' type='xml'>
+        		<field name='license_plate' position='after'>
+        			<h4>
+        				<label for="year" class="oe_edit_only"/>
+        				<field name='year'/>
+        			</h4>
+        		</field>
+        		<field name='car_value' position='replace'>
+        			<field name='purchase_price' groups=''/>
+        			<field name='sale_price' groups=''/>
+        		</field>
+                <field name='driver_id' position='replace'/>
+                <button name="return_action_to_open" position="replace"/>
+                <button name="act_show_log_cost" position="replace"/>
+                <button name="return_action_to_open" position="replace"/>
+                <button name="return_action_to_open" position="replace"/>
+                <button name="return_action_to_open" position="replace"/>
+        	</field>
+        </record>
+    </data>
+</openerp>

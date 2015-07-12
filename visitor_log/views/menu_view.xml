@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <menuitem id="security_menu" name="Security"/>
+        <menuitem id="security_list_menu" name="Security" parent="security_menu"/>
+    </data>
+</openerp>

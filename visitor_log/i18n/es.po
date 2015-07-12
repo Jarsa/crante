@@ -1,0 +1,233 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# 	* visitor_log
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-25 01:01+0000\n"
+"PO-Revision-Date: 2015-02-24 19:03-0600\n"
+"Last-Translator: Jesús Alan Ramos Rodríguez <alan.ramos@jarsa.com.mx>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: es\n"
+"X-Generator: Poedit 1.7.3\n"
+
+#. module: visitor_log
+#: model:ir.actions.act_window,name:visitor_log.action_visitor_log
+#: model:ir.model,name:visitor_log.model_visitor_log
+#: model:ir.ui.menu,name:visitor_log.visitor_log_menu view:visitor.log:0
+msgid "Visitor Log"
+msgstr "Registro de Visitantes"
+
+#. module: visitor_log
+#: model:res.groups,name:visitor_log.vehicle_log_group_manager
+msgid "Vehicle Manager"
+msgstr "Administrador de Vehículos"
+
+#. module: visitor_log
+#: field:vehicle.log,state:0 field:visitor.log,state:0
+msgid "State"
+msgstr "Estado"
+
+#. module: visitor_log
+#: selection:vehicle.log,state:0 selection:visitor.log,state:0
+msgid "Draft"
+msgstr "﻿Borrador"
+
+#. module: visitor_log
+#: field:vehicle.log,vehicle_id:0
+msgid "Vehicle"
+msgstr "Vehículo"
+
+#. module: visitor_log
+#: field:vehicle.log,date_out:0 field:visitor.log,date_out:0
+msgid "Date out"
+msgstr "Fecha de salida"
+
+#. module: visitor_log
+#: view:vehicle.log:0 field:vehicle.log,week:0 view:visitor.log:0
+#: field:visitor.log,week:0
+msgid "Week"
+msgstr "Semana"
+
+#. module: visitor_log
+#: field:visitor.log,employee_id:0
+msgid "Employee to visit"
+msgstr "Empleado que visita"
+
+#. module: visitor_log
+#: selection:visitor.log,state:0
+msgid "Appointment"
+msgstr "Cita"
+
+#. module: visitor_log
+#: field:vehicle.log,business:0 field:visitor.log,business:0
+msgid "Business"
+msgstr "Asunto"
+
+#. module: visitor_log
+#: model:res.groups,name:visitor_log.visitor_log_group_user
+msgid "Visitor User"
+msgstr "Usuario de Visitantes"
+
+#. module: visitor_log
+#: view:vehicle.log:0 field:vehicle.log,shop_id:0 view:visitor.log:0
+#: field:visitor.log,shop_id:0
+msgid "Company"
+msgstr "﻿Empresa"
+
+#. module: visitor_log
+#: model:res.groups,name:visitor_log.vehicle_log_group_user
+msgid "Vehicle User"
+msgstr "Usuario de Vehículos"
+
+#. module: visitor_log
+#: field:vehicle.log,approved_by:0
+msgid "Approved by"
+msgstr "Aprobado por"
+
+#. module: visitor_log
+#: selection:vehicle.log,sale_state:0
+msgid "Avialable"
+msgstr "Disponible"
+
+#. module: visitor_log
+#: model:ir.actions.act_window,name:visitor_log.action_vehicle_log
+#: model:ir.model,name:visitor_log.model_vehicle_log
+#: model:ir.ui.menu,name:visitor_log.vehicle_log_menu view:vehicle.log:0
+msgid "Vehicle Log"
+msgstr "Registro de Vehículos"
+
+#. module: visitor_log
+#: field:sale.shop,user_id:0
+msgid "User"
+msgstr "Usuario"
+
+#. module: visitor_log
+#: model:ir.model,name:visitor_log.model_sale_shop
+msgid "Sales Shop"
+msgstr "Tienda"
+
+#. module: visitor_log
+#: field:fleet.vehicle,date:0 field:vehicle.log,date:0
+#: field:visitor.log,date:0
+msgid "Date"
+msgstr "Fecha"
+
+#. module: visitor_log
+#: field:vehicle.log,sale_state:0
+msgid "Sale State"
+msgstr "Estado Ventas"
+
+#. module: visitor_log
+#: view:vehicle.log:0 field:vehicle.log,day:0 view:visitor.log:0
+#: field:visitor.log,day:0
+msgid "Day"
+msgstr "Día"
+
+#. module: visitor_log
+#: model:res.groups,name:visitor_log.visitor_log_group_manager
+msgid "Visitor Manager"
+msgstr "Administrador de Visitantes"
+
+#. module: visitor_log
+#: view:vehicle.log:0 view:visitor.log:0
+msgid "Default"
+msgstr "Predeterminado"
+
+#. module: visitor_log
+#: code:addons/visitor_log/model/fleet_vehicle_log.py:36
+#: code:addons/visitor_log/model/visitor_log.py:36
+#, python-format
+msgid "Week "
+msgstr "Semana "
+
+#. module: visitor_log
+#: field:fleet.vehicle,year:0 view:vehicle.log:0 field:vehicle.log,year:0
+#: view:visitor.log:0 field:visitor.log,year:0
+msgid "Year"
+msgstr "Año"
+
+#. module: visitor_log
+#: field:vehicle.log,date_in:0 field:visitor.log,date_in:0
+msgid "Date in"
+msgstr "Fecha de entrada"
+
+#. module: visitor_log
+#: model:ir.module.category,name:visitor_log.security_module_category
+#: model:ir.ui.menu,name:visitor_log.security_list_menu
+#: model:ir.ui.menu,name:visitor_log.security_menu
+msgid "Security"
+msgstr "Seguridad"
+
+#. module: visitor_log
+#: field:vehicle.log,name:0 field:visitor.log,name:0
+msgid "Log Number"
+msgstr "Número de registro"
+
+#. module: visitor_log
+#: model:ir.model,name:visitor_log.model_fleet_vehicle
+msgid "Information on a vehicle"
+msgstr "Información en un vehículo"
+
+#. module: visitor_log
+#: selection:vehicle.log,sale_state:0
+msgid "Reserved"
+msgstr "Reservado"
+
+#. module: visitor_log
+#: field:fleet.vehicle,sale_price:0
+msgid "Sale Price"
+msgstr "Precio de Venta"
+
+#. module: visitor_log
+#: field:visitor.log,visitor_id:0
+msgid "Visitor"
+msgstr "Visitante"
+
+#. module: visitor_log
+#: field:vehicle.log,image:0
+msgid "Image"
+msgstr "Imagen"
+
+#. module: visitor_log
+#: field:fleet.vehicle,purchase_price:0
+msgid "Purchase Price"
+msgstr "Precio de Compra"
+
+#. module: visitor_log
+#: view:vehicle.log:0 view:visitor.log:0
+msgid "Grouped by:"
+msgstr "Agrupado por"
+
+#. module: visitor_log
+#: view:vehicle.log:0 view:visitor.log:0
+msgid "Month"
+msgstr "Mes"
+
+#. module: visitor_log
+#: view:vehicle.log:0 selection:vehicle.log,state:0 view:visitor.log:0
+#: selection:visitor.log,state:0
+msgid "In"
+msgstr "Entrar"
+
+#. module: visitor_log
+#: view:vehicle.log:0 view:visitor.log:0
+msgid "Month/Day"
+msgstr "Mes/Día"
+
+#. module: visitor_log
+#: selection:vehicle.log,sale_state:0
+msgid "Sold"
+msgstr "Vendido"
+
+#. module: visitor_log
+#: view:vehicle.log:0 selection:vehicle.log,state:0 view:visitor.log:0
+#: selection:visitor.log,state:0
+msgid "Out"
+msgstr "Salir"
