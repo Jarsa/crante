@@ -42,6 +42,7 @@ ListaLugaresPersonalizados
 
 from suds.client import Client
 from suds.xsd.doctor import ImportDoctor, Import
+import geocoder
 
 url = 'http://ws.locatel.es/servicios/vehiculos/vehiculos.asmx?WSDL'
 imp = Import('http://www.w3.org/2001/XMLSchema')
@@ -54,8 +55,17 @@ password = 'mersa10'
 
 ListaVehiculos = client.service.ListaVehiculos(usuario, password)
 
+count = 1
 for vehiculo in ListaVehiculos.diffgram.Flota.coches:
-	print 'vehiculo_id: ' + vehiculo.vehiculo_id + '\nLatitud: ' + vehiculo.ult_latitud + '\nLongitud: ' + vehiculo.ult_longitud
+    lat = float(vehiculo.ult_latitud)
+    lon = float(vehiculo.ult_longitud)
+    geocoder1 = geocoder.google([lat, lon], method='reverse')
+    geocoder2 = geocoder.bing([lat, lon], method='reverse')
+    if hasattr(vehiculo, 'ult_zona3'):
+        print count, '\n Zona', vehiculo.ult_zona3, '\n Google', geocoder1.address, '\n Bing', geocoder2.address
+    else:
+        print count, '\n Zona NO Disponible', '\n Google', geocoder1.address, '\n Bing', geocoder2.address
+    count += 1
 	
 LeeVehiculo = client.service.LeeVehiculo(usuario, password, vehiculo_id)
 FechasVehiculos = client.service.FechasVehiculos(usuario, password)
