@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data  noupdate='1'>
+        <record id='connector_locatel' model='connector.locatel'>
+        	<field name='user'>localeluser</field>
+        	<field name='password'>locatelpassword</field>
+        	<field name='ws_schema'>http://www.w3.org/2001/XMLSchema</field>
+        	<field name='url_vehicle'>http://ws.locatel.es/servicios/vehiculos/vehiculos.asmx?WSDL</field>
+        	<field name='vehicle_namespace'>http://locatel.es/</field>
+        	<field name='url_history'>http://ws.locatel.es/servicios/historicos/historico.asmx?WSDL</field>
+        	<field name='history_namespace'>http://ws.locatel.es/</field>
+        	<field name='url_mngmt'>http://ws.locatel.es/servicios/gestion/gestion.asmx?WSDL</field>
+        	<field name='mngmt_namespace'>http://locatel.es/</field>
+        	<field name='url_reports'>http://ws.locatel.es/servicios/informes/informes.asmx?WSDL</field>
+        	<field name='reports_namespace'>http://www.locatel.es/servicios/informes</field>
+        	<field name='url_parts'>http://ws.locatel.es/servicios/partesvisita/Partes.asmx?WSDL</field>
+        	<field name='parts_namespace'>http://ws.locatel.es/Partesvisita/Partes</field>
+        </record>
+    </data>
+</openerp>
