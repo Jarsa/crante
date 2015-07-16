@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    	<!-- Form View -->
+        <record model='ir.ui.view' id='connector_locatel_form'>
+    		<field name='name'>connector_locatel.form</field>
+    		<field name='model'>connector.locatel</field>
+    		<field name='type'>form</field>
+    		<field name='arch' type='xml'>
+    			<form string='Basic configuration' version='7.0'>
+    				<sheet>
+    					<h1>
+    						<label string='Basic configuration'/>
+    					</h1>
+    					<group col='4'>
+    						<field name='user'/>
+    						<field name='password'/>
+    					</group>
+    					<group>
+    						<field name='ws_schema'/>
+    						<field name='url_vehicle'/>
+    						<field name='vehicle_namespace'/>
+    						<field name='url_history'/>
+    						<field name='history_namespace'/>
+    						<field name='url_mngmt'/>
+    						<field name='mngmt_namespace'/>
+    						<field name='url_reports'/>
+    						<field name='reports_namespace'/>
+    						<field name='url_parts'/>
+    						<field name='parts_namespace'/>
+    					</group>
+    				</sheet>
+    			</form>
+    		</field>
+    	</record>
+        <!-- Tree View -->
+    	<record model='ir.ui.view' id='connector_config_tree'>
+    		<field name='name'>connector_locatel.tree</field>
+    		<field name='model'>connector.locatel</field>
+    		<field name='type'>tree</field>
+    		<field name='arch' type='xml'>
+    			<tree string='Basic configuration'>
+    				<field name='user'/>
+    			</tree>
+    		</field>
+    	</record>
+        <!-- Menu Action -->
+    	<record id='action_connector_locatel' model='ir.actions.act_window'>
+    		<field name='name'>Connector locatel</field>
+    		<field name='res_model'>connector.locatel</field>
+    		<field name='view_type'>form</field>
+    		<field name='view_mode'>tree,form</field>
+    	</record>
+        <!-- Menus -->
+    	<menuitem id="connector_menu" name="Locatel" parent="base.menu_custom"/>
+    	<menuitem id="connector_locatel_menu" name="Configuration" parent="connector_menu" action="action_connector_locatel"/>
+    </data>
+</openerp>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    	<record model='ir.ui.view' id='connector_places_form'>
+            <field name='name'>connector.places.wizard.form</field>
+            <field name='model'>connector.places.wizard</field>
+            <field name='type'>form</field>
+            <field name='arch' type='xml'>
+                <form string='Get Places' version="7.0">
+                    <h3>Press the button below to update the list of places from Locatel GPS System</h3>
+                    <p>It could take some time</p>
+                    <footer>
+                        <button name="get_places" type="object"
+                                string="Get Locatel Places" class="oe_highlight" icon="gtk-refresh"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record model='ir.cron' id='connector_places_cron'>
+            <field name='name'>Update Places from Locatel</field>
+            <field name='user_id' eval='1'/>
+            <field name='active' eval='True'/>
+            <field name='interval_number'>1</field>
+            <field name='interval_type'>days</field>
+            <field name='numbercall'>-1</field>
+            <field name='model'>connector.places.wizard</field>
+            <field name='function'>get_places</field>
+        </record>
+        <record id='action_get_places' model='ir.actions.act_window'>
+            <field name='name'>Get Places</field>
+            <field name='res_model'>connector.places.wizard</field>
+            <field name='target'>new</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>form</field>
+        </record>
+        <menuitem id="get_places_menu" name="Get Locatel Places" parent="tms.menu_tms_config_routes" action="action_get_places"/>
+    </data>
+</openerp>
